@@ -185,20 +185,20 @@ header {
 }
 
 .spotlight-trend {
+  background-color: #fff8cc; /* soft yellow background */
   text-align: center;
   padding: 2rem 1rem;
-  background-color: #181818;
 }
 
 .spotlight-card {
-  background: #fff3cd; /* soft, readable yellow */
-  color: #222;          /* dark text for contrast */
+  background: #1e1e1e; /* dark panel */
+  color: #fff;         /* white text */
   padding: 1rem;
   border-radius: 12px;
   max-width: 400px;
   margin: auto;
-  box-shadow: 0 0 10px rgba(255, 230, 100, 0.3);
-  border: 1px solid #ffeeba;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
 }
 
 .rank-meta {
