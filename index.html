@@ -2,122 +2,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HypeRank</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css" />
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HypeRank</title>
+<link href="favicon.png" rel="icon" type="image/png"/>
+<link href="style.css" rel="stylesheet">
+</link></head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
-      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
-    </div>
-    <nav class="nav-links">
-      <a href="#spotlight">Trends</a>
-      <a href="#vote">Vote</a>
-      <a href="#submit">Submit</a>
-    </nav>
-  </header>
-  <div class="news-ticker">
-    <div class="ticker-track">
-      <span>🔥 Gyatt is trending #1 • 💀 NPC TikTok votes dropping • 🚀 New trend submitted: 'Corecore'</span>
-    </div>
-  </div>
-  <main class="hero-section">
-    <h2>Track what’s 🔥 and what’s dead online.</h2>
-    <p>From memes to influencers — know what’s trending in real time.</p>
-  </main>
-
-  <div class="search-bar" style="text-align:center; margin: 2rem;">
-    <form id="trendSearchForm">
-      <input type="text" id="trendSearchInput" placeholder="Search trends..." style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;">
-    </form>
-  </div>
-
-<section id="spotlight" class="spotlight-trend">
-  <h2>🌟 Spotlight Trend</h2>
-  <div class="spotlight-card">
-    <h3>“Rizz”</h3>
-    <p>Classic Gen Z slang for charisma. Still used, but fading in 2025.</p>
-    <span class="rank-meta">🔥 Ranked #2 this week</span>
-  </div>
-</section>
-
-<div class="update-time">
-  <p>Last updated: 9 minutes ago</p>
+<header class="site-header">
+<div class="logo-container">
+<img alt="HypeRank Icon" class="logo-icon" src="hyperank_icon.png"/>
+<h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
 </div>
-
-<section id="trending" class="trending-section">
-  <h2>🔥 Trending Now</h2>
-  <div class="trending-grid">
-    <div class="trend-card">
-      <div class="trend-title">Skibidi Rizz</div>
-      <div class="trend-meta rising">🔺 Rising</div>
-      <div class="trend-votes">1.2K votes</div>
-    </div>
-    <div class="trend-card">
-      <div class="trend-title">NPC TikTok</div>
-      <div class="trend-meta falling">🔻 Falling</div>
-      <div class="trend-votes">890 votes</div>
-    </div>
-    <div class="trend-card">
-      <div class="trend-title">Apple Vision Pro</div>
-      <div class="trend-meta mid">🧍 Mid</div>
-      <div class="trend-votes">620 votes</div>
-    </div>
-    <div class="trend-card">
-      <div class="trend-title">Gyatt</div>
-      <div class="trend-meta rising">🔺 Rising</div>
-      <div class="trend-votes">1.5K votes</div>
-    </div>
-    <div class="trend-card">
-      <div class="trend-title">Sigma Edits</div>
-      <div class="trend-meta falling">🔻 Falling</div>
-      <div class="trend-votes">540 votes</div>
-    </div>
-  </div>
+<nav class="nav-links">
+<a href="#spotlight">Trends</a>
+<a href="#vote">Vote</a>
+<a href="#submit">Submit</a>
+</nav>
+</header>
+<div class="news-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+<main class="hero-section">
+<h2>Track what’s 🔥 and what’s dead online.</h2>
+<p>From memes to influencers — know what’s trending in real time.</p>
+</main>
+<div class="search-bar" style="text-align:center; margin: 2rem;">
+<form id="trendSearchForm">
+<input id="trendSearchInput" placeholder="Search trends..." style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" type="text"/>
+</form>
+</div>
+<section class="spotlight-trend" id="spotlight">
+<h2>🌟 Spotlight Trend</h2>
+<div class="spotlight-card">
+<h3>“Rizz”</h3>
+<p>Classic Gen Z slang for charisma. Still used, but fading in 2025.</p>
+<span class="rank-meta">🔥 Ranked #2 this week</span>
+</div>
 </section>
-
-<section id="vote" class="vote-section">
-  <h2>🗳️ Vote What's Hot or Not</h2>
-  <div class="vote-grid">
-    <div class="vote-card">
-      <div class="vote-title">"Gyatt"</div>
-      <button class="vote-up">🔥 Fire</button>
-      <button class="vote-down">💀 Dead</button>
-    </div>
-    <div class="vote-card">
-      <div class="vote-title">"NPC Trend"</div>
-      <button class="vote-up">🔥 Fire</button>
-      <button class="vote-down">💀 Dead</button>
-    </div>
-  </div>
+<div class="update-time">
+<p>Last updated: 9 minutes ago</p>
+</div>
+<section class="trending-section" id="trending">
+<h2>🔥 Trending Now</h2>
+<div class="trending-grid">
+<div class="trend-card">
+<div class="trend-title">Skibidi Rizz</div>
+<div class="trend-meta rising">🔺 Rising</div>
+<div class="trend-votes">1.2K votes</div>
+</div>
+<div class="trend-card">
+<div class="trend-title">NPC TikTok</div>
+<div class="trend-meta falling">🔻 Falling</div>
+<div class="trend-votes">890 votes</div>
+</div>
+<div class="trend-card">
+<div class="trend-title">Apple Vision Pro</div>
+<div class="trend-meta mid">🧍 Mid</div>
+<div class="trend-votes">620 votes</div>
+</div>
+<div class="trend-card">
+<div class="trend-title">Gyatt</div>
+<div class="trend-meta rising">🔺 Rising</div>
+<div class="trend-votes">1.5K votes</div>
+</div>
+<div class="trend-card">
+<div class="trend-title">Sigma Edits</div>
+<div class="trend-meta falling">🔻 Falling</div>
+<div class="trend-votes">540 votes</div>
+</div>
+</div>
 </section>
-
-<section id="submit" class="submit-section">
-  <h2>🚀 Suggest a New Trend</h2>
-  <form class="submit-form">
-    <input type="text" placeholder="Enter trend name..." required />
-    <textarea placeholder="Why is it trending?" rows="4"></textarea>
-    <button type="submit">Submit</button>
-  </form>
+<section class="vote-section" id="vote">
+<h2>🗳️ Vote What's Hot or Not</h2>
+<div class="vote-grid">
+<div class="vote-card">
+<div class="vote-title">"Gyatt"</div>
+<button class="vote-up">🔥 Fire</button>
+<button class="vote-down">💀 Dead</button>
+</div>
+<div class="vote-card">
+<div class="vote-title">"NPC Trend"</div>
+<button class="vote-up">🔥 Fire</button>
+<button class="vote-down">💀 Dead</button>
+</div>
+</div>
 </section>
-
+<section class="submit-section" id="submit">
+<h2>🚀 Suggest a New Trend</h2>
+<form class="submit-form">
+<input placeholder="Enter trend name..." required="" type="text">
+<textarea placeholder="Why is it trending?" rows="4"></textarea>
+<button type="submit">Submit</button>
+</input></form>
+</section>
 <section class="about-section">
-  <h3>What is HypeRank?</h3>
-  <p>HypeRank tracks what's hot in internet culture — from slang and memes to influencers and apps. Vote what's 🔥 or 💀 and see the trends rise and fall.</p>
+<h3>What is HypeRank?</h3>
+<p>HypeRank tracks what's hot in internet culture — from slang and memes to influencers and apps. Vote what's 🔥 or 💀 and see the trends rise and fall.</p>
 </section>
-
 <script src="script.js"></script>
-
 <div id="custom-popup" style="display:none; position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
 background:#222; color:#fff; padding:1rem 1.5rem; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.4);
 font-size:1rem; z-index:1000;">✅ Your trend suggestion was submitted</div>
-
 </body>
 </html>
 <footer style="text-align:center; padding: 1rem; background:#111; color:#888; font-size: 0.9rem;">
-  &copy; 2025 HypeRank. All rights reserved.
+  © 2025 HypeRank. All rights reserved.
 </footer>
