@@ -66,7 +66,8 @@ fetch('news.json')
     const ticker = document.getElementById('tickerTrack');
     if (ticker && Array.isArray(data)) {
       const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-      ticker.innerHTML = "<span>" + data.join(separator) + "</span>";
+      const repeated = [...data, ...data].join(separator);  // Repeat headlines twice
+      ticker.innerHTML = "<span>" + repeated + "</span>";
     }
   });
     
