@@ -59,14 +59,54 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 📰 Load headlines into ticker
+   // 📰 Load headlines into ticker
 fetch('news.json')
   .then(res => res.json())
   .then(data => {
-    const tickerText = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    document.getElementById("ticker1").innerHTML = tickerText;
-    document.getElementById("ticker2").innerHTML = tickerText; // identical copy for infinite scroll
+    const ticker = document.getElementById('tickerTrack');
+    if (ticker && Array.isArray(data)) {
+      const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+      ticker.innerHTML = "<span>" + data.join(separator) + "</span>";
+    }
   });
+
+
+
+// ✅ Truly seamless ticker using JS duplication
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("news.json")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.querySelector(".ticker-track-wrapper");
+      if (!wrapper || !Array.isArray(data)) return;
+
+      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+
+      // Create and append two copies
+      const ticker1 = document.createElement("div");
+      const ticker2 = document.createElement("div");
+      ticker1.className = "ticker-track";
+      ticker2.className = "ticker-track";
+      ticker1.innerHTML = text;
+      ticker2.innerHTML = text;
+      wrapper.appendChild(ticker1);
+      wrapper.appendChild(ticker2);
+
+      let pos = 0;
+      const speed = 0.5; // px per frame
+
+      function animate() {
+        pos -= speed;
+        if (Math.abs(pos) >= ticker1.offsetWidth) {
+          pos = 0;
+        }
+        wrapper.style.transform = `translateX(${pos}px)`;
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    });
+});
     
   }
 });
