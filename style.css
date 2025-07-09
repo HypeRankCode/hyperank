@@ -413,15 +413,15 @@ header {
     gap: 1.5rem;
 }
 
-    .nav-links a {
-        text-decoration: none;
-        color: white;
-        font-weight: 500;
-    }
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+}
 
-        .nav-links a:hover {
-            color: #ff3c3c;
-        }
+.nav-links a:hover {
+    color: #ff3c3c;
+}
 
 
 
