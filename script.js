@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   
+
 // ✅ Fixed seamless ticker with instant start and proper loop
 document.addEventListener("DOMContentLoaded", () => {
   fetch("news.json")
@@ -102,6 +103,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 100);
     });
 });
-
 
 });
