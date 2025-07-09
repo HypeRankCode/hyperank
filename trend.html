@@ -8,11 +8,53 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-bottom: 3rem;
+    }
     .trend-result {
       padding: 3rem 1rem;
-      text-align: center;
-      font-size: 1.3rem;
+    }
+    .result-box {
+      font-size: 1.2rem;
+      margin: 1rem auto;
+    }
+    .trend-stats {
+      margin-top: 2rem;
+    }
+    .bar {
+      height: 24px;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      line-height: 24px;
+      font-weight: bold;
+    }
+    .fire-bar {
+      background: #ff3c3c;
+      width: 62%;
+    }
+    .dead-bar {
+      background: #555;
+      width: 38%;
+    }
+    footer {
+      background: #111;
+      color: #888;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      background: #ff3c3c;
       color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -31,11 +73,18 @@
 
   <main class="trend-result">
     <h1>Trend Search</h1>
-    <a href="index.html" style="display:inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: #ff3c3c; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">← Back to Home</a>
-    <div id="resultBox">Loading...</div>
+    <div class="result-box" id="resultBox">Loading...</div>
+    <div class="trend-stats" id="statsBox" style="display:none;">
+      <h3>Total Votes: 723</h3>
+      <div class="bar fire-bar">🔥 Fire: 62%</div>
+      <div class="bar dead-bar">💀 Dead: 38%</div>
+      <p style="margin-top:1rem; color:#aaa;">Note: these numbers are demo-only for now.</p>
+    </div>
   </main>
 
-  <footer style="text-align:center; padding: 1rem; background:#111; color:#888; font-size: 0.9rem;">
+  <a href="index.html" class="back-button">← Back to Home</a>
+
+  <footer>
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
@@ -44,8 +93,11 @@
     const known = ["gyatt", "npc tiktok", "skibidi rizz", "apple vision pro", "sigma edits", "rizz"];
 
     const result = document.getElementById("resultBox");
+    const stats = document.getElementById("statsBox");
+
     if (query && known.includes(query)) {
       result.innerHTML = `🔥 <strong>${query}</strong> is a trending topic on HypeRank.`;
+      stats.style.display = "block";
     } else {
       result.innerHTML = `❌ <strong>${query}</strong> doesn't exist on HypeRank... yet.`;
     }
