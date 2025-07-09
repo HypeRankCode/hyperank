@@ -58,5 +58,17 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
       }
     });
+
+    // 📰 Load headlines into ticker
+fetch('news.json')
+  .then(res => res.json())
+  .then(data => {
+    const ticker = document.getElementById('tickerTrack');
+    if (ticker && Array.isArray(data)) {
+      const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+      ticker.innerHTML = "<span>" + data.join(separator) + "</span>";
+    }
+  });
+    
   }
 });
