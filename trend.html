@@ -158,6 +158,7 @@
         if (match) {
           const firePercent = Math.round((match.fire / match.votes) * 100);
           const deadPercent = 100 - firePercent;
+// Display match info with total votes and bars in a styled box
           resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
           trendInfo.innerHTML = `
             <div style="
@@ -168,7 +169,6 @@
               margin: 2rem auto 0 auto;
               box-shadow: 0 0 10px rgba(0,0,0,0.4);
             ">
-              <p style="margin:1rem auto; max-width:800px;">${match.description}</p>
               <h3>Total Votes: ${match.votes}</h3>
               <div class="bar-container" style="margin-top: 1rem;">
                 <div class="bar fire-bar" style="width:${firePercent}%">🔥 Hype: ${firePercent}%</div>
