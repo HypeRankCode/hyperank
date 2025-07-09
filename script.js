@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const voteCards = document.querySelectorAll(".vote-card");
   voteCards.forEach(card => {
@@ -68,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const grid = document.querySelector(".trending-grid");
       if (!grid) return;
       grid.innerHTML = "";
-
       trends.forEach(trend => {
         const card = document.createElement("div");
         card.className = "trend-card";
@@ -79,20 +79,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const ratio = trend.fire / trend.votes;
         const meta = document.createElement("div");
+        const spark = document.createElement("div");
+
         if (ratio > 0.65) {
           meta.className = "trend-meta rising";
           meta.textContent = "🔺 Rising";
+          spark.className = "sparkline green";
+          spark.textContent = "📈 ▁▃▅▇▆";
         } else if (ratio < 0.4) {
           meta.className = "trend-meta falling";
           meta.textContent = "🔻 Falling";
+          spark.className = "sparkline red";
+          spark.textContent = "📉 ▆▅▃▂";
         } else {
           meta.className = "trend-meta mid";
           meta.textContent = "➖ Mid";
+          spark.className = "sparkline orange";
+          spark.textContent = "➖ ▄▄▄▅▅";
         }
-
-        const spark = document.createElement("div");
-        spark.className = "sparkline";
-        spark.textContent = (ratio < 0.4 ? "📉 " : "📈 ") + (trend.sparkline || "▁▃▅▇▆");
 
         const votes = document.createElement("div");
         votes.className = "trend-votes";
@@ -100,7 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const hypeScore = document.createElement("div");
         hypeScore.className = "meta-info";
-        hypeScore.textContent = "🔥 HypeScore: " + Math.round(ratio * 100) + "%";
+        const score = Math.round((trend.fire / trend.votes) * 100);
+        hypeScore.textContent = "🔥 HypeScore: " + score + "%";
 
         card.appendChild(title);
         card.appendChild(meta);
