@@ -44,8 +44,12 @@ body {
   font-weight: bold;
 }
 
+.logo-container:active {
+  background: none;
+}
+
 .logo-text .highlight {
-  color: #ff3c3c;
+  color: #ffffff;
 }
 
 .nav-links a {
