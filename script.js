@@ -1,30 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔥 Voting buttons for Fire/Dead (legacy cards)
-  const voteCards = document.querySelectorAll(".vote-card");
-  voteCards.forEach(card => {
-    const up = card.querySelector(".vote-up");
-    const down = card.querySelector(".vote-down");
-
-    up.addEventListener("click", () => {
-      up.classList.add("clicked");
-      up.textContent = "🔥 Voted!";
-      up.disabled = true;
-      down.disabled = true;
-    });
-
-    down.addEventListener("click", () => {
-      down.classList.add("clicked");
-      down.textContent = "💀 Voted!";
-      down.disabled = true;
-      up.disabled = true;
-    });
-
-    const counter = document.createElement("div");
-    counter.className = "fake-count";
-    counter.textContent = "Votes: " + (Math.floor(Math.random() * 1000) + 200);
-    card.appendChild(counter);
-  });
-
   // 🚀 Form submission
   const form = document.querySelector(".submit-form");
   if (form) {
@@ -91,17 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
           meta.className = "trend-meta rising";
           meta.textContent = "🔺 Rising";
           spark.className = "sparkline green";
-          spark.textContent = "📈 ▁▃▅▇▆";
+          spark.textContent = "▁▃▅▇▆";
         } else if (ratio < 0.4) {
           meta.className = "trend-meta falling";
           meta.textContent = "🔻 Falling";
           spark.className = "sparkline red";
-          spark.textContent = "📉 ▆▅▃▂";
+          spark.textContent = "▆▅▃▂";
         } else {
           meta.className = "trend-meta mid";
           meta.textContent = "➖ Mid";
           spark.className = "sparkline orange";
-          spark.textContent = "X ▄▄▄▅▅";
+          spark.textContent = "▄▄▄▅▅";
         }
 
         const votes = document.createElement("div");
