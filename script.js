@@ -1,5 +1,5 @@
-
 document.addEventListener("DOMContentLoaded", () => {
+  // 🔥 Voting buttons for Fire/Dead (legacy cards)
   const voteCards = document.querySelectorAll(".vote-card");
   voteCards.forEach(card => {
     const up = card.querySelector(".vote-up");
@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     card.appendChild(counter);
   });
 
+  // 🚀 Form submission
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", (e) => {
@@ -36,12 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 🕒 Update timestamp
   const updateText = document.querySelector(".update-time p");
   if (updateText) {
     const minutes = Math.floor(Math.random() * 9) + 1;
     updateText.textContent = `Last updated: ${minutes} minutes ago`;
   }
 
+  // 🔍 Search functionality
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", (e) => {
@@ -54,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 📰 Ticker news
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
@@ -63,12 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
     });
 
+  // 🔢 Load trends with sparklines & HypeScore
   fetch("trends.json")
     .then(res => res.json())
     .then(trends => {
       const grid = document.querySelector(".trending-grid");
       if (!grid) return;
       grid.innerHTML = "";
+
       trends.forEach(trend => {
         const card = document.createElement("div");
         card.className = "trend-card";
@@ -114,5 +120,43 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(hypeScore);
         grid.appendChild(card);
       });
+
+      // 🆕 Add "Which is better?" comparison vote
+      const voteSection = document.querySelector(".vote-section");
+      if (voteSection && trends.length >= 2) {
+        const compContainer = document.createElement("div");
+        compContainer.className = "comparison-container";
+        compContainer.innerHTML = `
+          <h3 style="margin-top: 3rem;">🤔 Which is better?</h3>
+          <div class="comparison-box">
+            <button class="compare-btn" data-index="0">${trends[0].label}</button>
+            <span>vs</span>
+            <button class="compare-btn" data-index="1">${trends[1].label}</button>
+          </div>
+          <div class="compare-results" style="display:none; margin-top:1rem;"></div>
+        `;
+        voteSection.appendChild(compContainer);
+
+        const buttons = compContainer.querySelectorAll(".compare-btn");
+        const resultBox = compContainer.querySelector(".compare-results");
+
+        let votes = [0, 0];
+
+        buttons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const i = parseInt(btn.dataset.index);
+            votes[i]++;
+            const total = votes[0] + votes[1];
+            const percent0 = Math.round((votes[0] / total) * 100);
+            const percent1 = 100 - percent0;
+            resultBox.style.display = "block";
+            resultBox.innerHTML = `
+              <strong>${trends[0].label}</strong>: ${percent0}%<br>
+              <strong>${trends[1].label}</strong>: ${percent1}%
+            `;
+            buttons.forEach(b => b.disabled = true);
+          });
+        });
+      }
     });
 });
