@@ -166,15 +166,17 @@
               background: #1a1a1a;
               padding: 1.5rem;
               border-radius: 12px;
-              width: 500px;
+              width: 700px;
               margin: 2rem auto 0 auto;
               box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
               display: block;
             ">
               <h3>Total Votes: ${match.votes}</h3>
-              <div class="bar-container" style="margin-top: 1rem;">
-                <div class="bar fire-bar" style="width:${firePercent}%">🔥 Hype: ${firePercent}%</div>
-                <div class="bar dead-bar" style="width:${deadPercent}%">💀 Dead: ${deadPercent}%</div>
+              <div class="bar-container" style="margin-top: 1rem; text-align: left;">
+                <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
+                <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
+                <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
+                <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
               </div>
             </div>
           `;
