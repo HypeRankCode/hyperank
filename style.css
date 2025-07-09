@@ -381,6 +381,13 @@ header {
   color: #fff;
 }
 
+.compare-btn.clicked {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .comparison-box {
   display: flex;
   justify-content: center;
