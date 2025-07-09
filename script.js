@@ -130,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const compContainer = document.createElement("div");
         compContainer.className = "comparison-container";
         compContainer.innerHTML = `
-          <h3 style="margin-top:2rem;">🤔 Which is better?</h3>
           <div class="comparison-box">
             <button class="compare-btn" data-index="0">${trendA.label}</button>
             <span class="vs-text">vs</span>
