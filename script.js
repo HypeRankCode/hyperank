@@ -1,8 +1,6 @@
-// ✅ Truly seamless ticker using JS duplication
-document.addEventListener("DOMContentLoaded", () => {
-  // ⛔ REMOVE this if you're using both — only one DOMContentLoaded needed
 
-  // 🔥 Voting logic (keep as-is)
+document.addEventListener("DOMContentLoaded", () => {
+  // 🔥 Voting logic
   const voteCards = document.querySelectorAll(".vote-card");
   voteCards.forEach(card => {
     const up = card.querySelector(".vote-up");
@@ -59,10 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  
 
-// ✅ Fixed seamless ticker with instant start and proper loop
-document.addEventListener("DOMContentLoaded", () => {
+  // 📰 Simple news ticker (1-time animation)
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
@@ -70,38 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!wrapper || !Array.isArray(data)) return;
 
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-
-      // Clear previous content if any
-      wrapper.innerHTML = "";
-
-      const ticker1 = document.createElement("div");
-      const ticker2 = document.createElement("div");
-      ticker1.className = "ticker-track";
-      ticker2.className = "ticker-track";
-      ticker1.innerHTML = text;
-      ticker2.innerHTML = text;
-
-      wrapper.appendChild(ticker1);
-      wrapper.appendChild(ticker2);
-
-      // Ensure content is loaded before measuring
-      setTimeout(() => {
-        let pos = 0;
-        const speed = 0.5;
-        const width = ticker1.offsetWidth;
-
-        function animate() {
-          pos -= speed;
-          if (Math.abs(pos) >= width) {
-            pos = 0;
-          }
-          wrapper.style.transform = `translateX(${pos}px)`;
-          requestAnimationFrame(animate);
-        }
-
-        animate();
-      }, 100);
+      wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
     });
-});
-
 });
