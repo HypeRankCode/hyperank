@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const hypeScore = document.createElement("div");
         hypeScore.className = "meta-info";
         const score = Math.round((trend.fire / trend.votes) * 100);
-        hypeScore.textContent = "🔥 HypeScore: " + score + "%";
+        hypeScore.textContent = "💥 HypeScore: " + score + "%";
 
         card.appendChild(title);
         card.appendChild(meta);
