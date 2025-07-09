@@ -138,6 +138,18 @@ body {
   max-width: 400px;
   margin: auto;
 }
+.submit-form input,
+.submit-form textarea {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #1e1e1e;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 .submit-form button {
   background: #ff3c3c;
