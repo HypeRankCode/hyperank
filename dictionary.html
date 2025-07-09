@@ -29,13 +29,11 @@
   </main>
 
   <script>
-    const dictionary = {
-      gyatt: "A TikTok slang term used to express surprise or excitement at someone’s body.",
-      rizz: "Slang for charisma or flirt game — often used to mean 'pulling' someone.",
-      sigma: "Used to refer to a lone-wolf masculine mindset. Popular in TikTok edits.",
-      slay: "To perform exceptionally well or look amazing. Often used in Gen Z slang.",
-      npc: "Non-playable character — used to describe someone acting robotic or fake.",
-    };
+    let dictionary = [];
+
+    fetch("dictionary.json")
+      .then(res => res.json())
+      .then(data => dictionary = data);
 
     const input = document.getElementById("dictSearchInput");
     const button = document.getElementById("dictSearchBtn");
@@ -48,8 +46,9 @@
         return;
       }
 
-      if (dictionary[term]) {
-        result.innerHTML = `<strong>${term}</strong>: ${dictionary[term]}`;
+      const match = dictionary.find(entry => entry.term.toLowerCase() === term);
+      if (match) {
+        result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
       } else {
         result.innerHTML = `No definition found for <strong>${term}</strong>.`;
       }
