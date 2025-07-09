@@ -19,19 +19,24 @@ document.addEventListener("DOMContentLoaded", () => {
       down.disabled = true;
       up.disabled = true;
     });
+
+    // Add fake vote counter
+    const counter = document.createElement("div");
+    counter.className = "fake-count";
+    counter.textContent = "Votes: " + (Math.floor(Math.random() * 1000) + 200);
+    card.appendChild(counter);
   });
 
   // 🚀 Handle submit form
   const form = document.querySelector(".submit-form");
   if (form) {
-    
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const popup = document.getElementById("custom-popup");
-  popup.style.display = "block";
-  setTimeout(() => popup.style.display = "none", 3000);
-  form.reset();
-});
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const popup = document.getElementById("custom-popup");
+      popup.style.display = "block";
+      setTimeout(() => popup.style.display = "none", 3000);
+      form.reset();
+    });
   }
 
   // 🕒 Dynamic update time
@@ -40,45 +45,18 @@ form.addEventListener("submit", (e) => {
     const minutes = Math.floor(Math.random() * 9) + 1;
     updateText.textContent = `Last updated: ${minutes} minutes ago`;
   }
+
+  // 🔎 Handle search redirect on enter
+  const searchForm = document.getElementById("trendSearchForm");
+  if (searchForm) {
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+      if (query) {
+        // Strip hash fragment to prevent broken navigation
+        const base = window.location.origin;
+        window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
+      }
+    });
+  }
 });
-
-// Fake vote counts
-document.querySelectorAll(".vote-card").forEach(card => {
-  const counter = document.createElement("div");
-  counter.className = "fake-count";
-  counter.textContent = "Votes: " + (Math.floor(Math.random() * 1000) + 200);
-  card.appendChild(counter);
-});
-
-// Filter trend cards by search
-// (filter removed)
-  const val = this.value.toLowerCase();
-  document.querySelectorAll(".trend-card").forEach(card => {
-    const title = card.querySelector(".trend-title").textContent.toLowerCase();
-    card.style.display = title.includes(val) ? "block" : "none";
-  });
-});
-
-// Handle search form submit to redirect to a trend page
-const searchForm = document.getElementById("trendSearchForm");
-if (searchForm) {
-  searchForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
-    if (query) {
-      window.location.href = window.location.origin + `/trend.html?term=${encodeURIComponent(query)}`;
-    }
-  });
-}
-
-// Handle search form submit to redirect to a trend page
-const searchForm = document.getElementById("trendSearchForm");
-if (searchForm) {
-  searchForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
-    if (query) {
-      window.location.href = `trend.html?term=${encodeURIComponent(query)}`;
-    }
-  });
-}
