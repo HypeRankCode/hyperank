@@ -444,5 +444,19 @@ header {
     color: #ff3c3c;
 }
 
+.suggest-btn {
+  margin: 0.25rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.suggest-btn:hover {
+  background: #ff3c3c;
+}
+
 
 

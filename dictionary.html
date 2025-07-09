@@ -29,34 +29,64 @@
   </main>
 
   <script>
-    let dictionary = [];
+  let dictionary = [];
 
-    fetch("dictionary.json")
-      .then(res => res.json())
-      .then(data => dictionary = data);
+  fetch("dictionary.json")
+    .then(res => res.json())
+    .then(data => dictionary = data);
 
-    const input = document.getElementById("dictSearchInput");
-    const button = document.getElementById("dictSearchBtn");
-    const result = document.getElementById("dictResult");
+  const input = document.getElementById("dictSearchInput");
+  const button = document.getElementById("dictSearchBtn");
+  const result = document.getElementById("dictResult");
 
-    button.addEventListener("click", () => {
-      const term = input.value.trim().toLowerCase();
-      if (term === "") {
-        result.textContent = "Please enter a term.";
-        return;
-      }
+  function getSuggestions(term) {
+    const lowered = term.toLowerCase();
+    return dictionary
+      .map(entry => entry.term)
+      .filter(t => t.includes(lowered) || similarity(t, lowered) > 0.5);
+  }
 
-      const match = dictionary.find(entry => entry.term.toLowerCase() === term);
-      if (match) {
-        result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
+  function similarity(a, b) {
+    let matches = 0;
+    const len = Math.min(a.length, b.length);
+    for (let i = 0; i < len; i++) {
+      if (a[i] === b[i]) matches++;
+    }
+    return matches / Math.max(a.length, b.length);
+  }
+
+  button.addEventListener("click", () => {
+    const term = input.value.trim().toLowerCase();
+    if (!term) {
+      result.innerHTML = "Please enter a term.";
+      return;
+    }
+
+    const match = dictionary.find(entry => entry.term.toLowerCase() === term);
+
+    if (match) {
+      result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
+    } else {
+      const suggestions = getSuggestions(term);
+      if (suggestions.length > 0) {
+        result.innerHTML = `No exact match. Did you mean: ${suggestions
+          .map(t => `<button class="suggest-btn">${t}</button>`)
+          .join(" ")}`;
+        document.querySelectorAll(".suggest-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            input.value = btn.textContent;
+            button.click();
+          });
+        });
       } else {
         result.innerHTML = `No definition found for <strong>${term}</strong>.`;
       }
-    });
+    }
+  });
 
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") button.click();
-    });
-  </script>
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") button.click();
+  });
+</script>
 </body>
 </html>
