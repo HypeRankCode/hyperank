@@ -26,7 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("✅ Thanks! Your trend suggestion was submitted.");
+      const popup = document.getElementById("custom-popup");
+      popup.style.display = "block";
+      setTimeout(() => popup.style.display = "none", 3000);
       form.reset();
     });
   }
