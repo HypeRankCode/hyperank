@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HypeRank Dictionary</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-container">
+      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+    </nav>
+  </header>
+
+  <main class="dictionary-container" style="padding: 2rem; text-align: center;">
+    <h2 style="margin-bottom: 1rem;">📚 Dictionary</h2>
+    <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." 
+           style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
+    <button id="dictSearchBtn" 
+            style="padding: 0.8rem 1.2rem; border: none; border-radius: 8px; background: #ff3c3c; color: white; margin-left: 0.5rem; cursor: pointer;">
+      Search
+    </button>
+    <div id="dictResult" style="margin-top: 2rem; font-size: 1.1rem;"></div>
+  </main>
+
+  <script>
+    const dictionary = {
+      gyatt: "A TikTok slang term used to express surprise or excitement at someone’s body.",
+      rizz: "Slang for charisma or flirt game — often used to mean 'pulling' someone.",
+      sigma: "Used to refer to a lone-wolf masculine mindset. Popular in TikTok edits.",
+      slay: "To perform exceptionally well or look amazing. Often used in Gen Z slang.",
+      npc: "Non-playable character — used to describe someone acting robotic or fake.",
+    };
+
+    const input = document.getElementById("dictSearchInput");
+    const button = document.getElementById("dictSearchBtn");
+    const result = document.getElementById("dictResult");
+
+    button.addEventListener("click", () => {
+      const term = input.value.trim().toLowerCase();
+      if (term === "") {
+        result.textContent = "Please enter a term.";
+        return;
+      }
+
+      if (dictionary[term]) {
+        result.innerHTML = `<strong>${term}</strong>: ${dictionary[term]}`;
+      } else {
+        result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+      }
+    });
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") button.click();
+    });
+  </script>
+</body>
+</html>
