@@ -187,7 +187,7 @@ header {
 .spotlight-trend {
   background-color: #1a1a1a; /* same as body background */
   text-align: center;
-  padding: 1rem 1rem; /* Make top/bottom spacing even */
+  padding: 1rem 2rem; /* Make top/bottom spacing even */
 }
 
 .spotlight-card {
