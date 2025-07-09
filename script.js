@@ -63,12 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
 fetch('news.json')
   .then(res => res.json())
   .then(data => {
-    const ticker = document.getElementById('tickerTrack');
-    if (ticker && Array.isArray(data)) {
-      const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-      const repeated = [...data, ...data].join(separator);  // Repeat headlines twice
-      ticker.innerHTML = "<span>" + repeated + "</span>";
-    }
+    const tickerText = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    document.getElementById("ticker1").innerHTML = tickerText;
+    document.getElementById("ticker2").innerHTML = tickerText; // identical copy for infinite scroll
   });
     
   }
