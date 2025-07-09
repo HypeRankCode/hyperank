@@ -98,3 +98,74 @@ body {
 .rising { color: #00e676; }
 .falling { color: #ff1744; }
 .mid { color: #ff9100; }
+
+/* New Sections */
+.vote-section, .submit-section, .about-section {
+  padding: 2rem;
+  text-align: center;
+}
+
+.vote-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.vote-card {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 200px;
+}
+.vote-up, .vote-down {
+  background: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0.3rem;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.vote-up:hover { background: #ff3c3c; color: white; }
+.vote-down:hover { background: #555; color: white; }
+
+.submit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: auto;
+}
+.submit-form input, .submit-form textarea {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+}
+.submit-form button {
+  background: #ff3c3c;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.submit-form button:hover {
+  background: #ff1e1e;
+}
+
+.about-section {
+  padding: 3rem 2rem;
+  background: #121212;
+  color: #eee;
+}
+.about-section h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+.about-section p {
+  max-width: 600px;
+  margin: auto;
+  font-size: 1rem;
+}
