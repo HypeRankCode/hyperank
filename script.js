@@ -61,35 +61,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 📰 Seamless ticker scroll
-  fetch("news.json")
-    .then(res => res.json())
-    .then(data => {
-      const wrapper = document.querySelector(".ticker-track-wrapper");
-      if (!wrapper || !Array.isArray(data)) return;
+fetch("news.json")
+  .then(res => res.json())
+  .then(data => {
+    const wrapper = document.querySelector(".ticker-track-wrapper");
+    if (!wrapper || !Array.isArray(data)) return;
 
-      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
 
-      const ticker1 = document.createElement("div");
-      const ticker2 = document.createElement("div");
-      ticker1.className = "ticker-track";
-      ticker2.className = "ticker-track";
-      ticker1.innerHTML = text;
-      ticker2.innerHTML = text;
-      wrapper.appendChild(ticker1);
-      wrapper.appendChild(ticker2);
+    const ticker1 = document.createElement("div");
+    const ticker2 = document.createElement("div");
+    ticker1.className = "ticker-track";
+    ticker2.className = "ticker-track";
+    ticker1.innerHTML = text;
+    ticker2.innerHTML = text;
+    wrapper.appendChild(ticker1);
+    wrapper.appendChild(ticker2);
 
-      let pos = 0;
-      const speed = 0.5;
+    let pos = 0;
+    const speed = 0.5;
 
-      function animate() {
-        pos -= speed;
-        if (Math.abs(pos) >= ticker1.offsetWidth) {
-          pos = 0;
-        }
-        wrapper.style.transform = `translateX(${pos}px)`;
-        requestAnimationFrame(animate);
+    function animate() {
+      pos -= speed;
+      const totalWidth = ticker1.offsetWidth + ticker2.offsetWidth;
+      if (Math.abs(pos) >= ticker1.offsetWidth) {
+        pos = 0;
       }
+      wrapper.style.transform = `translateX(${pos}px)`;
+      requestAnimationFrame(animate);
+    }
 
-      animate();
-    });
+    animate();
+  });
 });
