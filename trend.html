@@ -116,7 +116,8 @@
       <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
     </div>
     <nav class="nav-links">
-      <a href="index.html">Home</a>
+      <a href="index.html" class="back-home-btn">← Back to Home</a>
+	  <a href="dictionary.html">Dictionary</a>
     </nav>
   </header>
 
@@ -126,7 +127,6 @@
       <div id="resultBox">Loading...</div>
       <div id="trendInfo"></div>
     </div>
-    <a href="index.html" class="back-button">← Back to Home</a>
   </main>
 
   <footer>
@@ -159,11 +159,11 @@
           const firePercent = Math.round((match.fire / match.votes) * 100);
           const deadPercent = 100 - firePercent;
 
-          resultBox.innerHTML = `🔥 <strong>${match.label}</strong> is a trending topic.`;
+          resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
           trendInfo.innerHTML = `
             <p style="margin:1rem auto; max-width:400px;">${match.description}</p>
             <h3>Total Votes: ${match.votes}</h3>
-			<div class="bar-container" style="max-width: 400px; margin: 0 auto;">
+			<div class="bar-container" style="max-width: 600px; margin: 0 auto;">
 				<div class="bar fire-bar" style="width:${firePercent}%">🔥 Hype: ${firePercent}%</div>
 				<div class="bar dead-bar" style="width:${deadPercent}%">💀 Dead: ${deadPercent}%</div>
 			</div>
