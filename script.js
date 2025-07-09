@@ -60,37 +60,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 📰 Seamless ticker scroll
-fetch("news.json")
-  .then(res => res.json())
-  .then(data => {
-    const wrapper = document.querySelector(".ticker-track-wrapper");
-    if (!wrapper || !Array.isArray(data)) return;
+// ✅ Fixed seamless ticker with instant start and proper loop
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("news.json")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.querySelector(".ticker-track-wrapper");
+      if (!wrapper || !Array.isArray(data)) return;
 
-    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
 
-    const ticker1 = document.createElement("div");
-    const ticker2 = document.createElement("div");
-    ticker1.className = "ticker-track";
-    ticker2.className = "ticker-track";
-    ticker1.innerHTML = text;
-    ticker2.innerHTML = text;
-    wrapper.appendChild(ticker1);
-    wrapper.appendChild(ticker2);
+      // Clear previous content if any
+      wrapper.innerHTML = "";
 
-    let pos = 0;
-    const speed = 0.5;
+      const ticker1 = document.createElement("div");
+      const ticker2 = document.createElement("div");
+      ticker1.className = "ticker-track";
+      ticker2.className = "ticker-track";
+      ticker1.innerHTML = text;
+      ticker2.innerHTML = text;
 
-    function animate() {
-      pos -= speed;
-      const totalWidth = ticker1.offsetWidth + ticker2.offsetWidth;
-      if (Math.abs(pos) >= ticker1.offsetWidth) {
-        pos = 0;
-      }
-      wrapper.style.transform = `translateX(${pos}px)`;
-      requestAnimationFrame(animate);
-    }
+      wrapper.appendChild(ticker1);
+      wrapper.appendChild(ticker2);
 
-    animate();
-  });
+      // Ensure content is loaded before measuring
+      setTimeout(() => {
+        let pos = 0;
+        const speed = 0.5;
+        const width = ticker1.offsetWidth;
+
+        function animate() {
+          pos -= speed;
+          if (Math.abs(pos) >= width) {
+            pos = 0;
+          }
+          wrapper.style.transform = `translateX(${pos}px)`;
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+      }, 100);
+    });
+});
 });
