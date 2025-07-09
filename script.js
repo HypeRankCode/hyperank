@@ -51,13 +51,25 @@ document.querySelectorAll(".vote-card").forEach(card => {
 });
 
 // Filter trend cards by search
-document.getElementById("trendSearch").addEventListener("input", function() {
+// (filter removed)
   const val = this.value.toLowerCase();
   document.querySelectorAll(".trend-card").forEach(card => {
     const title = card.querySelector(".trend-title").textContent.toLowerCase();
     card.style.display = title.includes(val) ? "block" : "none";
   });
 });
+
+// Handle search form submit to redirect to a trend page
+const searchForm = document.getElementById("trendSearchForm");
+if (searchForm) {
+  searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+    if (query) {
+      window.location.href = `trend.html?term=${encodeURIComponent(query)}`;
+    }
+  });
+}
 
 // Handle search form submit to redirect to a trend page
 const searchForm = document.getElementById("trendSearchForm");
