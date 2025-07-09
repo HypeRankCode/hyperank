@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         compContainer.innerHTML = `
           <div class="comparison-box">
             <button class="compare-btn" data-index="0">${trends[0].label}</button>
-            <span>vs</span>
+            <span class="vs-text">vs</span>
             <button class="compare-btn" data-index="1">${trends[1].label}</button>
           </div>
           <div class="compare-results" style="display:none; margin-top:1rem;"></div>
@@ -148,12 +148,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const total = votes[0] + votes[1];
             const percent0 = Math.round((votes[0] / total) * 100);
             const percent1 = 100 - percent0;
+
             resultBox.style.display = "block";
             resultBox.innerHTML = `
               <strong>${trends[0].label}</strong>: ${percent0}%<br>
               <strong>${trends[1].label}</strong>: ${percent1}%
             `;
-            buttons.forEach(b => b.disabled = true);
+
+            // Disable and gray out buttons after voting
+            buttons.forEach(b => {
+              b.disabled = true;
+              b.classList.add("clicked");
+            });
           });
         });
       }
