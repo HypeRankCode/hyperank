@@ -161,14 +161,15 @@
 // spacing
           resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
           trendInfo.innerHTML = `
-            <p style="margin:1rem auto; max-width:400px;">${match.description}</p>
+            <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
             <div style="
               background: #1a1a1a;
               padding: 1.5rem;
               border-radius: 12px;
-              width: 700px;
+              width: 600px;
               margin: 2rem auto 0 auto;
-              box-shadow: 0 0 10px rgba(0,0,0,0.4);
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+              display: block;
             ">
               <h3>Total Votes: ${match.votes}</h3>
               <div class="bar-container" style="margin-top: 1rem;">
