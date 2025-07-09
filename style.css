@@ -64,6 +64,14 @@ body {
   opacity: 0.7;
 }
 
+.trend-box {
+background: #1a1a1a;
+border-radius: 12px;
+padding: 1.5rem;
+max-width: 400px;
+margin: 1.5rem auto;
+box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
+}
 
 .hero-section {
   text-align: center;
