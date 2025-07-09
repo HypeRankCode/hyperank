@@ -66,7 +66,7 @@ if (searchForm) {
     e.preventDefault();
     const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
     if (query) {
-      window.location.href = `trend.html?term=${encodeURIComponent(query)}`;
+      window.location.href = window.location.origin + `/trend.html?term=${encodeURIComponent(query)}`;
     }
   });
 }
