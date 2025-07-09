@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔥 Voting logic
   const voteCards = document.querySelectorAll(".vote-card");
   voteCards.forEach(card => {
     const up = card.querySelector(".vote-up");
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     card.appendChild(counter);
   });
 
-  // 🚀 Form submit
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", (e) => {
@@ -37,14 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ⏱️ Update timestamp
   const updateText = document.querySelector(".update-time p");
   if (updateText) {
     const minutes = Math.floor(Math.random() * 9) + 1;
     updateText.textContent = `Last updated: ${minutes} minutes ago`;
   }
 
-  // 🔍 Search redirect
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", (e) => {
@@ -57,24 +53,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 📰 Simple news ticker (1-time animation)
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
       const wrapper = document.querySelector(".ticker-track-wrapper");
       if (!wrapper || !Array.isArray(data)) return;
-
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
       wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
     });
 
-  // 🔢 Load trend data with sparklines + HypeScore
   fetch("trends.json")
     .then(res => res.json())
     .then(trends => {
       const grid = document.querySelector(".trending-grid");
       if (!grid) return;
-      grid.innerHTML = ""; // clear any static content
+      grid.innerHTML = "";
 
       trends.forEach(trend => {
         const card = document.createElement("div");
@@ -84,13 +77,22 @@ document.addEventListener("DOMContentLoaded", () => {
         title.className = "trend-title";
         title.textContent = trend.label;
 
+        const ratio = trend.fire / trend.votes;
         const meta = document.createElement("div");
-        meta.className = "trend-meta";
-        meta.textContent = trend.meta || "🧍 Mid";
+        if (ratio > 0.65) {
+          meta.className = "trend-meta rising";
+          meta.textContent = "🔺 Rising";
+        } else if (ratio < 0.4) {
+          meta.className = "trend-meta falling";
+          meta.textContent = "🔻 Falling";
+        } else {
+          meta.className = "trend-meta mid";
+          meta.textContent = "➖ Mid";
+        }
 
         const spark = document.createElement("div");
         spark.className = "sparkline";
-        spark.textContent = "📈 " + (trend.sparkline || "▁▃▅▇▆");
+        spark.textContent = (ratio < 0.4 ? "📉 " : "📈 ") + (trend.sparkline || "▁▃▅▇▆");
 
         const votes = document.createElement("div");
         votes.className = "trend-votes";
@@ -98,8 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const hypeScore = document.createElement("div");
         hypeScore.className = "meta-info";
-        const score = Math.round((trend.fire / trend.votes) * 100);
-        hypeScore.textContent = "🔥 HypeScore: " + score + "%";
+        hypeScore.textContent = "🔥 HypeScore: " + Math.round(ratio * 100) + "%";
 
         card.appendChild(title);
         card.appendChild(meta);
