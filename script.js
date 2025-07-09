@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   // 🔥 Voting logic
   const voteCards = document.querySelectorAll(".vote-card");
@@ -67,5 +66,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
       wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
+    });
+
+  // 🔢 Load trend data with sparklines + HypeScore
+  fetch("trends.json")
+    .then(res => res.json())
+    .then(trends => {
+      const grid = document.querySelector(".trending-grid");
+      if (!grid) return;
+      grid.innerHTML = ""; // clear any static content
+
+      trends.forEach(trend => {
+        const card = document.createElement("div");
+        card.className = "trend-card";
+
+        const title = document.createElement("div");
+        title.className = "trend-title";
+        title.textContent = trend.label;
+
+        const meta = document.createElement("div");
+        meta.className = "trend-meta";
+        meta.textContent = trend.meta || "🧍 Mid";
+
+        const spark = document.createElement("div");
+        spark.className = "sparkline";
+        spark.textContent = "📈 " + (trend.sparkline || "▁▃▅▇▆");
+
+        const votes = document.createElement("div");
+        votes.className = "trend-votes";
+        votes.textContent = trend.votes + " votes";
+
+        const hypeScore = document.createElement("div");
+        hypeScore.className = "meta-info";
+        const score = Math.round((trend.fire / trend.votes) * 100);
+        hypeScore.textContent = "🔥 HypeScore: " + score + "%";
+
+        card.appendChild(title);
+        card.appendChild(meta);
+        card.appendChild(spark);
+        card.appendChild(votes);
+        card.appendChild(hypeScore);
+        grid.appendChild(card);
+      });
     });
 });
