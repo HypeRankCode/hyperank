@@ -169,3 +169,65 @@ body {
   margin: auto;
   font-size: 1rem;
 }
+
+/* Sticky header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: #111;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+/* Spotlight Trend */
+.spotlight-trend {
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #181818;
+}
+.spotlight-card {
+  background: #222;
+  padding: 1rem;
+  border-radius: 12px;
+  max-width: 400px;
+  margin: auto;
+}
+.rank-meta {
+  color: #ff3c3c;
+  font-weight: bold;
+}
+
+/* Last Updated Text */
+.update-time {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #bbb;
+  margin-top: 1rem;
+}
+
+/* Sections: Rising/Falling */
+.rising-section, .falling-section {
+  padding: 2rem;
+  text-align: center;
+}
+.trending-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+.trend-card {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 200px;
+}
+.trend-title {
+  font-weight: bold;
+}
+.rising { color: #00e676; }
+.falling { color: #ff1744; }
