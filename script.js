@@ -24,13 +24,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Handle submit form
   const form = document.querySelector(".submit-form");
   if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const popup = document.getElementById("custom-popup");
-      popup.style.display = "block";
-      setTimeout(() => popup.style.display = "none", 3000);
-      form.reset();
-    });
+    
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const popup = document.getElementById("custom-popup");
+  popup.style.display = "block";
+  setTimeout(() => popup.style.display = "none", 3000);
+  form.reset();
+});
   }
 
   // 🕒 Dynamic update time
@@ -57,3 +58,15 @@ document.getElementById("trendSearch").addEventListener("input", function() {
     card.style.display = title.includes(val) ? "block" : "none";
   });
 });
+
+// Handle search form submit to redirect to a trend page
+const searchForm = document.getElementById("trendSearchForm");
+if (searchForm) {
+  searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+    if (query) {
+      window.location.href = `trend.html?term=${encodeURIComponent(query)}`;
+    }
+  });
+}
