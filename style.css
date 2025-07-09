@@ -1,3 +1,6 @@
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
@@ -99,7 +102,6 @@ body {
 .falling { color: #ff1744; }
 .mid { color: #ff9100; }
 
-/* New Sections */
 .vote-section, .submit-section, .about-section {
   padding: 2rem;
   text-align: center;
@@ -170,7 +172,6 @@ body {
   font-size: 1rem;
 }
 
-/* Sticky header */
 header {
   position: sticky;
   top: 0;
@@ -183,25 +184,28 @@ header {
   border-bottom: 1px solid #333;
 }
 
-/* Spotlight Trend */
 .spotlight-trend {
+  background-color: #1a1a1a; /* same as body background */
   text-align: center;
-  padding: 2rem 1rem;
-  background-color: #181818;
+  padding: 1rem 2rem; /* Make top/bottom spacing even */
 }
+
 .spotlight-card {
-  background: #222;
+  background: #ffd600;     /* bold, readable yellow */
+  color: #111;             /* dark text for contrast */
   padding: 1rem;
   border-radius: 12px;
   max-width: 400px;
   margin: auto;
+  box-shadow: 0 0 10px rgba(255, 214, 0, 0.4);
+  border: 1px solid #e6c200;
 }
+
 .rank-meta {
   color: #ff3c3c;
   font-weight: bold;
 }
 
-/* Last Updated Text */
 .update-time {
   text-align: center;
   font-size: 0.9rem;
@@ -209,7 +213,6 @@ header {
   margin-top: 1rem;
 }
 
-/* Sections: Rising/Falling */
 .rising-section, .falling-section {
   padding: 2rem;
   text-align: center;
@@ -226,6 +229,12 @@ header {
   border-radius: 12px;
   width: 200px;
 }
+
+.trend-card, .trend-card * {
+  user-select: none;
+  cursor: default;
+}
+
 .trend-title {
   font-weight: bold;
 }
@@ -247,11 +256,46 @@ header {
   color: #aaa;
 }
 
-.tooltip {
-  cursor: help;
-  font-size: 0.9em;
-  color: #888;
+.news-ticker {
+  background-color: #1a1a1a;
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
 }
+
+.ticker-track {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scrollTicker 60s linear infinite;
+}
+
+@keyframes scrollTicker {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
+.ticker-track-wrapper {
+  display: flex;
+  width: fit-content;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.ticker-track {
+  flex: none;
+  padding-right: 2rem;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.sparkline.green { color: #00e676; }
+.sparkline.red { color: #ff1744; }
+.sparkline.orange { color: #ff9100; }
+
 .sparkline {
   font-size: 0.9em;
   color: #00e676;
@@ -261,3 +305,106 @@ header {
   font-size: 0.8em;
   color: #aaa;
 }
+
+
+.matchup-card {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1rem auto;
+  max-width: 600px;
+}
+
+.option {
+  background: #222;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+  flex: 1;
+  text-align: center;
+  border: 2px solid #444;
+}
+
+.option:hover {
+  background: #333;
+}
+
+.vs {
+  align-self: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #aaa;
+}
+
+.result-bar {
+  display: flex;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 30px;
+  background: #333;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.result {
+  height: 100%;
+  font-size: 0.9rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#resultA {
+  background-color: #ff3c3c;
+}
+
+#resultB {
+  background-color: #555;
+}
+
+.compare-btn {
+  background: #222;
+  border: 2px solid #444;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 0 1rem;
+  transition: background 0.3s;
+}
+
+.compare-btn:hover {
+  background: #ff3c3c;
+  border-color: #ff3c3c;
+  color: #fff;
+}
+
+.compare-btn.clicked {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.comparison-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.compare-results {
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  color: #ccc;
+}
+

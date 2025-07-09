@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trend - HypeRank</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-bottom: 3rem;
+    }
+    .trend-result {
+      padding: 3rem 1rem;
+    }
+    .bar {
+      height: 24px;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      line-height: 24px;
+      font-weight: bold;
+    }
+    .fire-bar {
+      background: #ff3c3c;
+      color: white;
+    }
+    .dead-bar {
+      background: #555;
+      color: white;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      background: #ff3c3c;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-container">
+      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html#spotlight">Trends</a>
+      <a href="index.html#vote">Vote</a>
+      <a href="index.html#submit">Submit</a>
+    </nav>
+  </header>
+
+  <main class="trend-result">
+    <h1>Trend Search</h1>
+    <div id="resultBox">Loading...</div>
+    <div id="trendInfo"></div>
+  </main>
+
+  <a href="index.html" class="back-button">← Back to Home</a>
+
+  <footer>
+    &copy; 2025 HypeRank. All rights reserved.
+  </footer>
+
+  <script>
+    function similarity(a, b) {
+      a = a.toLowerCase();
+      b = b.toLowerCase();
+      if (a === b) return 1;
+      if (a.includes(b) || b.includes(a)) return 0.7;
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
+    }
+
+    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+    const resultBox = document.getElementById("resultBox");
+    const trendInfo = document.getElementById("trendInfo");
+
+    fetch("trends.json")
+      .then(res => res.json())
+      .then(trends => {
+        const match = trends.find(t => t.name === query);
+
+        if (match) {
+          const firePercent = Math.round((match.fire / match.votes) * 100);
+          const deadPercent = 100 - firePercent;
+
+          resultBox.innerHTML = `🔥 <strong>${match.label}</strong> is a trending topic.`;
+          trendInfo.innerHTML = `
+            <p style="margin:1rem auto; max-width:400px;">${match.description}</p>
+            <h3>Total Votes: ${match.votes}</h3>
+            <div class="bar fire-bar" style="width:${firePercent}%">🔥 Fire: ${firePercent}%</div>
+            <div class="bar dead-bar" style="width:${deadPercent}%">💀 Dead: ${deadPercent}%</div>
+          `;
+        } else {
+          let suggestion = null;
+          let bestScore = 0;
+          for (const t of trends) {
+            const score = similarity(query, t.name);
+            if (score > bestScore) {
+              bestScore = score;
+              suggestion = t.name;
+            }
+          }
+
+          resultBox.innerHTML = `❌ <strong>${query}</strong> doesn't exist on HypeRank... yet.`;
+          if (suggestion && bestScore >= 0.5) {
+            trendInfo.innerHTML = `🔍 Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
+          }
+        }
+      });
+  </script>
+</body>
+</html>
