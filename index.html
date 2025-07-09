@@ -8,93 +8,89 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
-      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    <header class="site-header">
+        <div class="logo-container">
+            <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+            <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+        </div>
+        <nav class="nav-links">
+            <a href="#spotlight">Trends</a>
+            <a href="#vote">Vote</a>
+            <a href="#submit">Submit</a>
+        </nav>
+    </header>
+
+    <div class="news-ticker">
+        <div class="ticker-track-wrapper"></div>
     </div>
-    <nav class="nav-links">
-      <a href="#spotlight">Trends</a>
-      <a href="#vote">Vote</a>
-      <a href="#submit">Submit</a>
-    </nav>
-  </header>
 
-  <div class="news-ticker">
-    <div class="ticker-track-wrapper"></div>
-  </div>
+    <main class="hero-section">
+        <h2>Track what’s Hype these days!</h2>
+        <p>From memes to influencers — know what’s trending in real time</p>
+    </main>
 
-  <main class="hero-section">
-    <h2>Track what’s Hype these days!</h2>
-    <p>From memes to influencers — know what’s trending in real time</p>
-  </main>
-
-  <div class="search-bar" style="text-align:center; margin: 2rem;">
-    <form id="trendSearchForm">
-      <input
-        id="trendSearchInput"
-        type="text"
-        placeholder="Search trends..."
-        style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;"
-      />
-    </form>
-  </div>
-
-  <section id="spotlight" class="spotlight-trend">
-    <h2>Spotlight Trend</h2>
-    <div class="spotlight-card">
-      <h3>“Rizz”</h3>
-      <p>Classic Gen Z slang for charisma. Still used, but fading in 2025.</p>
-      <span class="rank-meta">🔥 Ranked #2 this week</span>
+    <div class="search-bar" style="text-align:center; margin: 2rem;">
+        <form id="trendSearchForm">
+            <input id="trendSearchInput"
+                   type="text"
+                   placeholder="Search trends..."
+                   style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
+        </form>
     </div>
-  </section>
 
-  <div class="update-time">
-    <p>Last updated: 9 minutes ago</p>
-  </div>
+    <section id="spotlight" class="spotlight-trend">
+        <h2>Spotlight Trend</h2>
+        <div class="spotlight-card">
+            <h3>“Rizz”</h3>
+            <p>Classic Gen Z slang for charisma. Still used, but fading in 2025.</p>
+            <span class="rank-meta">🔥 Ranked #2 this week</span>
+        </div>
+    </section>
 
-  <section id="trending" class="trending-section">
-    <h2>Trending Now‼️</h2>
-    <div class="trending-grid"></div>
-  </section>
-
-  <section id="vote" class="vote-section">
-    <h2>🤔 Which do you use more?</h2>
-    <div class="comparison-box">
-      <!-- Dynamic vote buttons inserted by script.js -->
+    <div class="update-time">
+        <p>Last updated: 9 minutes ago</p>
     </div>
-    <div class="compare-results">
-      <!-- Vote result text (e.g. "Gyatt: 60%, NPC: 40%") -->
-    </div>
-  </section>
 
-  <section id="submit" class="submit-section">
-    <h2>Suggest a New Trend</h2>
-    <form class="submit-form">
-      <input type="text" placeholder="Enter trend name..." required />
-      <textarea placeholder="Why is it trending?" rows="4"></textarea>
-      <button type="submit">Submit</button>
-    </form>
-  </section>
+    <section id="trending" class="trending-section">
+        <h2>Trending Now‼️</h2>
+        <div class="trending-grid"></div>
+    </section>
 
-  <section class="about-section">
-    <h3>What is HypeRank?</h3>
-    <p>
-      HypeRank tracks what's popular in internet culture — from slang and memes to
-      influencers and apps. Vote what's HOT or NOT and see the trends rise and fall.
-    </p>
-  </section>
+    <section id="vote" class="vote-section">
+        <h2>🤔 Which do you use more?</h2>
+        <div class="comparison-box">
+            <!-- Dynamic vote buttons inserted by script.js -->
+        </div>
+        <div class="compare-results">
+            <!-- Vote result text (e.g. "Gyatt: 60%, NPC: 40%") -->
+        </div>
+    </section>
 
-  <script src="script.js"></script>
+    <section id="submit" class="submit-section">
+        <h2>Suggest a New Trend</h2>
+        <form class="submit-form">
+            <input type="text" placeholder="Enter trend name..." required />
+            <textarea placeholder="Why is it trending?" rows="4"></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
 
-  <div
-    id="custom-popup"
-    style="display:none; position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+    <section class="about-section">
+        <h3>What is HypeRank?</h3>
+        <p>
+            HypeRank tracks what's popular in internet culture — from slang and memes to
+            influencers and apps. Vote what's HOT or NOT and see the trends rise and fall.
+        </p>
+    </section>
+
+    <script src="script.js"></script>
+
+    <div id="custom-popup"
+         style="display:none; position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
            background:#222; color:#fff; padding:1rem 1.5rem; border-radius:12px;
-           box-shadow:0 0 10px rgba(0,0,0,0.4); font-size:1rem; z-index:1000;"
-  >
-    ✅ Your trend suggestion was submitted
-  </div>
+           box-shadow:0 0 10px rgba(0,0,0,0.4); font-size:1rem; z-index:1000;">
+        ✅ Your trend suggestion was submitted
+    </div>
 </body>
 
 <footer style="text-align:center; padding: 1rem; background:#111; color:#888; font-size: 0.9rem;">
