@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trend Search - HypeRank</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2rem;
+      text-align: center;
+    }
+    .result {
+      margin-top: 3rem;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Search Result</h1>
+  <div id="trend-result" class="result">Loading...</div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const term = urlParams.get("term");
+    const knownTrends = ["gyatt", "npc meme", "bereal", "skibidi toilet", "rizz", "sigma edits", "apple vision pro"];
+
+    const resultDiv = document.getElementById("trend-result");
+    if (term && knownTrends.includes(term)) {
+      resultDiv.innerHTML = `🔥 <strong>${term}</strong> is a trending topic on HypeRank.`;
+    } else {
+      resultDiv.innerHTML = `❌ <strong>${term}</strong> doesn't exist on HypeRank... yet.`;
+    }
+  </script>
+</body>
+</html>
