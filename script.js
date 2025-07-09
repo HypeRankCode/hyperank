@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
           meta.className = "trend-meta mid";
           meta.textContent = "➖ Mid";
           spark.className = "sparkline orange";
-          spark.textContent = "═══ ▄▄▄▅▅";
+          spark.textContent = "X ▄▄▄▅▅";
         }
 
         const votes = document.createElement("div");
