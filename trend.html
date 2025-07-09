@@ -5,23 +5,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trend - HypeRank</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="favicon.png">
   <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
+    .trend-result {
+      padding: 3rem 1rem;
       text-align: center;
-      padding: 3rem;
-    }
-    .result {
-      font-size: 1.4rem;
-      margin-top: 2rem;
+      font-size: 1.3rem;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Trend Search</h1>
-  <div class="result" id="resultBox">Loading...</div>
+  <header class="site-header">
+    <div class="logo-container">
+      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html#spotlight">Trends</a>
+      <a href="index.html#vote">Vote</a>
+      <a href="index.html#submit">Submit</a>
+    </nav>
+  </header>
+
+  <main class="trend-result">
+    <h1>Trend Search</h1>
+    <div id="resultBox">Loading...</div>
+  </main>
+
+  <footer style="text-align:center; padding: 1rem; background:#111; color:#888; font-size: 0.9rem;">
+    &copy; 2025 HypeRank. All rights reserved.
+  </footer>
 
   <script>
     const query = new URLSearchParams(window.location.search).get("term");
