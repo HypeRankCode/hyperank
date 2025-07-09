@@ -138,18 +138,32 @@ body {
   max-width: 400px;
   margin: auto;
 }
-.submit-form input,
-.submit-form textarea {
+
+.submit-form input {
   padding: 0.8rem;
   border-radius: 8px;
   border: none;
   font-size: 1rem;
-  font-family: inherit;
+  font-family: 'Segoe UI', sans-serif;
   background: #1e1e1e;
   color: white;
   width: 100%;
   box-sizing: border-box;
 }
+
+.submit-form textarea {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-family: 'Segoe UI', sans-serif; /* Match the input */
+  background: #1e1e1e;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical; /* Optional: lets user resize vertically */
+}
+
 
 .submit-form button {
   background: #ff3c3c;
