@@ -1,37 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trend Search - HypeRank</title>
+  <title>Trend - HypeRank</title>
   <style>
     body {
       background-color: #111;
       color: white;
       font-family: 'Segoe UI', sans-serif;
-      padding: 2rem;
       text-align: center;
+      padding: 3rem;
     }
     .result {
-      margin-top: 3rem;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <h1>Search Result</h1>
-  <div id="trend-result" class="result">Loading...</div>
+  <h1>Trend Search</h1>
+  <div class="result" id="resultBox">Loading...</div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const term = urlParams.get("term");
-    const knownTrends = ["gyatt", "npc meme", "bereal", "skibidi toilet", "rizz", "sigma edits", "apple vision pro"];
+    const query = new URLSearchParams(window.location.search).get("term");
+    const known = ["gyatt", "npc tiktok", "skibidi rizz", "apple vision pro", "sigma edits", "rizz"];
 
-    const resultDiv = document.getElementById("trend-result");
-    if (term && knownTrends.includes(term)) {
-      resultDiv.innerHTML = `🔥 <strong>${term}</strong> is a trending topic on HypeRank.`;
+    const result = document.getElementById("resultBox");
+    if (query && known.includes(query)) {
+      result.innerHTML = `🔥 <strong>${query}</strong> is a trending topic on HypeRank.`;
     } else {
-      resultDiv.innerHTML = `❌ <strong>${term}</strong> doesn't exist on HypeRank... yet.`;
+      result.innerHTML = `❌ <strong>${query}</strong> doesn't exist on HypeRank... yet.`;
     }
   </script>
 </body>
