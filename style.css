@@ -224,6 +224,12 @@ header {
   border-radius: 12px;
   width: 200px;
 }
+
+.trend-card, .trend-card * {
+  user-select: none;
+  cursor: default;
+}
+
 .trend-title {
   font-weight: bold;
 }
