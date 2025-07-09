@@ -161,7 +161,7 @@ body {
   color: white;
   width: 100%;
   box-sizing: border-box;
-  resize: vertical; /* Optional: lets user resize vertically */
+  resize: none; /* disables resizing */
 }
 
 
