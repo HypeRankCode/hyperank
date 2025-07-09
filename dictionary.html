@@ -5,6 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>HypeRank Dictionary</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      text-align: center;
+    }
+    #dictSearchInput {
+      padding: 0.8rem;
+      width: 60%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: none;
+    }
+    #dictSearchBtn {
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      background: #ff3c3c;
+      color: white;
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+    #dictResult {
+      margin-top: 2rem;
+      font-size: 1.1rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #111;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    a.suggestion-link {
+      color: #ff3c3c;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -17,76 +66,74 @@
     </nav>
   </header>
 
-  <main class="dictionary-container" style="padding: 2rem; text-align: center;">
+  <main>
     <h2 style="margin-bottom: 1rem;">📚 Dictionary</h2>
-    <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." 
-           style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
-    <button id="dictSearchBtn" 
-            style="padding: 0.8rem 1.2rem; border: none; border-radius: 8px; background: #ff3c3c; color: white; margin-left: 0.5rem; cursor: pointer;">
-      Search
-    </button>
-    <div id="dictResult" style="margin-top: 2rem; font-size: 1.1rem;"></div>
+    <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." />
+    <button id="dictSearchBtn">Search</button>
+    <div id="dictResult"></div>
   </main>
 
+  <footer>
+    &copy; 2025 HypeRank. All rights reserved.
+  </footer>
+
   <script>
-  let dictionary = [];
+    let dictionary = [];
 
-  fetch("dictionary.json")
-    .then(res => res.json())
-    .then(data => dictionary = data);
+    fetch("dictionary.json")
+      .then(res => res.json())
+      .then(data => dictionary = data);
 
-  const input = document.getElementById("dictSearchInput");
-  const button = document.getElementById("dictSearchBtn");
-  const result = document.getElementById("dictResult");
+    const input = document.getElementById("dictSearchInput");
+    const button = document.getElementById("dictSearchBtn");
+    const result = document.getElementById("dictResult");
 
-  function getSuggestions(term) {
-    const lowered = term.toLowerCase();
-    return dictionary
-      .map(entry => entry.term)
-      .filter(t => t.includes(lowered) || similarity(t, lowered) > 0.5);
-  }
-
-  function similarity(a, b) {
-    let matches = 0;
-    const len = Math.min(a.length, b.length);
-    for (let i = 0; i < len; i++) {
-      if (a[i] === b[i]) matches++;
-    }
-    return matches / Math.max(a.length, b.length);
-  }
-
-  button.addEventListener("click", () => {
-    const term = input.value.trim().toLowerCase();
-    if (!term) {
-      result.innerHTML = "Please enter a term.";
-      return;
+    function getSuggestions(term) {
+      const lowered = term.toLowerCase();
+      return dictionary
+        .map(entry => entry.term)
+        .filter(t => t.includes(lowered) || similarity(t, lowered) > 0.5);
     }
 
-    const match = dictionary.find(entry => entry.term.toLowerCase() === term);
-
-    if (match) {
-      result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
-    } else {
-      const suggestions = getSuggestions(term);
-      if (suggestions.length > 0) {
-        result.innerHTML = `No exact match. Did you mean: ${suggestions
-          .map(t => `<button class="suggest-btn">${t}</button>`)
-          .join(" ")}`;
-        document.querySelectorAll(".suggest-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
-            input.value = btn.textContent;
-            button.click();
-          });
-        });
-      } else {
-        result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+    function similarity(a, b) {
+      let matches = 0;
+      const len = Math.min(a.length, b.length);
+      for (let i = 0; i < len; i++) {
+        if (a[i] === b[i]) matches++;
       }
+      return matches / Math.max(a.length, b.length);
     }
-  });
 
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") button.click();
-  });
-</script>
+    button.addEventListener("click", () => {
+      const term = input.value.trim().toLowerCase();
+      if (!term) {
+        result.innerHTML = "Please enter a term.";
+        return;
+      }
+
+      const match = dictionary.find(entry => entry.term.toLowerCase() === term);
+
+      if (match) {
+        result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
+      } else {
+        const suggestions = getSuggestions(term);
+        if (suggestions.length > 0) {
+          result.innerHTML = `No exact match. Did you mean: 
+            <a class="suggestion-link" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
+        } else {
+          result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+        }
+      }
+    });
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") button.click();
+    });
+
+    function selectSuggestion(text) {
+      input.value = text;
+      button.click();
+    }
+  </script>
 </body>
 </html>
