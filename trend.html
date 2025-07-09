@@ -18,13 +18,6 @@
     .trend-result {
       padding: 3rem 1rem;
     }
-    .result-box {
-      font-size: 1.2rem;
-      margin: 1rem auto;
-    }
-    .trend-stats {
-      margin-top: 2rem;
-    }
     .bar {
       height: 24px;
       margin: 0.5rem 0;
@@ -34,17 +27,11 @@
     }
     .fire-bar {
       background: #ff3c3c;
-      width: 62%;
+      color: white;
     }
     .dead-bar {
       background: #555;
-      width: 38%;
-    }
-    footer {
-      background: #111;
-      color: #888;
-      padding: 1rem;
-      font-size: 0.9rem;
+      color: white;
     }
     .back-button {
       display: inline-block;
@@ -73,13 +60,8 @@
 
   <main class="trend-result">
     <h1>Trend Search</h1>
-    <div class="result-box" id="resultBox">Loading...</div>
-    <div class="trend-stats" id="statsBox" style="display:none;">
-      <h3>Total Votes: 723</h3>
-      <div class="bar fire-bar">🔥 Fire: 62%</div>
-      <div class="bar dead-bar">💀 Dead: 38%</div>
-      <p style="margin-top:1rem; color:#aaa;">Note: these numbers are demo-only for now.</p>
-    </div>
+    <div id="resultBox">Loading...</div>
+    <div id="trendInfo"></div>
   </main>
 
   <a href="index.html" class="back-button">← Back to Home</a>
@@ -89,18 +71,55 @@
   </footer>
 
   <script>
-    const query = new URLSearchParams(window.location.search).get("term");
-    const known = ["gyatt", "npc tiktok", "skibidi rizz", "apple vision pro", "sigma edits", "rizz"];
-
-    const result = document.getElementById("resultBox");
-    const stats = document.getElementById("statsBox");
-
-    if (query && known.includes(query)) {
-      result.innerHTML = `🔥 <strong>${query}</strong> is a trending topic on HypeRank.`;
-      stats.style.display = "block";
-    } else {
-      result.innerHTML = `❌ <strong>${query}</strong> doesn't exist on HypeRank... yet.`;
+    function similarity(a, b) {
+      a = a.toLowerCase();
+      b = b.toLowerCase();
+      if (a === b) return 1;
+      if (a.includes(b) || b.includes(a)) return 0.7;
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
     }
+
+    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+    const resultBox = document.getElementById("resultBox");
+    const trendInfo = document.getElementById("trendInfo");
+
+    fetch("trends.json")
+      .then(res => res.json())
+      .then(trends => {
+        const match = trends.find(t => t.name === query);
+
+        if (match) {
+          const firePercent = Math.round((match.fire / match.votes) * 100);
+          const deadPercent = 100 - firePercent;
+
+          resultBox.innerHTML = `🔥 <strong>${match.label}</strong> is a trending topic.`;
+          trendInfo.innerHTML = `
+            <p style="margin:1rem auto; max-width:400px;">${match.description}</p>
+            <h3>Total Votes: ${match.votes}</h3>
+            <div class="bar fire-bar" style="width:${firePercent}%">🔥 Fire: ${firePercent}%</div>
+            <div class="bar dead-bar" style="width:${deadPercent}%">💀 Dead: ${deadPercent}%</div>
+          `;
+        } else {
+          let suggestion = null;
+          let bestScore = 0;
+          for (const t of trends) {
+            const score = similarity(query, t.name);
+            if (score > bestScore) {
+              bestScore = score;
+              suggestion = t.name;
+            }
+          }
+
+          resultBox.innerHTML = `❌ <strong>${query}</strong> doesn't exist on HypeRank... yet.`;
+          if (suggestion && bestScore >= 0.5) {
+            trendInfo.innerHTML = `🔍 Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
+          }
+        }
+      });
   </script>
 </body>
 </html>
