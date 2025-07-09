@@ -231,3 +231,18 @@ header {
 }
 .rising { color: #00e676; }
 .falling { color: #ff1744; }
+
+.tooltip {
+  cursor: help;
+  font-size: 0.9em;
+  color: #888;
+}
+.sparkline {
+  font-size: 0.9em;
+  color: #00e676;
+  margin: 0.3rem 0;
+}
+.meta-info {
+  font-size: 0.8em;
+  color: #aaa;
+}
