@@ -1,6 +1,8 @@
-
+// ✅ Truly seamless ticker using JS duplication
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔥 Handle voting buttons
+  // ⛔ REMOVE this if you're using both — only one DOMContentLoaded needed
+
+  // 🔥 Voting logic (keep as-is)
   const voteCards = document.querySelectorAll(".vote-card");
   voteCards.forEach(card => {
     const up = card.querySelector(".vote-up");
@@ -20,14 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
       up.disabled = true;
     });
 
-    // Add fake vote counter
     const counter = document.createElement("div");
     counter.className = "fake-count";
     counter.textContent = "Votes: " + (Math.floor(Math.random() * 1000) + 200);
     card.appendChild(counter);
   });
 
-  // 🚀 Handle submit form
+  // 🚀 Form submit
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", (e) => {
@@ -39,41 +40,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🕒 Dynamic update time
+  // ⏱️ Update timestamp
   const updateText = document.querySelector(".update-time p");
   if (updateText) {
     const minutes = Math.floor(Math.random() * 9) + 1;
     updateText.textContent = `Last updated: ${minutes} minutes ago`;
   }
 
-  // 🔎 Handle search redirect on enter
+  // 🔍 Search redirect
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
       if (query) {
-        // Strip hash fragment to prevent broken navigation
         const base = window.location.origin;
         window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
       }
     });
+  }
 
-   // 📰 Load headlines into ticker
-fetch('news.json')
-  .then(res => res.json())
-  .then(data => {
-    const ticker = document.getElementById('tickerTrack');
-    if (ticker && Array.isArray(data)) {
-      const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-      ticker.innerHTML = "<span>" + data.join(separator) + "</span>";
-    }
-  });
-
-
-
-// ✅ Truly seamless ticker using JS duplication
-document.addEventListener("DOMContentLoaded", () => {
+  // 📰 Seamless ticker scroll
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
@@ -82,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
 
-      // Create and append two copies
       const ticker1 = document.createElement("div");
       const ticker2 = document.createElement("div");
       ticker1.className = "ticker-track";
@@ -93,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.appendChild(ticker2);
 
       let pos = 0;
-      const speed = 0.5; // px per frame
+      const speed = 0.5;
 
       function animate() {
         pos -= speed;
@@ -106,7 +92,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
       animate();
     });
-});
-    
-  }
 });
