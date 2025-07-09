@@ -1,0 +1,42 @@
+[
+  {
+    "name": "gyatt",
+    "label": "Gyatt",
+    "description": "A TikTok term for noticing someone with a huge butt.",
+    "votes": 1340,
+    "fire": 890,
+    "dead": 450
+  },
+  {
+    "name": "npc tiktok",
+    "label": "NPC TikTok",
+    "description": "A TikTok live stream trend where people act like NPCs.",
+    "votes": 920,
+    "fire": 610,
+    "dead": 310
+  },
+  {
+    "name": "rizz",
+    "label": "Rizz",
+    "description": "Gen Z slang for charisma or pickup game.",
+    "votes": 1500,
+    "fire": 1100,
+    "dead": 400
+  },
+  {
+    "name": "sigma edits",
+    "label": "Sigma Edits",
+    "description": "Edits of men doing masculine things to motivational music.",
+    "votes": 800,
+    "fire": 470,
+    "dead": 330
+  },
+  {
+    "name": "apple vision pro",
+    "label": "Apple Vision Pro",
+    "description": "Apple\u2019s futuristic AR/VR headset released in 2024.",
+    "votes": 700,
+    "fire": 420,
+    "dead": 280
+  }
+]
