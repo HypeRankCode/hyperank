@@ -21,6 +21,17 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: inherit;         /* Ensures the text doesn't become blue or purple */
+}
+
+.logo-container:visited {
+  color: inherit;         /* Prevent purple flash after clicking */
+}
+
+.logo-container:focus,
+.logo-container:active {
+  outline: none;          /* Prevents browser glow effect */
 }
 
 .logo-icon {
