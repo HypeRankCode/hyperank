@@ -281,6 +281,10 @@ header {
   color: #fff;
 }
 
+.sparkline.green { color: #00e676; }
+.sparkline.red { color: #ff1744; }
+.sparkline.orange { color: #ff9100; }
+
 .sparkline {
   font-size: 0.9em;
   color: #00e676;
