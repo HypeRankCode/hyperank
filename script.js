@@ -7,12 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const down = card.querySelector(".vote-down");
 
     up.addEventListener("click", () => {
+      up.classList.add("clicked");
       up.textContent = "🔥 Voted!";
       up.disabled = true;
       down.disabled = true;
     });
 
     down.addEventListener("click", () => {
+      down.classList.add("clicked");
       down.textContent = "💀 Voted!";
       down.disabled = true;
       up.disabled = true;
@@ -35,4 +37,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor(Math.random() * 9) + 1;
     updateText.textContent = `Last updated: ${minutes} minutes ago`;
   }
+});
+
+// Fake vote counts
+document.querySelectorAll(".vote-card").forEach(card => {
+  const counter = document.createElement("div");
+  counter.className = "fake-count";
+  counter.textContent = "Votes: " + (Math.floor(Math.random() * 1000) + 200);
+  card.appendChild(counter);
+});
+
+// Filter trend cards by search
+document.getElementById("trendSearch").addEventListener("input", function() {
+  const val = this.value.toLowerCase();
+  document.querySelectorAll(".trend-card").forEach(card => {
+    const title = card.querySelector(".trend-title").textContent.toLowerCase();
+    card.style.display = title.includes(val) ? "block" : "none";
+  });
 });
