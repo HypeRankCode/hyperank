@@ -121,16 +121,20 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.appendChild(card);
       });
 
-      // 🆕 Add "Which is better?" comparison vote
+      // 🆕 Add hardcoded "Which is better?" vote: Gyatt vs Rizz
       const voteSection = document.querySelector(".vote-section");
-      if (voteSection && trends.length >= 2) {
+      const trendA = trends.find(t => t.name === "gyatt");
+      const trendB = trends.find(t => t.name === "rizz");
+
+      if (voteSection && trendA && trendB) {
         const compContainer = document.createElement("div");
         compContainer.className = "comparison-container";
         compContainer.innerHTML = `
+          <h3 style="margin-top:2rem;">🤔 Which is better?</h3>
           <div class="comparison-box">
-            <button class="compare-btn" data-index="0">${trends[0].label}</button>
+            <button class="compare-btn" data-index="0">${trendA.label}</button>
             <span class="vs-text">vs</span>
-            <button class="compare-btn" data-index="1">${trends[1].label}</button>
+            <button class="compare-btn" data-index="1">${trendB.label}</button>
           </div>
           <div class="compare-results" style="display:none; margin-top:1rem;"></div>
         `;
@@ -151,11 +155,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resultBox.style.display = "block";
             resultBox.innerHTML = `
-              <strong>${trends[0].label}</strong>: ${percent0}%<br>
-              <strong>${trends[1].label}</strong>: ${percent1}%
+              <strong>${trendA.label}</strong>: ${percent0}%<br>
+              <strong>${trendB.label}</strong>: ${percent1}%
             `;
 
-            // Disable and gray out buttons after voting
             buttons.forEach(b => {
               b.disabled = true;
               b.classList.add("clicked");
