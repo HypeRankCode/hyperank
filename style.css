@@ -468,7 +468,18 @@ header {
   transition: background 0.2s;
 }
 .back-home-btn:hover {
-  background: #e63636;
+  background: #871e1e;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-container:hover {
+  opacity: 0.9;
+  cursor: pointer;
 }
 
 
