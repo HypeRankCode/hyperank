@@ -69,17 +69,17 @@ document.addEventListener("DOMContentLoaded", () => {
           meta.className = "trend-meta rising";
           meta.textContent = "🔺 Rising";
           spark.className = "sparkline green";
-          spark.textContent = "📈 ▁▃▅▇▆";
+          spark.textContent = "▁▃▅▇▆";
         } else if (ratio < 0.4) {
           meta.className = "trend-meta falling";
           meta.textContent = "🔻 Falling";
           spark.className = "sparkline red";
-          spark.textContent = "📉 ▆▅▃▂";
+          spark.textContent = "▆▅▃▂";
         } else {
           meta.className = "trend-meta mid";
           meta.textContent = "➖ Mid";
           spark.className = "sparkline orange";
-          spark.textContent = "X ▄▄▄▅▅";
+          spark.textContent = "▄▄▄▅▅";
         }
 
         const votes = document.createElement("div");
