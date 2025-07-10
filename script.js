@@ -25,6 +25,22 @@ window.signUp = async () => {
   const password = document.getElementById('authPassword').value;
   const username = document.getElementById('authUsername')?.value.trim() || "";
 
+  if (!email || !password || !username) {
+    document.getElementById('authMsg').textContent = '⚠️ Please fill in all fields (email, password, username).';
+    return;
+  }
+
+  const { data: existingUser, error: checkError } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("username", username)
+    .single();
+
+  if (existingUser) {
+    document.getElementById('authMsg').textContent = '⚠️ Username is already taken. Try another one.';
+    return;
+  }
+
   const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
   if (signUpError) {
     if (signUpError.message.includes("already registered")) {
@@ -57,33 +73,8 @@ window.resetPassword = async () => {
   document.getElementById('authMsg').textContent = error ? error.message : '📧 Password reset email sent!';
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-
-  const emailSpan = document.getElementById('userEmailDisplay');
-  const authBtn = document.getElementById('authBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-
-  if (user) {
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single();
-
-    const username = profileData?.username || user.email;
-    emailSpan.textContent = `Welcome, ${username}`;
-    authBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
-  } else {
-    emailSpan.textContent = '';
-    authBtn.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
-  }
-});
-
 // DOM loaded
+
 document.addEventListener("DOMContentLoaded", async () => {
   const { data: { user } } = await supabase.auth.getUser();
   currentUser = user;
@@ -94,9 +85,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const voteNotice = document.getElementById('voteNotice');
 
   if (user) {
-    const { data: profile } = await supabase.from("profiles").select("username").eq("id", user.id).single();
-    const displayName = profile?.username || user.email;
-    emailSpan.textContent = `Welcome, ${displayName}`;
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+
+    const username = profileData?.username || user.email;
+    emailSpan.textContent = `Welcome, ${username}`;
     authBtn.style.display = 'none';
     logoutBtn.style.display = 'inline-block';
     if (voteNotice) voteNotice.style.display = 'none';
