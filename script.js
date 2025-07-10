@@ -41,58 +41,61 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
     });
 
-  // 🔢 Load trends with sparklines & HypeScore
-  fetch("trends.json")
-    .then(res => res.json())
-    .then(trends => {
-      const grid = document.querySelector(".trending-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
+// spacing
+    fetch("trends.json")
+      .then(res => res.json())
+      .then(trends => {
+        const grid = document.querySelector(".trending-grid");
+        if (!grid) return;
+        grid.innerHTML = "";
 
-      trends.forEach(trend => {
-        const card = document.createElement("div");
-        card.className = "trend-card";
+        const topTrends = trends.slice(0, 5); // Only use top 5 trends
 
-        const title = document.createElement("div");
-        title.className = "trend-title";
-        title.textContent = trend.label;
+        topTrends.forEach(trend => {
+          const card = document.createElement("div");
+          card.className = "trend-card";
 
-        const ratio = trend.fire / trend.votes;
-        const meta = document.createElement("div");
-        const spark = document.createElement("div");
+          const title = document.createElement("div");
+          title.className = "trend-title";
+          title.textContent = trend.label;
 
-        if (ratio > 0.65) {
-          meta.className = "trend-meta rising";
-          meta.textContent = "🔺 Rising";
-          spark.className = "sparkline green";
-          spark.textContent = "▁▃▅▇▆";
-        } else if (ratio < 0.4) {
-          meta.className = "trend-meta falling";
-          meta.textContent = "🔻 Falling";
-          spark.className = "sparkline red";
-          spark.textContent = "▆▅▃▂";
-        } else {
-          meta.className = "trend-meta mid";
-          meta.textContent = "➖ Mid";
-          spark.className = "sparkline orange";
-          spark.textContent = "▄▄▄▅▅";
-        }
+          const ratio = trend.fire / trend.votes;
+          const meta = document.createElement("div");
+          const spark = document.createElement("div");
 
-        const votes = document.createElement("div");
-        votes.className = "trend-votes";
-        votes.textContent = trend.votes + " votes";
+          if (ratio > 0.65) {
+            meta.className = "trend-meta rising";
+            meta.textContent = "🔺 Rising";
+            spark.className = "sparkline green";
+            spark.textContent = "📈 ▁▃▅▇▆";
+          } else if (ratio < 0.4) {
+            meta.className = "trend-meta falling";
+            meta.textContent = "🔻 Falling";
+            spark.className = "sparkline red";
+            spark.textContent = "📉 ▆▅▃▂";
+          } else {
+            meta.className = "trend-meta mid";
+            meta.textContent = "➖ Mid";
+            spark.className = "sparkline orange";
+            spark.textContent = "X ▄▄▄▅▅";
+          }
 
-        const hypeScore = document.createElement("div");
-        hypeScore.className = "meta-info";
-        const score = Math.round((trend.fire / trend.votes) * 100);
-        hypeScore.textContent = "💥 HypeScore: " + score + "%";
+          const votes = document.createElement("div");
+          votes.className = "trend-votes";
+          votes.textContent = trend.votes + " votes";
 
-        card.appendChild(title);
-        card.appendChild(meta);
-        card.appendChild(spark);
-        card.appendChild(votes);
-        card.appendChild(hypeScore);
-        grid.appendChild(card);
+          const hypeScore = document.createElement("div");
+          hypeScore.className = "meta-info";
+          const score = Math.round((trend.fire / trend.votes) * 100);
+          hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
+          card.appendChild(title);
+          card.appendChild(meta);
+          card.appendChild(spark);
+          card.appendChild(votes);
+          card.appendChild(hypeScore);
+          grid.appendChild(card);
+        });
       });
 
       // 🆕 Add hardcoded "Which is better?" vote: Gyatt vs Rizz
