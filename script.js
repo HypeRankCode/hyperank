@@ -1,6 +1,11 @@
+  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
 document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Form submission
   const form = document.querySelector(".submit-form");
+  
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -43,61 +48,68 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
 
-  // spacing
-  fetch("trends.json")
-    .then(res => res.json())
-    .then(trends => {
-      const grid = document.querySelector(".trending-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
+// spacing
+  const { data: trends, error } = await supabase
+    .from("trends")
+    .select("*")
+    .order("votes", { ascending: false });
 
-      const topTrends = trends.slice(0, 5); // Only use top 5 trends
+  if (error) {
+    console.error("Failed to fetch trends from Supabase:", error);
+    return;
+  }
 
-      topTrends.forEach(trend => {
-        const card = document.createElement("div");
-        card.className = "trend-card";
+  const grid = document.querySelector(".trending-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
 
-        const title = document.createElement("div");
-        title.className = "trend-title";
-        title.textContent = trend.label;
+  const topTrends = trends.slice(0, 5); // Only use top 5 trends
 
-        const ratio = trend.fire / trend.votes;
-        const meta = document.createElement("div");
-        const spark = document.createElement("div");
+  topTrends.forEach(trend => {
+    const card = document.createElement("div");
+    card.className = "trend-card";
 
-        if (ratio > 0.65) {
-          meta.className = "trend-meta rising";
-          meta.textContent = "🔺 Rising";
-          spark.className = "sparkline green";
-          spark.textContent = "▁▃▅▇▆";
-        } else if (ratio < 0.4) {
-          meta.className = "trend-meta falling";
-          meta.textContent = "🔻 Falling";
-          spark.className = "sparkline red";
-          spark.textContent = "▆▅▃▂";
-        } else {
-          meta.className = "trend-meta mid";
-          meta.textContent = "➖ Mid";
-          spark.className = "sparkline orange";
-          spark.textContent = "▄▄▄▅▅";
-        }
+    const title = document.createElement("div");
+    title.className = "trend-title";
+    title.textContent = trend.label;
 
-        const votes = document.createElement("div");
-        votes.className = "trend-votes";
-        votes.textContent = trend.votes + " votes";
+    const ratio = trend.hype / trend.votes;
+    const meta = document.createElement("div");
+    const spark = document.createElement("div");
 
-        const hypeScore = document.createElement("div");
-        hypeScore.className = "meta-info";
-        const score = Math.round((trend.fire / trend.votes) * 100);
-        hypeScore.textContent = "💥 HypeScore: " + score + "%";
+    if (ratio > 0.65) {
+      meta.className = "trend-meta rising";
+      meta.textContent = "🔺 Rising";
+      spark.className = "sparkline green";
+      spark.textContent = "▁▃▅▇▆";
+    } else if (ratio < 0.4) {
+      meta.className = "trend-meta falling";
+      meta.textContent = "🔻 Falling";
+      spark.className = "sparkline red";
+      spark.textContent = "▆▅▃▂";
+    } else {
+      meta.className = "trend-meta mid";
+      meta.textContent = "➖ Mid";
+      spark.className = "sparkline orange";
+      spark.textContent = "▄▄▄▅▅";
+    }
 
-        card.appendChild(title);
-        card.appendChild(meta);
-        card.appendChild(spark);
-        card.appendChild(votes);
-        card.appendChild(hypeScore);
-        grid.appendChild(card);
-      });
+    const votes = document.createElement("div");
+    votes.className = "trend-votes";
+    votes.textContent = trend.votes + " votes";
+
+    const hypeScore = document.createElement("div");
+    hypeScore.className = "meta-info";
+    const score = Math.round((trend.hype / trend.votes) * 100);
+    hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(spark);
+    card.appendChild(votes);
+    card.appendChild(hypeScore);
+    grid.appendChild(card);
+  });
 
       // 🆕 Add hardcoded "Which is better?" vote: Gyatt vs Rizz
       const voteSection = document.querySelector(".vote-section");
