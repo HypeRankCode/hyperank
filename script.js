@@ -1,7 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
 const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Update with your Supabase key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your own Supabase Key here
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,27 +11,30 @@ document.addEventListener("DOMContentLoaded", () => {
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      
+      // Get values from the form
       const inputs = form.querySelectorAll("input, textarea");
       const name = inputs[0].value.trim().toLowerCase();
       const label = inputs[0].value.trim();
       const description = inputs[1].value.trim();
 
+      // Validation check
       if (!name || !description) return;
 
-      // Insert the new trend into Supabase
-      const { error } = await supabase.from("trends").insert({
+      // Insert the suggestion into the "suggestions" table (not trends table yet)
+      const { error } = await supabase.from("suggestions").insert({
         name,
         label,
         description,
-        votes: 1,
-        hype: 1
+        status: "pending", // Added status to filter and manage suggestions
       });
 
+      // Show confirmation popup
       if (!error) {
         const popup = document.getElementById("custom-popup");
         popup.style.display = "block";
-        setTimeout(() => popup.style.display = "none", 3000);
-        form.reset();
+        setTimeout(() => popup.style.display = "none", 3000); // Hide after 3 seconds
+        form.reset(); // Reset the form
       } else {
         console.error("Submission error:", error);
       }
@@ -133,51 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(hypeScore);
         grid.appendChild(card);
       });
-
-      // 🆕 Add hardcoded "Which is better?" vote: Gyatt vs Rizz
-      const voteSection = document.querySelector(".vote-section");
-      const trendA = trends.find(t => t.name === "gyatt");
-      const trendB = trends.find(t => t.name === "rizz");
-
-      if (voteSection && trendA && trendB) {
-        const compContainer = document.createElement("div");
-        compContainer.className = "comparison-container";
-        compContainer.innerHTML = `
-          <div class="comparison-box">
-            <button class="compare-btn" data-index="0">${trendA.label}</button>
-            <span class="vs-text">vs</span>
-            <button class="compare-btn" data-index="1">${trendB.label}</button>
-          </div>
-          <div class="compare-results" style="display:none; margin-top:1rem;"></div>
-        `;
-        voteSection.appendChild(compContainer);
-
-        const buttons = compContainer.querySelectorAll(".compare-btn");
-        const resultBox = compContainer.querySelector(".compare-results");
-
-        let votes = [0, 0];
-
-        buttons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const i = parseInt(btn.dataset.index);
-            votes[i]++;
-            const total = votes[0] + votes[1];
-            const percent0 = Math.round((votes[0] / total) * 100);
-            const percent1 = 100 - percent0;
-
-            resultBox.style.display = "block";
-            resultBox.innerHTML = `
-              <strong>${trendA.label}</strong>: ${percent0}%<br>
-              <strong>${trendB.label}</strong>: ${percent1}%
-            `;
-
-            buttons.forEach(b => {
-              b.disabled = true;
-              b.classList.add("clicked");
-            });
-          });
-        });
-      }
     } catch (err) {
       console.error("Error fetching trends:", err);
     }
