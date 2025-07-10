@@ -33,14 +33,6 @@
       color: inherit;
     }
 
-    .logo-container:visited,
-    .logo-container:focus,
-    .logo-container:active {
-      color: inherit;
-      outline: none;
-      text-decoration: none;
-    }
-
     .logo-container * {
       color: inherit;
       text-decoration: none;
@@ -140,82 +132,88 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct Supabase key
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  let trends = [];
+    let trends = [];
 
-  // Fetch data from Supabase instead of the trends.json file
-  async function fetchTrends() {
-    const { data, error } = await supabase
-      .from('trends')
-      .select('*');
-
-    if (error) {
-      console.error('Error fetching trends from Supabase:', error);
-      return;
+    async function fetchTrends() {
+      const { data, error } = await supabase.from('trends').select('*');
+      if (error) {
+        console.error('Error fetching trends from Supabase:', error);
+        return;
+      }
+      trends = data;
     }
 
-    trends = data;
-  }
+    await fetchTrends();
 
-  // Call fetchTrends to load data from Supabase
-  fetchTrends();
+    const input = document.getElementById('dictSearchInput');
+    const button = document.getElementById('dictSearchBtn');
+    const result = document.getElementById('dictResult');
 
-  const input = document.getElementById('dictSearchInput');
-  const button = document.getElementById('dictSearchBtn');
-  const result = document.getElementById('dictResult');
-
-  function getSuggestions(term) {
-    const lowered = term.toLowerCase();
-    return trends
-      .map(entry => entry.label)
-      .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
-  }
-
-  function similarity(a, b) {
-    let matches = 0;
-    const len = Math.min(a.length, b.length);
-    for (let i = 0; i < len; i++) {
-      if (a[i] === b[i]) matches++;
-    }
-    return matches / Math.max(a.length, b.length);
-  }
-
-  button.addEventListener("click", () => {
-    const term = input.value.trim().toLowerCase();
-    if (!term) {
-      result.innerHTML = "Please enter a term.";
-      return;
+    function getSuggestions(term) {
+      const lowered = term.toLowerCase();
+      return trends
+        .map(entry => entry.label)
+        .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
     }
 
-    const match = trends.find(entry => entry.label.toLowerCase() === term);
+    function similarity(a, b) {
+      let matches = 0;
+      const len = Math.min(a.length, b.length);
+      for (let i = 0; i < len; i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
+    }
 
-    if (match) {
-      result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
-    } else {
-      const suggestions = getSuggestions(term);
-      if (suggestions.length > 0) {
-        result.innerHTML = `No exact match. Did you mean: 
-          <a class="suggestion-link" href="javascript:void(0)" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
+    function runSearch(term) {
+      const lowered = term.trim().toLowerCase();
+      const match = trends.find(entry => entry.label.toLowerCase() === lowered);
+
+      if (match) {
+        result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
       } else {
-        result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+        const suggestions = getSuggestions(lowered);
+        if (suggestions.length > 0) {
+          result.innerHTML = `No exact match. Did you mean: 
+            <a class="suggestion-link" href="#" id="suggestion-link">${suggestions[0]}</a>?`;
+          setTimeout(() => {
+            const suggestionEl = document.getElementById('suggestion-link');
+            if (suggestionEl) {
+              suggestionEl.addEventListener('click', e => {
+                e.preventDefault();
+                input.value = suggestions[0];
+                runSearch(suggestions[0]);
+              });
+            }
+          }, 0);
+        } else {
+          result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+        }
       }
     }
-  });
 
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") button.click();
-  });
+    button.addEventListener("click", () => {
+      const term = input.value.trim();
+      if (!term) {
+        result.innerHTML = "Please enter a term.";
+        return;
+      }
+      runSearch(term);
+    });
 
-   window.selectSuggestion = function (text) {
-	input.value = text;
-	button.click();
-   };
-</script>
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        button.click();
+      }
+    });
+  </script>
 </body>
 </html>
