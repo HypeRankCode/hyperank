@@ -23,11 +23,15 @@ window.signIn = async () => {
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
-  const username = document.getElementById('authUsername').value.trim();
+  const username = document.getElementById('authUsername')?.value.trim() || "";
 
   const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
   if (signUpError) {
-    document.getElementById('authMsg').textContent = signUpError.message;
+    if (signUpError.message.includes("already registered")) {
+      document.getElementById('authMsg').textContent = '⚠️ Email is already in use. Try signing in or use a different email.';
+    } else {
+      document.getElementById('authMsg').textContent = signUpError.message;
+    }
     return;
   }
 
