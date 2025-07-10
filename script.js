@@ -1,75 +1,117 @@
-// spacing
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
-
-const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-const supabaseKey = 'YOUR_SUPABASE_KEY';
-const supabase = createClient(supabaseUrl, supabaseKey);
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
+  
+  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", () => {
-  (async () => {
-    try {
-      const { data: trends, error } = await supabase
-        .from("trends")
-        .select("*")
-        .order("votes", { ascending: false });
+  // 🚀 Form submission
+  const form = document.querySelector(".submit-form");
+  
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const popup = document.getElementById("custom-popup");
+      popup.style.display = "block";
+      setTimeout(() => popup.style.display = "none", 3000);
+      form.reset();
+    });
+  }
 
-      if (error) {
-        console.error("Failed to fetch trends from Supabase:", error);
-        return;
+  // 🕒 Update timestamp
+  const updateText = document.querySelector(".update-time p");
+  if (updateText) {
+    const minutes = Math.floor(Math.random() * 9) + 1;
+    updateText.textContent = `Last updated: ${minutes} minutes ago`;
+  }
+
+  // 🔍 Search functionality
+  const searchForm = document.getElementById("trendSearchForm");
+  if (searchForm) {
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+      if (query) {
+        const base = window.location.origin;
+        window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
       }
+    });
+  }
 
-      const grid = document.querySelector(".trending-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
+  // 📰 Ticker news
+  fetch("news.json")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.querySelector(".ticker-track-wrapper");
+      if (!wrapper || !Array.isArray(data)) return;
 
-      const topTrends = trends.slice(0, 5); // Only use top 5 trends
+      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
+    });
 
-      topTrends.forEach(trend => {
-        const card = document.createElement("div");
-        card.className = "trend-card";
+// spacing
+  const { data: trends, error } = await supabase
+    .from("trends")
+    .select("*")
+    .order("votes", { ascending: false });
 
-        const title = document.createElement("div");
-        title.className = "trend-title";
-        title.textContent = trend.label;
+  if (error) {
+    console.error("Failed to fetch trends from Supabase:", error);
+    return;
+  }
 
-        // Handling division by zero
-        const ratio = trend.votes === 0 ? 0 : trend.hype / trend.votes;
-        const meta = document.createElement("div");
-        const spark = document.createElement("div");
+  const grid = document.querySelector(".trending-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
 
-        if (ratio > 0.65) {
-          meta.className = "trend-meta rising";
-          meta.textContent = "🔺 Rising";
-          spark.className = "sparkline green";
-          spark.textContent = "▁▃▅▇▆";
-        } else if (ratio < 0.4) {
-          meta.className = "trend-meta falling";
-          meta.textContent = "🔻 Falling";
-          spark.className = "sparkline red";
-          spark.textContent = "▆▅▃▂";
-        } else {
-          meta.className = "trend-meta mid";
-          meta.textContent = "➖ Mid";
-          spark.className = "sparkline orange";
-          spark.textContent = "▄▄▄▅▅";
-        }
+  const topTrends = trends.slice(0, 5); // Only use top 5 trends
 
-        const votes = document.createElement("div");
-        votes.className = "trend-votes";
-        votes.textContent = trend.votes + " votes";
+  topTrends.forEach(trend => {
+    const card = document.createElement("div");
+    card.className = "trend-card";
 
-        const hypeScore = document.createElement("div");
-        hypeScore.className = "meta-info";
-        const score = Math.round((trend.hype / trend.votes) * 100);
-        hypeScore.textContent = "💥 HypeScore: " + score + "%";
+    const title = document.createElement("div");
+    title.className = "trend-title";
+    title.textContent = trend.label;
 
-        card.appendChild(title);
-        card.appendChild(meta);
-        card.appendChild(spark);
-        card.appendChild(votes);
-        card.appendChild(hypeScore);
-        grid.appendChild(card);
-      });
+    const ratio = trend.hype / trend.votes;
+    const meta = document.createElement("div");
+    const spark = document.createElement("div");
+
+    if (ratio > 0.65) {
+      meta.className = "trend-meta rising";
+      meta.textContent = "🔺 Rising";
+      spark.className = "sparkline green";
+      spark.textContent = "▁▃▅▇▆";
+    } else if (ratio < 0.4) {
+      meta.className = "trend-meta falling";
+      meta.textContent = "🔻 Falling";
+      spark.className = "sparkline red";
+      spark.textContent = "▆▅▃▂";
+    } else {
+      meta.className = "trend-meta mid";
+      meta.textContent = "➖ Mid";
+      spark.className = "sparkline orange";
+      spark.textContent = "▄▄▄▅▅";
+    }
+
+    const votes = document.createElement("div");
+    votes.className = "trend-votes";
+    votes.textContent = trend.votes + " votes";
+
+    const hypeScore = document.createElement("div");
+    hypeScore.className = "meta-info";
+    const score = Math.round((trend.hype / trend.votes) * 100);
+    hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(spark);
+    card.appendChild(votes);
+    card.appendChild(hypeScore);
+    grid.appendChild(card);
+  });
 
       // 🆕 Add hardcoded "Which is better?" vote: Gyatt vs Rizz
       const voteSection = document.querySelector(".vote-section");
@@ -115,8 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
       }
-    } catch (err) {
-      console.error("Error fetching trends:", err);
-    }
-  })();
+    })
+    .catch(err => console.error("trends.json fetch error:", err));
 });
