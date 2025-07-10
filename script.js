@@ -5,69 +5,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 🚀 Form submission
-  const form = document.querySelector(".submit-form");
-
-  if (form) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const inputs = form.querySelectorAll("input, textarea");
-      const name = inputs[0].value.trim().toLowerCase();
-      const label = inputs[0].value.trim();
-      const description = inputs[1].value.trim();
-
-      if (!name || !description) return;
-
-      const { error } = await supabase.from("trends").insert({
-        name,
-        label,
-        description,
-        votes: 1,
-        hype: 1
-      });
-
-      if (!error) {
-        const popup = document.getElementById("custom-popup");
-        popup.style.display = "block";
-        setTimeout(() => popup.style.display = "none", 3000);
-        form.reset();
-      } else {
-        console.error("Submission error:", error);
-      }
-    });
-  }
-
-  // 🕒 Update timestamp
-  const updateText = document.querySelector(".update-time p");
-  if (updateText) {
-    updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
-  }
-
-  // 🔍 Search functionality
-  const searchForm = document.getElementById("trendSearchForm");
-  if (searchForm) {
-    searchForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
-      if (query) {
-        const base = window.location.origin;
-        window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
-      }
-    });
-  }
-
-  // 📰 Ticker news
-  fetch("news.json")
-    .then(res => res.json())
-    .then(data => {
-      const wrapper = document.querySelector(".ticker-track-wrapper");
-      if (!wrapper || !Array.isArray(data)) return;
-      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
-    });
-
-  // spacing
   (async () => {
     const { data: trends, error } = await supabase
       .from("trends")
@@ -101,17 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
         meta.className = "trend-meta rising";
         meta.textContent = "🔺 Rising";
         spark.className = "sparkline green";
-        spark.textContent = "▁▃▅▇▆";
+        spark.textContent = "📈 ▁▃▅▇▆";
       } else if (ratio < 0.4) {
         meta.className = "trend-meta falling";
         meta.textContent = "🔻 Falling";
         spark.className = "sparkline red";
-        spark.textContent = "▆▅▃▂";
+        spark.textContent = "📉 ▆▅▃▂";
       } else {
         meta.className = "trend-meta mid";
         meta.textContent = "➖ Mid";
         spark.className = "sparkline orange";
-        spark.textContent = "▄▄▄▅▅";
+        spark.textContent = "X ▄▄▄▅▅";
       }
 
       const votes = document.createElement("div");
