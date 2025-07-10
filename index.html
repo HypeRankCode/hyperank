@@ -53,6 +53,25 @@
       color: #ff3c3c;
     }
 
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-links span {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .nav-links button {
+      background: none;
+      border: none;
+      color: #ff3c3c;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     footer {
       text-align: center;
       padding: 1rem;
@@ -64,6 +83,67 @@
     main {
       flex: 1;
     }
+
+    .auth-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-box {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      color: white;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .auth-box input {
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: none;
+      background: #2a2a2a;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .auth-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .auth-buttons button {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      background: #ff3c3c;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .auth-buttons .close-btn {
+      background: #444;
+    }
+
+    .auth-msg {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #ccc;
+    }
   </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
@@ -74,7 +154,9 @@
       <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
     </a>
     <nav class="nav-links">
-      <a href="#" onclick="openAuth()">Sign In / Up</a>
+      <span id="userEmailDisplay"></span>
+      <button onclick="openAuth()" id="authBtn">Sign In / Up</button>
+      <button onclick="logoutUser()" id="logoutBtn" style="display:none;">Log Out</button>
     </nav>
   </header>
 
@@ -89,13 +171,8 @@
 
   <div class="search-bar" style="text-align:center; margin: 2rem;">
     <form id="trendSearchForm">
-      <input id="trendSearchInput"
-             type="text"
-             placeholder="Search trends..."
-             style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
+      <input id="trendSearchInput" type="text" placeholder="Search trends..." style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
     </form>
-
-    <!-- 🔤 Dictionary link -->
     <div style="margin-top: 1rem;">
       <a href="dictionary.html" style="color: #ccc; font-size: 0.95rem; text-decoration: underline;">
         🔤 Browse the Dictionary
@@ -123,11 +200,10 @@
 
   <section id="vote" class="vote-section">
     <h2>🤔 Which do you use more?</h2>
-    <div class="comparison-box">
-      <!-- Dynamic vote buttons inserted by script.js -->
-    </div>
-    <div class="compare-results">
-      <!-- Vote result text (e.g. "Gyatt: 60%, NPC: 40%") -->
+    <div class="comparison-box"></div>
+    <div class="compare-results"></div>
+    <div id="voteNotice" style="display:none; text-align:center; color:#f44; margin-top:1rem;">
+      🔒 Please sign in to vote.
     </div>
   </section>
 
@@ -147,19 +223,18 @@
       influencers and apps. Vote what's HOT or NOT and see the trends rise and fall.
     </p>
   </section>
-  
-  <!-- 🔐 AUTH MODAL -->
-  <div id="authModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000a; backdrop-filter:blur(4px); z-index:999;">
-    <div style="background:#222; padding:2rem; border-radius:12px; max-width:400px; margin:10% auto; color:#fff;">
-      <h2>Login or Sign Up</h2>
-      <input id="authEmail" type="email" placeholder="Email" style="width:100%; margin:1rem 0; padding:0.5rem;" />
-      <input id="authPassword" type="password" placeholder="Password" style="width:100%; margin-bottom:1rem; padding:0.5rem;" />
-      <div style="display:flex; justify-content:space-between;">
+
+  <div id="authModal" class="auth-modal">
+    <div class="auth-box">
+      <h2>👤 Sign In / Register</h2>
+      <input id="authEmail" type="email" placeholder="Email address" />
+      <input id="authPassword" type="password" placeholder="Password" />
+      <div class="auth-buttons">
         <button onclick="signIn()">Sign In</button>
         <button onclick="signUp()">Sign Up</button>
-        <button onclick="closeAuth()">❌</button>
+        <button onclick="closeAuth()" class="close-btn">Cancel</button>
       </div>
-      <p id="authMsg" style="margin-top:1rem; font-size:0.9rem;"></p>
+      <p id="authMsg" class="auth-msg"></p>
     </div>
   </div>
 
