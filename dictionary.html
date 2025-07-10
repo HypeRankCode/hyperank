@@ -117,7 +117,7 @@
     }
   </style>
 </head>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
+
 <body>
   <header class="site-header">
     <a href="index.html" class="logo-container">
@@ -140,63 +140,82 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
-  <script>
-      let trends = [];
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-      fetch("trends.json")
-        .then(res => res.json())
-        .then(data => trends = data);
+    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct Supabase key
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-      const input = document.getElementById("dictSearchInput");
-      const button = document.getElementById("dictSearchBtn");
-      const result = document.getElementById("dictResult");
+    let trends = [];
 
-      function getSuggestions(term) {
-        const lowered = term.toLowerCase();
-        return trends
-          .map(entry => entry.label)
-          .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
+    // Fetch data from Supabase instead of the trends.json file
+    async function fetchTrends() {
+      const { data, error } = await supabase
+        .from('trends')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching trends from Supabase:', error);
+        return;
       }
 
-      function similarity(a, b) {
-        let matches = 0;
-        const len = Math.min(a.length, b.length);
-        for (let i = 0; i < len; i++) {
-          if (a[i] === b[i]) matches++;
-        }
-        return matches / Math.max(a.length, b.length);
+      trends = data;
+    }
+
+    // Call fetchTrends to load data from Supabase
+    fetchTrends();
+
+    const input = document.getElementById('dictSearchInput');
+    const button = document.getElementById('dictSearchBtn');
+    const result = document.getElementById('dictResult');
+
+    function getSuggestions(term) {
+      const lowered = term.toLowerCase();
+      return trends
+        .map(entry => entry.label)
+        .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
+    }
+
+    function similarity(a, b) {
+      let matches = 0;
+      const len = Math.min(a.length, b.length);
+      for (let i = 0; i < len; i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
+    }
+
+    button.addEventListener("click", () => {
+      const term = input.value.trim().toLowerCase();
+      if (!term) {
+        result.innerHTML = "Please enter a term.";
+        return;
       }
 
-      button.addEventListener("click", () => {
-        const term = input.value.trim().toLowerCase();
-        if (!term) {
-          result.innerHTML = "Please enter a term.";
-          return;
-        }
+      const match = trends.find(entry => entry.label.toLowerCase() === term);
 
-        const match = trends.find(entry => entry.label.toLowerCase() === term);
-
-        if (match) {
-          result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
+      if (match) {
+        result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
+      } else {
+        const suggestions = getSuggestions(term);
+        if (suggestions.length > 0) {
+          result.innerHTML = `No exact match. Did you mean: 
+            <a class="suggestion-link" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
         } else {
-          const suggestions = getSuggestions(term);
-          if (suggestions.length > 0) {
-            result.innerHTML = `No exact match. Did you mean: 
-              <a class="suggestion-link" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
-          } else {
-            result.innerHTML = `No definition found for <strong>${term}</strong>.`;
-          }
+          result.innerHTML = `No definition found for <strong>${term}</strong>.`;
         }
-      });
-
-      input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") button.click();
-      });
-
-      function selectSuggestion(text) {
-        input.value = text;
-        button.click();
       }
-</script>
+    });
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") button.click();
+    });
+
+    function selectSuggestion(text) {
+      input.value = text;
+      button.click();
+    }
+  </script>
 </body>
 </html>
