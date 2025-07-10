@@ -23,39 +23,35 @@ window.signIn = async () => {
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
-  const username = document.getElementById('authUsername')?.value.trim() || "";
+  const username = document.getElementById('authUsername')?.value.trim();
 
   if (!email || !password || !username) {
     document.getElementById('authMsg').textContent = '⚠️ Please fill in all fields (email, password, username).';
     return;
   }
 
-  const { data: existingUser, error: checkError } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("username", username)
-    .single();
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        display_name: username
+      }
+    }
+  });
 
-  if (existingUser) {
-    document.getElementById('authMsg').textContent = '⚠️ Username is already taken. Try another one.';
-    return;
-  }
-
-  const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
   if (signUpError) {
     if (signUpError.message.includes("already registered")) {
-      document.getElementById('authMsg').textContent = '⚠️ Email is already in use. Try signing in or use a different email.';
+      document.getElementById('authMsg').textContent = '⚠️ Email already in use. Try signing in.';
     } else {
       document.getElementById('authMsg').textContent = signUpError.message;
     }
     return;
   }
 
-  if (data.user) {
-    await supabase.from("profiles").insert({ id: data.user.id, email, username });
-    document.getElementById('authMsg').textContent = '✅ Account created!';
-  }
+  document.getElementById('authMsg').textContent = '✅ Account created!';
 };
+
 window.logoutUser = async () => {
   await supabase.auth.signOut();
   location.reload();
@@ -72,6 +68,32 @@ window.resetPassword = async () => {
   });
   document.getElementById('authMsg').textContent = error ? error.message : '📧 Password reset email sent!';
 };
+
+// DOM loaded
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  currentUser = user;
+
+  const emailSpan = document.getElementById('userEmailDisplay');
+  const authBtn = document.getElementById('authBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const voteNotice = document.getElementById('voteNotice');
+
+  if (user) {
+    const username = user.user_metadata?.display_name || user.email;
+    emailSpan.textContent = `Welcome, ${username}`;
+    authBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+    if (voteNotice) voteNotice.style.display = 'none';
+  } else {
+    emailSpan.textContent = '';
+    authBtn.style.display = 'inline-block';
+    logoutBtn.style.display = 'none';
+    if (voteNotice) voteNotice.style.display = 'block';
+  }
+});
+
 
 // DOM loaded
 
