@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="style.css" />
   <style>
+    /* Your CSS styles here */
     body {
       margin: 0;
       background: #111;
@@ -16,7 +17,7 @@
       flex-direction: column;
       min-height: 100vh;
     }
-
+    /* More styles ... */
     .site-header {
       display: flex;
       justify-content: space-between;
@@ -25,45 +26,7 @@
       background-color: #1a1a1a;
       border-bottom: 1px solid #333;
     }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .logo-container * {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      height: 36px;
-      margin-right: 10px;
-    }
-
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: white;
-    }
-
-    .logo-text .highlight {
-      color: #ff3c3c;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    main {
-      flex: 1;
-    }
+    /* More styles... */
   </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
@@ -78,15 +41,18 @@
     </nav>
   </header>
 
+  <!-- News Ticker -->
   <div class="news-ticker">
     <div class="ticker-track-wrapper"></div>
   </div>
 
+  <!-- Main Hero Section -->
   <main class="hero-section">
     <h2>Track what’s Hype these days!</h2>
     <p>From memes to influencers — know what’s trending in real time</p>
   </main>
 
+  <!-- Search Bar -->
   <div class="search-bar" style="text-align:center; margin: 2rem;">
     <form id="trendSearchForm">
       <input id="trendSearchInput"
@@ -96,6 +62,7 @@
     </form>
   </div>
 
+  <!-- Spotlight Trend Section -->
   <section id="spotlight" class="spotlight-trend">
     <h2>Spotlight Trend</h2>
     <div class="spotlight-card">
@@ -105,15 +72,18 @@
     </div>
   </section>
 
+  <!-- Update Time -->
   <div class="update-time">
     <p>Last updated: 9 minutes ago</p>
   </div>
 
+  <!-- Trending Section -->
   <section id="trending" class="trending-section">
     <h2>Trending Now!!</h2>
-    <div class="trending-grid"></div>
+    <div class="trending-grid"></div> <!-- Make sure this container exists -->
   </section>
 
+  <!-- Voting Section -->
   <section id="vote" class="vote-section">
     <h2>🤔 Which do you use more?</h2>
     <div class="comparison-box">
@@ -124,6 +94,7 @@
     </div>
   </section>
 
+  <!-- Submit Section -->
   <section id="submit" class="submit-section">
     <h2>Suggest a New Trend</h2>
     <form class="submit-form">
@@ -133,6 +104,7 @@
     </form>
   </section>
 
+  <!-- About Section -->
   <section class="about-section">
     <h3>What is HypeRank?</h3>
     <p>
@@ -141,6 +113,7 @@
     </p>
   </section>
   
+  <!-- External Script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <script type="module" src="script.js"></script>
 
