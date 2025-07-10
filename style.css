@@ -332,7 +332,7 @@ header {
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: scrollTicker 80s linear infinite;
+  animation: scrollTicker 140s linear infinite;
   will-change: transform;
 }
 
