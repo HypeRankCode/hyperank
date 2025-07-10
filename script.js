@@ -57,6 +57,32 @@ window.resetPassword = async () => {
   document.getElementById('authMsg').textContent = error ? error.message : '📧 Password reset email sent!';
 };
 
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  currentUser = user;
+
+  const emailSpan = document.getElementById('userEmailDisplay');
+  const authBtn = document.getElementById('authBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  if (user) {
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+
+    const username = profileData?.username || user.email;
+    emailSpan.textContent = `Welcome, ${username}`;
+    authBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+  } else {
+    emailSpan.textContent = '';
+    authBtn.style.display = 'inline-block';
+    logoutBtn.style.display = 'none';
+  }
+});
+
 // DOM loaded
 document.addEventListener("DOMContentLoaded", async () => {
   const { data: { user } } = await supabase.auth.getUser();
