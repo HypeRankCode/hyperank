@@ -41,6 +41,18 @@ window.logoutUser = async () => {
   location.reload();
 };
 
+window.resetPassword = async () => {
+  const email = document.getElementById('authEmail').value;
+  if (!email) {
+    document.getElementById('authMsg').textContent = 'Please enter your email to reset password.';
+    return;
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset.html`
+  });
+  document.getElementById('authMsg').textContent = error ? error.message : '📧 Password reset email sent!';
+};
+
 // DOM loaded
 document.addEventListener("DOMContentLoaded", async () => {
   const { data: { user } } = await supabase.auth.getUser();
