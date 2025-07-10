@@ -134,69 +134,83 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct key
-    const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // truncated for brevity
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-    function similarity(a, b) {
-      a = a.toLowerCase();
-      b = b.toLowerCase();
-      if (a === b) return 1;
-      if (a.includes(b) || b.includes(a)) return 0.7;
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
+  const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+  const resultBox = document.getElementById("resultBox");
+  const trendInfo = document.getElementById("trendInfo");
+
+  function similarity(a, b) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+    if (a === b) return 1;
+    if (a.includes(b) || b.includes(a)) return 0.7;
+    let matches = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      if (a[i] === b[i]) matches++;
+    }
+    return matches / Math.max(a.length, b.length);
+  }
+
+  async function fetchAndMatchTrend() {
+    const { data: trends, error } = await supabase.from("trends").select("*");
+
+    if (error || !trends || trends.length === 0) {
+      resultBox.textContent = "There was an error loading trend data.";
+      console.error("Supabase error:", error);
+      return;
     }
 
-    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
-    const resultBox = document.getElementById("resultBox");
-    const trendInfo = document.getElementById("trendInfo");
+    const match = trends.find(
+      t => t.name.toLowerCase() === query || t.label.toLowerCase() === query
+    );
 
-    fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}` // Send correct authorization header
-      }
-    })
-      .then(res => res.json())
-      .then(trends => {
-        if (!Array.isArray(trends) || trends.length === 0) {
-          resultBox.innerHTML = `<strong>No trends found for "${query}"</strong>`;
-          return;
-        }
+    if (match) {
+      const firePercent = Math.round((match.hype / match.votes) * 100);
+      const deadPercent = 100 - firePercent;
 
-        const match = trends[0];  // Assuming the first match
-
-        if (match) {
-          const firePercent = Math.round((match.hype / match.votes) * 100);
-          const deadPercent = 100 - firePercent;
-
-          resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
-          trendInfo.innerHTML = `
-            <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
-            <div style="display: flex; justify-content: center; margin-top: 2rem;">
-              <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
-                <h3>Total Votes: ${match.votes}</h3>
-                <div class="bar-container" style="margin-top: 1rem; text-align: left;">
-                  <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
-                  <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
-                  <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
-                  <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
-                </div>
-              </div>
+      resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
+      trendInfo.innerHTML = `
+        <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+          <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
+            <h3>Total Votes: ${match.votes}</h3>
+            <div class="bar-container" style="margin-top: 1rem; text-align: left;">
+              <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
+              <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
+              <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
+              <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
             </div>
-          `;
+          </div>
+        </div>
+      `;
+    } else {
+      resultBox.innerHTML = `No trends found for "<strong>${query}</strong>".`;
+
+      // Generate suggestion
+      let bestMatch = null;
+      let bestScore = 0;
+
+      for (const t of trends) {
+        const score = similarity(query, t.name);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = t.name;
         }
-      })
-      .catch(err => {
-        console.error("Error fetching trends:", err);
-        resultBox.innerHTML = "There was an error fetching the trend data.";
-      });
-  </script>
+      }
+
+      if (bestScore >= 0.5 && bestMatch) {
+        trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(bestMatch)}" style="color:#ff3c3c;">${bestMatch}</a>?`;
+      }
+    }
+  }
+
+  fetchAndMatchTrend();
+</script>
 </body>
 </html>
