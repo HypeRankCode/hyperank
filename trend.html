@@ -134,57 +134,57 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
- <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct key
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct key
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  function similarity(a, b) {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-    if (a === b) return 1;
-    if (a.includes(b) || b.includes(a)) return 0.7;
-    let matches = 0;
-    for (let i = 0; i < Math.min(a.length, b.length); i++) {
-      if (a[i] === b[i]) matches++;
-    }
-    return matches / Math.max(a.length, b.length);
-  }
+    let trends = [];
 
-  const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
-  const resultBox = document.getElementById("resultBox");
-  const trendInfo = document.getElementById("trendInfo");
+    // Fetch data from Supabase instead of the trends.json file
+    async function fetchTrends() {
+      const { data, error } = await supabase
+        .from('trends')
+        .select('*');
 
-  fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
-    headers: {
-      'apikey': supabaseKey,
-      'Authorization': `Bearer ${supabaseKey}` // Send correct authorization header
-    }
-  })
-    .then(res => res.json())
-    .then(trends => {
-      if (!Array.isArray(trends) || trends.length === 0) {
-        resultBox.innerHTML = `<strong>No trends found for "${query}"</strong>`;
-        let suggestion = null;
-        let bestScore = 0;
-        for (const t of trends) {
-          const score = similarity(query, t.name);
-          if (score > bestScore) {
-            bestScore = score;
-            suggestion = t.name;
-          }
-        }
-
-        if (suggestion && bestScore >= 0.5) {
-          trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
-        }
-
+      if (error) {
+        console.error('Error fetching trends from Supabase:', error);
         return;
       }
 
-      const match = trends[0];  // Assuming the first match
+      trends = data;
+    }
+
+    // Call fetchTrends to load data from Supabase
+    fetchTrends();
+
+    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+    const resultBox = document.getElementById("resultBox");
+    const trendInfo = document.getElementById("trendInfo");
+
+    function similarity(a, b) {
+      a = a.toLowerCase();
+      b = b.toLowerCase();
+      if (a === b) return 1;
+      if (a.includes(b) || b.includes(a)) return 0.7;
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
+    }
+
+    function getSuggestions(term) {
+      const lowered = term.toLowerCase();
+      return trends
+        .map(entry => entry.label)
+        .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
+    }
+
+    if (query) {
+      const match = trends.find(entry => entry.label.toLowerCase() === query);
 
       if (match) {
         const firePercent = Math.round((match.hype / match.votes) * 100);
@@ -205,12 +205,21 @@
             </div>
           </div>
         `;
+      } else {
+        const suggestions = getSuggestions(query);
+        if (suggestions.length > 0) {
+          resultBox.innerHTML = `No exact match. Did you mean: 
+            <a class="suggestion-link" href="javascript:void(0)" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
+        } else {
+          resultBox.innerHTML = `No trends found for <strong>${query}</strong>.`;
+        }
       }
-    })
-    .catch(err => {
-      console.error("Error fetching trends:", err);
-      resultBox.innerHTML = "There was an error fetching the trend data.";
-    });
-</script>
+    }
+
+    function selectSuggestion(text) {
+      const newURL = `trend.html?term=${encodeURIComponent(text)}`;
+      window.location.href = newURL;
+    }
+  </script>
 </body>
 </html>
