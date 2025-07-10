@@ -94,6 +94,80 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (voteNotice) voteNotice.style.display = 'block';
   }
 
+  // Prevent duplicate voting UI
+  const box = document.querySelector(".comparison-box");
+  const resultDiv = document.querySelector(".compare-results");
+  box.innerHTML = "";
+  resultDiv.innerHTML = "";
+
+  // Voting system
+  if (currentUser) {
+    const { data: allTrends, error } = await supabase.from("trends").select("*");
+
+    if (error || !allTrends || allTrends.length < 2) {
+      box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+      return;
+    }
+
+    const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+    const createVoteBtn = (trend) => {
+      const btn = document.createElement("button");
+      btn.className = "vote-option";
+      btn.textContent = trend.label;
+      btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+      btn.onclick = async () => {
+        const { error } = await supabase.from("trends").update({
+          votes: trend.votes + 1,
+          hype: trend.hype + 1
+        }).eq("id", trend.id);
+
+        if (!error) {
+          resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
+          box.innerHTML = "";
+        } else {
+          console.error("Voting error:", error);
+        }
+      };
+      return btn;
+    };
+
+    const vsText = document.createElement("span");
+    vsText.textContent = "vs";
+    vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+
+    box.appendChild(createVoteBtn(a));
+    box.appendChild(vsText);
+    box.appendChild(createVoteBtn(b));
+  }
+});
+
+
+// DOM loaded
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData.session?.user;
+  currentUser = user;
+
+  const emailSpan = document.getElementById('userEmailDisplay');
+  const authBtn = document.getElementById('authBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const voteNotice = document.getElementById('voteNotice');
+
+  if (user) {
+    const username = user.user_metadata?.display_name || user.email;
+    emailSpan.textContent = `Welcome, ${username}`;
+    authBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+    if (voteNotice) voteNotice.style.display = 'none';
+  } else {
+    emailSpan.textContent = '';
+    authBtn.style.display = 'inline-block';
+    logoutBtn.style.display = 'none';
+    if (voteNotice) voteNotice.style.display = 'block';
+  }
+
   // Voting system
   if (currentUser) {
     const box = document.querySelector(".comparison-box");
