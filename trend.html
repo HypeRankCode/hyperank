@@ -110,7 +110,6 @@
   </style>
 </head>
 
-<!-- Ensure you are loading the JS correctly at the end of the body -->
 <body>
   <header class="site-header">
     <a href="index.html" class="logo-container">
@@ -126,7 +125,7 @@
   <main class="content-wrapper">
     <div class="trend-result">
       <h1>Trend Search</h1>
-      <div id="resultBox">Loading...</div> <!-- Ensure resultBox exists -->
+      <div id="resultBox">Loading...</div>
       <div id="trendInfo"></div>
     </div>
   </main>
@@ -135,12 +134,11 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
-  <!-- Supabase Client and the JavaScript for Fetching and Displaying Data -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
     const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'your-supabase-key'; // Ensure you use the correct key
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Use your correct key
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     function similarity(a, b) {
@@ -162,11 +160,16 @@
     fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
       headers: {
         'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
+        'Authorization': `Bearer ${supabaseKey}` // Send correct authorization header
       }
     })
       .then(res => res.json())
       .then(trends => {
+        if (!Array.isArray(trends) || trends.length === 0) {
+          resultBox.innerHTML = `<strong>No trends found for "${query}"</strong>`;
+          return;
+        }
+
         const match = trends[0];  // Assuming the first match
 
         if (match) {
@@ -176,18 +179,8 @@
           resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
           trendInfo.innerHTML = `
             <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
-            <div style="
-              display: flex;
-              justify-content: center;
-              margin-top: 2rem;
-            ">
-              <div style="
-                background: #1a1a1a;
-                padding: 1.5rem;
-                border-radius: 12px;
-                width: 700px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-              ">
+            <div style="display: flex; justify-content: center; margin-top: 2rem;">
+              <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
                 <h3>Total Votes: ${match.votes}</h3>
                 <div class="bar-container" style="margin-top: 1rem; text-align: left;">
                   <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
@@ -198,22 +191,11 @@
               </div>
             </div>
           `;
-        } else {
-          let suggestion = null;
-          let bestScore = 0;
-          for (const t of trends) {
-            const score = similarity(query, t.name);
-            if (score > bestScore) {
-              bestScore = score;
-              suggestion = t.name;
-            }
-          }
-
-          resultBox.innerHTML = `<strong>${query}</strong> doesn't exist on HypeRank... yet.`;
-          if (suggestion && bestScore >= 0.5) {
-            trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
-          }
         }
+      })
+      .catch(err => {
+        console.error("Error fetching trends:", err);
+        resultBox.innerHTML = "There was an error fetching the trend data.";
       });
   </script>
 </body>
