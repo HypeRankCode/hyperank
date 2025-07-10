@@ -30,15 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
+// spacing
   // 📰 Ticker news
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
       const wrapper = document.querySelector(".ticker-track-wrapper");
       if (!wrapper || !Array.isArray(data)) return;
+
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      wrapper.innerHTML = `<div class="ticker-track">${text}</div>`;
+      const content = `<div class="ticker-track">${text} &nbsp;&nbsp; • &nbsp;&nbsp; ${text}</div>`;
+      wrapper.innerHTML = content;
     });
 
   // spacing

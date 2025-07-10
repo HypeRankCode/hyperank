@@ -323,34 +323,21 @@ header {
   font-size: 0.95rem;
 }
 
+.ticker-track-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .ticker-track {
   display: inline-block;
-  padding-left: 100%;
+  white-space: nowrap;
+  will-change: transform;
   animation: scrollTicker 60s linear infinite;
-  animation-delay: 0.5s;
 }
 
 @keyframes scrollTicker {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.ticker-track-wrapper {
-  display: flex;
-  width: fit-content;
-  white-space: nowrap;
-  will-change: transform;
-}
-
-.ticker-track {
-  flex: none;
-  padding-right: 2rem;
-  font-size: 0.95rem;
-  color: #fff;
+  0%   { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
 .sparkline.green { color: #00e676; }
