@@ -47,15 +47,36 @@ document.addEventListener("DOMContentLoaded", () => {
     updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
   }
 
-  // 🔍 Search functionality
+  // 🔍 Search functionality using Supabase
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
-    searchForm.addEventListener("submit", (e) => {
+    searchForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      
+      // Get the search query and normalize it
       const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+
       if (query) {
-        const base = window.location.origin;
-        window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
+        // Query Supabase for trends that match the search term
+        const { data: trends, error } = await supabase
+          .from("trends")
+          .select("*")
+          .ilike("name", `%${query}%`);  // case-insensitive search for the trend name
+
+        if (error) {
+          console.error("Error fetching trends from Supabase:", error);
+          return;
+        }
+
+        // If trends are found, redirect to trend page with the relevant ID
+        if (trends && trends.length > 0) {
+          const base = window.location.origin;
+          const trendData = trends[0];  // Assuming the first match
+          window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}&id=${trendData.id}`;
+        } else {
+          console.log("No trends found for:", query);
+          // Optionally show a message if no trends are found
+        }
       }
     });
   }

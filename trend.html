@@ -134,7 +134,12 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <script>
+    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Update with your Supabase key
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     function similarity(a, b) {
       a = a.toLowerCase();
       b = b.toLowerCase();
@@ -151,15 +156,20 @@
     const resultBox = document.getElementById("resultBox");
     const trendInfo = document.getElementById("trendInfo");
 
-    fetch("trends.json")
+    fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
+      }
+    })
       .then(res => res.json())
       .then(trends => {
-        const match = trends.find(t => t.name === query);
+        const match = trends[0];  // Assuming the first match
 
         if (match) {
-          const firePercent = Math.round((match.fire / match.votes) * 100);
+          const firePercent = Math.round((match.hype / match.votes) * 100);
           const deadPercent = 100 - firePercent;
-// spacing
+
           resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
           trendInfo.innerHTML = `
             <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
