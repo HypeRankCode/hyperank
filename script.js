@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-// spacing
+
   // 📰 Ticker news
   fetch("news.json")
     .then(res => res.json())
@@ -39,8 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!wrapper || !Array.isArray(data)) return;
 
       const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      const content = `<div class="ticker-track">${text} &nbsp;&nbsp; • &nbsp;&nbsp; ${text}</div>`;
-      wrapper.innerHTML = content;
+      const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
 
   // spacing
