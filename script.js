@@ -72,7 +72,8 @@ window.resetPassword = async () => {
 // DOM loaded
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData.session?.user;
   currentUser = user;
 
   const emailSpan = document.getElementById('userEmailDisplay');
@@ -82,38 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (user) {
     const username = user.user_metadata?.display_name || user.email;
-    emailSpan.textContent = `Welcome, ${username}`;
-    authBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
-    if (voteNotice) voteNotice.style.display = 'none';
-  } else {
-    emailSpan.textContent = '';
-    authBtn.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
-    if (voteNotice) voteNotice.style.display = 'block';
-  }
-});
-
-
-// DOM loaded
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-
-  const emailSpan = document.getElementById('userEmailDisplay');
-  const authBtn = document.getElementById('authBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const voteNotice = document.getElementById('voteNotice');
-
-  if (user) {
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single();
-
-    const username = profileData?.username || user.email;
     emailSpan.textContent = `Welcome, ${username}`;
     authBtn.style.display = 'none';
     logoutBtn.style.display = 'inline-block';
