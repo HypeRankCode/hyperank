@@ -1,85 +1,86 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
 const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Replace this with your actual key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 🚀 Auth modal functions
+  window.openAuth = () => {
+    document.getElementById('authModal').style.display = 'block';
+  }
+  window.closeAuth = () => {
+    document.getElementById('authModal').style.display = 'none';
+  }
+  window.signIn = async () => {
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    document.getElementById('authMsg').textContent = error ? error.message : '✅ Signed in!';
+    if (!error) setTimeout(() => location.reload(), 1000);
+  };
+  window.signUp = async () => {
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    const { error } = await supabase.auth.signUp({ email, password });
+    document.getElementById('authMsg').textContent = error ? error.message : '✅ Account created!';
+  };
+
   // 🚀 Form submission
   const form = document.querySelector(".submit-form");
-
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
-      // Get values from the form
       const inputs = form.querySelectorAll("input, textarea");
       const name = inputs[0].value.trim().toLowerCase();
       const label = inputs[0].value.trim();
       const description = inputs[1].value.trim();
-
-      // Validation check
       if (!name || !description) return;
-
-      // Insert the suggestion into the "suggestions" table (make sure the table exists in Supabase)
       const { error } = await supabase.from("suggestions").insert({
         name,
         label,
         description,
-        status: "pending", // Added status to filter and manage suggestions
+        status: "pending",
       });
-
-      // Show confirmation popup
       if (!error) {
         const popup = document.getElementById("custom-popup");
         popup.style.display = "block";
-        setTimeout(() => popup.style.display = "none", 3000); // Hide after 3 seconds
-        form.reset(); // Reset the form
+        setTimeout(() => popup.style.display = "none", 3000);
+        form.reset();
       } else {
         console.error("Submission error:", error);
       }
     });
   }
 
-  // 🕒 Update timestamp
   const updateText = document.querySelector(".update-time p");
   if (updateText) {
     updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
   }
 
-//spacing
-  // 🔍 Search functionality using Supabase
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
       const queryInput = document.getElementById("trendSearchInput");
       if (!queryInput) return;
-
       const query = queryInput.value.trim().toLowerCase();
       if (!query) return;
-
       try {
         const { data: trends, error } = await supabase
           .from("trends")
           .select("*")
           .ilike("name", `%${query}%`);
-
         const base = window.location.origin;
-
         if (error) {
           console.error("Error fetching trends from Supabase:", error);
-          // Redirect anyway with just the term
           window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
           return;
         }
-
         if (trends && trends.length > 0) {
           const trendData = trends[0];
           window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}&id=${trendData.id}`;
         } else {
-          // No match found — still go to trend page to show "did you mean"
           window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
         }
       } catch (err) {
@@ -90,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 📰 Ticker news
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
 
-  // spacing: Fetch trends from Supabase and display
   (async () => {
     try {
       const { data: trends, error } = await supabase
@@ -117,9 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const grid = document.querySelector(".trending-grid");
       if (!grid) return;
 
-      grid.innerHTML = ""; // Clear the grid
-
-      const topTrends = trends.slice(0, 5); // Only use the top 5 trends
+      grid.innerHTML = "";
+      const topTrends = trends.slice(0, 5);
 
       topTrends.forEach(trend => {
         const card = document.createElement("div");
@@ -170,4 +168,4 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching trends:", err);
     }
   })();
-});  
+});
