@@ -134,7 +134,7 @@
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
 
-<script type="module">
+ <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
   const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
@@ -167,24 +167,20 @@
     .then(trends => {
       if (!Array.isArray(trends) || trends.length === 0) {
         resultBox.innerHTML = `<strong>No trends found for "${query}"</strong>`;
-        
-        // Suggest similar term if no exact match found
         let suggestion = null;
         let bestScore = 0;
-        // Check similarity for each trend
-        trends.forEach(t => {
+        for (const t of trends) {
           const score = similarity(query, t.name);
           if (score > bestScore) {
             bestScore = score;
             suggestion = t.name;
           }
-        });
+        }
 
         if (suggestion && bestScore >= 0.5) {
           trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
-        } else {
-          trendInfo.innerHTML = `No trends found for <strong>${query}</strong>.`;
         }
+
         return;
       }
 
