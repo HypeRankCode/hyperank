@@ -23,8 +23,18 @@ window.signIn = async () => {
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
-  const { error } = await supabase.auth.signUp({ email, password });
-  document.getElementById('authMsg').textContent = error ? error.message : '✅ Account created!';
+  const username = document.getElementById('authUsername').value.trim();
+
+  const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+  if (signUpError) {
+    document.getElementById('authMsg').textContent = signUpError.message;
+    return;
+  }
+
+  if (data.user) {
+    await supabase.from("profiles").insert({ id: data.user.id, email, username });
+    document.getElementById('authMsg').textContent = '✅ Account created!';
+  }
 };
 window.logoutUser = async () => {
   await supabase.auth.signOut();
@@ -33,7 +43,6 @@ window.logoutUser = async () => {
 
 // DOM loaded
 document.addEventListener("DOMContentLoaded", async () => {
-  // Check login
   const { data: { user } } = await supabase.auth.getUser();
   currentUser = user;
 
@@ -43,7 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const voteNotice = document.getElementById('voteNotice');
 
   if (user) {
-    emailSpan.textContent = `Welcome, ${user.email}`;
+    const { data: profile } = await supabase.from("profiles").select("username").eq("id", user.id).single();
+    const displayName = profile?.username || user.email;
+    emailSpan.textContent = `Welcome, ${displayName}`;
     authBtn.style.display = 'none';
     logoutBtn.style.display = 'inline-block';
     if (voteNotice) voteNotice.style.display = 'none';
@@ -54,7 +65,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (voteNotice) voteNotice.style.display = 'block';
   }
 
-  // Submit form
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", async (e) => {
@@ -81,13 +91,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Update time
   const updateText = document.querySelector(".update-time p");
   if (updateText) {
     updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
   }
 
-  // Search
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", async (e) => {
@@ -120,7 +128,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // News ticker
   fetch("news.json")
     .then(res => res.json())
     .then(data => {
@@ -131,7 +138,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
 
-  // Trends
   try {
     const { data: trends, error } = await supabase
       .from("trends")
