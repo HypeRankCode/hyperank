@@ -130,7 +130,7 @@
   </header>
 
   <main>
-    <h2 style="margin-bottom: 1rem;">📚 Dictionary</h2>
+    <h2 style="margin-bottom: 1rem;">Dictionary</h2>
     <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." />
     <button id="dictSearchBtn">Search</button>
     <div id="dictResult"></div>
@@ -139,64 +139,64 @@
   <footer>
     &copy; 2025 HypeRank. All rights reserved.
   </footer>
-
+//spacing
   <script>
-    let dictionary = [];
+      let trends = [];
 
-    fetch("dictionary.json")
-      .then(res => res.json())
-      .then(data => dictionary = data);
+      fetch("trends.json")
+        .then(res => res.json())
+        .then(data => trends = data);
 
-    const input = document.getElementById("dictSearchInput");
-    const button = document.getElementById("dictSearchBtn");
-    const result = document.getElementById("dictResult");
+      const input = document.getElementById("dictSearchInput");
+      const button = document.getElementById("dictSearchBtn");
+      const result = document.getElementById("dictResult");
 
-    function getSuggestions(term) {
-      const lowered = term.toLowerCase();
-      return dictionary
-        .map(entry => entry.term)
-        .filter(t => t.includes(lowered) || similarity(t, lowered) > 0.5);
-    }
-
-    function similarity(a, b) {
-      let matches = 0;
-      const len = Math.min(a.length, b.length);
-      for (let i = 0; i < len; i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
-    }
-
-    button.addEventListener("click", () => {
-      const term = input.value.trim().toLowerCase();
-      if (!term) {
-        result.innerHTML = "Please enter a term.";
-        return;
+      function getSuggestions(term) {
+        const lowered = term.toLowerCase();
+        return trends
+          .map(entry => entry.label)
+          .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
       }
 
-      const match = dictionary.find(entry => entry.term.toLowerCase() === term);
-
-      if (match) {
-        result.innerHTML = `<strong>${match.term}</strong>: ${match.definition}`;
-      } else {
-        const suggestions = getSuggestions(term);
-        if (suggestions.length > 0) {
-          result.innerHTML = `No exact match. Did you mean: 
-            <a class="suggestion-link" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
-        } else {
-          result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+      function similarity(a, b) {
+        let matches = 0;
+        const len = Math.min(a.length, b.length);
+        for (let i = 0; i < len; i++) {
+          if (a[i] === b[i]) matches++;
         }
+        return matches / Math.max(a.length, b.length);
       }
-    });
 
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") button.click();
-    });
+      button.addEventListener("click", () => {
+        const term = input.value.trim().toLowerCase();
+        if (!term) {
+          result.innerHTML = "Please enter a term.";
+          return;
+        }
 
-    function selectSuggestion(text) {
-      input.value = text;
-      button.click();
-    }
-  </script>
+        const match = trends.find(entry => entry.label.toLowerCase() === term);
+
+        if (match) {
+          result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
+        } else {
+          const suggestions = getSuggestions(term);
+          if (suggestions.length > 0) {
+            result.innerHTML = `No exact match. Did you mean: 
+              <a class="suggestion-link" onclick="selectSuggestion('${suggestions[0]}')">${suggestions[0]}</a>?`;
+          } else {
+            result.innerHTML = `No definition found for <strong>${term}</strong>.`;
+          }
+        }
+      });
+
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") button.click();
+      });
+
+      function selectSuggestion(text) {
+        input.value = text;
+        button.click();
+      }
+</script>
 </body>
 </html>

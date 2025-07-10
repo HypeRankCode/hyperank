@@ -1,7 +1,28 @@
 [
-  {"name": "gyatt", "label": "Gyatt", "description": "A TikTok term for noticing someone with a huge butt.", "votes": 1340, "fire": 890, "dead": 450},
+  {"name": "gyatt", "label": "Gyatt", "description": "A term for noticing someone with a huge butt.", "votes": 1340, "fire": 890, "dead": 450},
   {"name": "npc tiktok", "label": "NPC TikTok", "description": "A TikTok live stream trend where people act like NPCs.", "votes": 920, "fire": 10, "dead": 910},
   {"name": "rizz", "label": "Rizz", "description": "Gen Z slang for charisma or pickup game.", "votes": 1500, "fire": 1100, "dead": 400},
   {"name": "sigma edits", "label": "Sigma Edits", "description": "Edits of men doing masculine things to motivational music.", "votes": 800, "fire": 470, "dead": 330},
   {"name": "apple vision pro", "label": "Apple Vision Pro", "description": "Apple’s futuristic AR/VR headset released in 2024.", "votes": 700, "fire": 250, "dead": 550}
+  {"name": "skibidi toilet", "label": "Skibidi Toilet", "description": "Surreal YouTube series featuring toilets with heads.", "votes": 1200, "fire": 800, "dead": 400},
+  {"name": "corecore", "label": "Corecore", "description": "Aesthetic TikTok edit trend blending music and emotional clips.", "votes": 1100, "fire": 850, "dead": 250},
+  {"name": "delulu", "label": "Delulu", "description": "Short for 'delusional', often used in stan culture.", "votes": 980, "fire": 660, "dead": 320},
+  {"name": "silent rizz", "label": "Silent Rizz", "description": "A trend about attracting people without saying a word.", "votes": 890, "fire": 540, "dead": 350},
+  {"name": "girl dinner", "label": "Girl Dinner", "description": "TikTok meme of snack-style meals eaten by women.", "votes": 760, "fire": 400, "dead": 360},
+  {"name": "beige flag", "label": "Beige Flag", "description": "Describes quirks in a relationship that are neither good nor bad.", "votes": 620, "fire": 390, "dead": 230},
+  {"name": "uncanny memes", "label": "Uncanny Memes", "description": "Surreal, dreamlike memes with unsettling vibes.", "votes": 700, "fire": 500, "dead": 200},
+  {"name": "drake the type of guy", "label": "Drake The Type Of Guy", "description": "Meme about imagining Drake doing soft or odd things.", "votes": 950, "fire": 770, "dead": 180},
+  {"name": "sassy men", "label": "Sassy Men", "description": "TikTok trend highlighting humorous male sassiness.", "votes": 840, "fire": 580, "dead": 260},
+  {"name": "male wife", "label": "Male Wife", "description": "A man who is nurturing/domestic in a humorous way.", "votes": 670, "fire": 450, "dead": 220},
+  {"name": "nuh uh sound", "label": "Nuh Uh Sound", "description": "Viral audio used in meme edits and reaction videos.", "votes": 740, "fire": 430, "dead": 310},
+  {"name": "zesty edits", "label": "Zesty Edits", "description": "Dramatic or flamboyant fan edits, often ironic.", "votes": 600, "fire": 320, "dead": 280},
+  {"name": "yapping", "label": "Yapping", "description": "A term for excessive talking, often used playfully.", "votes": 540, "fire": 300, "dead": 240},
+  {"name": "girl math", "label": "Girl Math", "description": "Funny rationalizations of spending or budgeting by women.", "votes": 790, "fire": 530, "dead": 260},
+  {"name": "manic pixie dream core", "label": "Manic Pixie Dream Core", "description": "Aesthetic blending indie vibes with dreamy, eccentric edits.", "votes": 430, "fire": 300, "dead": 130},
+  {"name": "vabbing", "label": "Vabbing", "description": "Trend claiming applying vaginal fluids as perfume attracts others.", "votes": 460, "fire": 210, "dead": 250},
+  {"name": "influencer boxing", "label": "Influencer Boxing", "description": "Social media stars boxing in livestreamed pay-per-view events.", "votes": 890, "fire": 520, "dead": 370},
+  {"name": "twin flame", "label": "Twin Flame", "description": "Spiritual belief in one’s perfect other half.", "votes": 660, "fire": 400, "dead": 260},
+  {"name": "glorilla walk", "label": "Glorilla Walk", "description": "Viral TikTok dance imitating rapper GloRilla’s strut.", "votes": 510, "fire": 370, "dead": 140},
+  {"name": "dabloons", "label": "Dabloons", "description": "Cat meme trend using imaginary currency (dabloons).", "votes": 720, "fire": 480, "dead": 240}
 ]
+
