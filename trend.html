@@ -110,110 +110,87 @@
   </style>
 </head>
 
-<!-- Add the Supabase JS client import -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm"></script>
+<!-- Supabase JS client import for ES module usage -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-<body>
-  <header class="site-header">
-    <a href="index.html" class="logo-container">
-      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
-      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
-    </a>
-    <nav class="nav-links">
-      <a href="index.html" class="nav-link">← Back to Home</a>
-      <a href="dictionary.html" class="nav-link">Dictionary</a>
-    </nav>
-  </header>
+  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Update with your Supabase key
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-  <main class="content-wrapper">
-    <div class="trend-result">
-      <h1>Trend Search</h1>
-      <div id="resultBox">Loading...</div>
-      <div id="trendInfo"></div>
-    </div>
-  </main>
-
-  <footer>
-    &copy; 2025 HypeRank. All rights reserved.
-  </footer>
-
-  <script>
-    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // Update with your Supabase key
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    function similarity(a, b) {
-      a = a.toLowerCase();
-      b = b.toLowerCase();
-      if (a === b) return 1;
-      if (a.includes(b) || b.includes(a)) return 0.7;
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
+  function similarity(a, b) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+    if (a === b) return 1;
+    if (a.includes(b) || b.includes(a)) return 0.7;
+    let matches = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      if (a[i] === b[i]) matches++;
     }
+    return matches / Math.max(a.length, b.length);
+  }
 
-    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
-    const resultBox = document.getElementById("resultBox");
-    const trendInfo = document.getElementById("trendInfo");
+  const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+  const resultBox = document.getElementById("resultBox");
+  const trendInfo = document.getElementById("trendInfo");
 
-    fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      }
-    })
-      .then(res => res.json())
-      .then(trends => {
-        const match = trends[0];  // Assuming the first match
+  fetch(`${supabaseUrl}/rest/v1/trends?name=eq.${query}`, {
+    headers: {
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`
+    }
+  })
+    .then(res => res.json())
+    .then(trends => {
+      const match = trends[0];  // Assuming the first match
 
-        if (match) {
-          const firePercent = Math.round((match.hype / match.votes) * 100);
-          const deadPercent = 100 - firePercent;
+      if (match) {
+        const firePercent = Math.round((match.hype / match.votes) * 100);
+        const deadPercent = 100 - firePercent;
 
-          resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
-          trendInfo.innerHTML = `
-            <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
+        resultBox.innerHTML = `<strong>${match.label}</strong> is a trending topic.`;
+        trendInfo.innerHTML = `
+          <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
+          <div style="
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+          ">
             <div style="
-              display: flex;
-              justify-content: center;
-              margin-top: 2rem;
+              background: #1a1a1a;
+              padding: 1.5rem;
+              border-radius: 12px;
+              width: 700px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
             ">
-              <div style="
-                background: #1a1a1a;
-                padding: 1.5rem;
-                border-radius: 12px;
-                width: 700px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-              ">
-                <h3>Total Votes: ${match.votes}</h3>
-                <div class="bar-container" style="margin-top: 1rem; text-align: left;">
-                  <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
-                  <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
-                  <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
-                  <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
-                </div>
+              <h3>Total Votes: ${match.votes}</h3>
+              <div class="bar-container" style="margin-top: 1rem; text-align: left;">
+                <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
+                <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
+                <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
+                <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
               </div>
             </div>
-          `;
-        } else {
-          let suggestion = null;
-          let bestScore = 0;
-          for (const t of trends) {
-            const score = similarity(query, t.name);
-            if (score > bestScore) {
-              bestScore = score;
-              suggestion = t.name;
-            }
-          }
-
-          resultBox.innerHTML = `<strong>${query}</strong> doesn't exist on HypeRank... yet.`;
-          if (suggestion && bestScore >= 0.5) {
-            trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
+          </div>
+        `;
+      } else {
+        let suggestion = null;
+        let bestScore = 0;
+        for (const t of trends) {
+          const score = similarity(query, t.name);
+          if (score > bestScore) {
+            bestScore = score;
+            suggestion = t.name;
           }
         }
-      });
-  </script>
-</body>
+
+        resultBox.innerHTML = `<strong>${query}</strong> doesn't exist on HypeRank... yet.`;
+        if (suggestion && bestScore >= 0.5) {
+          trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(suggestion)}" style="color:#ff3c3c">${suggestion}</a>?`;
+        }
+      }
+    });
+</script>
+
+<body>
 </html>
