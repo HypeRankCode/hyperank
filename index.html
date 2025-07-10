@@ -107,6 +107,7 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      position: relative;
     }
 
     .auth-box input {
@@ -122,6 +123,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
+      justify-content: space-between;
     }
 
     .auth-buttons button {
@@ -136,7 +138,24 @@
     }
 
     .auth-buttons .close-btn {
-      background: #444;
+      background: transparent;
+      color: #fff;
+      font-size: 1.2rem;
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      width: auto;
+      height: auto;
+      padding: 0;
+    }
+
+    .forgot-password-link {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #ccc;
+      text-decoration: underline;
+      margin-top: 0.5rem;
+      cursor: pointer;
     }
 
     .auth-msg {
@@ -222,15 +241,15 @@
 
   <div id="authModal" class="auth-modal">
     <div class="auth-box">
+      <button onclick="closeAuth()" class="close-btn">&times;</button>
       <h2>Sign In / Register</h2>
       <input id="authEmail" type="email" placeholder="Email address" />
       <input id="authPassword" type="password" placeholder="Password" />
       <div class="auth-buttons">
         <button onclick="signIn()">Sign In</button>
         <button onclick="signUp()">Sign Up</button>
-        <button onclick="resetPassword()">Forgot Password?</button>
-        <button onclick="closeAuth()" class="close-btn">Cancel</button>
       </div>
+      <div onclick="resetPassword()" class="forgot-password-link">Forgot Password?</div>
       <p id="authMsg" class="auth-msg"></p>
     </div>
   </div>
