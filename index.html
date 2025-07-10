@@ -138,15 +138,17 @@
     }
 
     .auth-buttons .close-btn {
-      background: transparent;
-      color: #fff;
+      background: none;
+      color: #aaa;
       font-size: 1.2rem;
       position: absolute;
-      top: 12px;
-      right: 16px;
+      top: 10px;
+      right: 12px;
       width: auto;
       height: auto;
       padding: 0;
+      border: none;
+      cursor: pointer;
     }
 
     .forgot-password-link {
@@ -241,7 +243,7 @@
 
   <div id="authModal" class="auth-modal">
     <div class="auth-box">
-      <button onclick="closeAuth()" class="close-btn">&times;</button>
+      <button onclick="closeAuth()" class="close-btn" aria-label="Close">&times;</button>
       <h2>Sign In / Register</h2>
       <input id="authEmail" type="email" placeholder="Email address" />
       <input id="authPassword" type="password" placeholder="Password" />
