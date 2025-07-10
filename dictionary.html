@@ -212,10 +212,10 @@
     if (e.key === "Enter") button.click();
   });
 
-  function selectSuggestion(text) {
-    input.value = text;
-    button.click();
-  }
+   window.selectSuggestion = function (text) {
+	input.value = text;
+	button.click();
+   };
 </script>
 </body>
 </html>
