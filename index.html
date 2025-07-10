@@ -3,25 +3,129 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test Supabase</title>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
-    
-    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Test if Supabase works
-    async function test() {
-      const { data, error } = await supabase.from('trends').select('*');
-      console.log(data, error);
+  <title>HypeRank</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Your CSS styles here */
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: 'Urbanist', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-
-    test();
-  </script>
+    /* More styles ... */
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: #1a1a1a;
+      border-bottom: 1px solid #333;
+    }
+    /* More styles... */
+  </style>
 </head>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
 <body>
-  <h1>Supabase Test</h1>
-  <p>Check the console for the result.</p>
+  <header class="site-header">
+    <a href="index.html" class="logo-container">
+      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    </a>
+    <nav class="nav-links">
+      <a href="dictionary.html">Dictionary</a>
+    </nav>
+  </header>
+
+  <!-- News Ticker -->
+  <div class="news-ticker">
+    <div class="ticker-track-wrapper"></div>
+  </div>
+
+  <!-- Main Hero Section -->
+  <main class="hero-section">
+    <h2>Track what’s Hype these days!</h2>
+    <p>From memes to influencers — know what’s trending in real time</p>
+  </main>
+
+  <!-- Search Bar -->
+  <div class="search-bar" style="text-align:center; margin: 2rem;">
+    <form id="trendSearchForm">
+      <input id="trendSearchInput"
+             type="text"
+             placeholder="Search trends..."
+             style="padding: 0.8rem; width: 60%; max-width: 400px; border-radius: 8px; border: none;" />
+    </form>
+  </div>
+
+  <!-- Spotlight Trend Section -->
+  <section id="spotlight" class="spotlight-trend">
+    <h2>Spotlight Trend</h2>
+    <div class="spotlight-card">
+      <h3>“Rizz”</h3>
+      <p>Classic Gen Z slang for charisma or pickup game. Still used, but fading in 2025.</p>
+      <span class="rank-meta">🔥 Ranked #2 this week</span>
+    </div>
+  </section>
+
+  <!-- Update Time -->
+  <div class="update-time">
+    <p>Last updated: 9 minutes ago</p>
+  </div>
+
+  <!-- Trending Section -->
+  <section id="trending" class="trending-section">
+    <h2>Trending Now!!</h2>
+    <div class="trending-grid"></div> <!-- Make sure this container exists -->
+  </section>
+
+  <!-- Voting Section -->
+  <section id="vote" class="vote-section">
+    <h2>🤔 Which do you use more?</h2>
+    <div class="comparison-box">
+      <!-- Dynamic vote buttons inserted by script.js -->
+    </div>
+    <div class="compare-results">
+      <!-- Vote result text (e.g. "Gyatt: 60%, NPC: 40%") -->
+    </div>
+  </section>
+
+  <!-- Submit Section -->
+  <section id="submit" class="submit-section">
+    <h2>Suggest a New Trend</h2>
+    <form class="submit-form">
+      <input type="text" placeholder="Enter trend name..." required />
+      <textarea placeholder="Why is it trending?" rows="4"></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <h3>What is HypeRank?</h3>
+    <p>
+      HypeRank tracks what's popular in internet culture — from slang and memes to
+      influencers and apps. Vote what's HOT or NOT and see the trends rise and fall.
+    </p>
+  </section>
+  
+  <!-- External Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module" src="script.js"></script>
+  
+  <div id="custom-popup"
+       style="display:none; position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+         background:#222; color:#fff; padding:1rem 1.5rem; border-radius:12px;
+         box-shadow:0 0 10px rgba(0,0,0,0.4); font-size:1rem; z-index:1000;">
+    ✅ Your trend suggestion was submitted
+  </div>
+
+  <footer>
+    &copy; 2025 HypeRank. All rights reserved.
+  </footer>
 </body>
 </html>
