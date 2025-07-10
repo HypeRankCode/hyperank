@@ -47,36 +47,45 @@ document.addEventListener("DOMContentLoaded", () => {
     updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
   }
 
+//spacing
   // 🔍 Search functionality using Supabase
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
     searchForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      // Get the search query and normalize it
-      const query = document.getElementById("trendSearchInput").value.trim().toLowerCase();
+      const queryInput = document.getElementById("trendSearchInput");
+      if (!queryInput) return;
 
-      if (query) {
-        // Query Supabase for trends that match the search term
+      const query = queryInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      try {
         const { data: trends, error } = await supabase
           .from("trends")
           .select("*")
-          .ilike("name", `%${query}%`);  // case-insensitive search for the trend name
+          .ilike("name", `%${query}%`);
+
+        const base = window.location.origin;
 
         if (error) {
           console.error("Error fetching trends from Supabase:", error);
+          // Redirect anyway with just the term
+          window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
           return;
         }
 
-        // If trends are found, redirect to trend page with the relevant ID
         if (trends && trends.length > 0) {
-          const base = window.location.origin;
-          const trendData = trends[0];  // Assuming the first match
+          const trendData = trends[0];
           window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}&id=${trendData.id}`;
         } else {
-          console.log("No trends found for:", query);
-          // Optionally show a message if no trends are found
+          // No match found — still go to trend page to show "did you mean"
+          window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
         }
+      } catch (err) {
+        console.error("Unexpected error during trend search:", err);
+        const base = window.location.origin;
+        window.location.href = `${base}/trend.html?term=${encodeURIComponent(query)}`;
       }
     });
   }
