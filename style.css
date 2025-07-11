@@ -360,6 +360,16 @@ header {
   color: #aaa;
 }
 
+.compare-results {
+  min-height: 1.5rem; /* lock height so it doesn’t collapse and shift layout */
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.compare-results.visible {
+  opacity: 1;
+}
+
 
 .matchup-card {
   display: flex;
