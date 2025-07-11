@@ -176,14 +176,15 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator); // ✅ no extra separator at end
+    const baseText = data.map(item => item.trim()).join(separator); // ⛔ no trailing separator
 
-    // Create multiple spans for seamless loop
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = baseText;
+
+      // ✅ Only prepend separator to clones after the first one
+      span.innerHTML = (i > 0 ? separator : "") + baseText;
       ticker.appendChild(span);
     }
 
@@ -205,7 +206,6 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
-
 
 
 
