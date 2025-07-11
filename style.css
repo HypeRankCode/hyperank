@@ -339,7 +339,7 @@ header {
 .ticker-content {
   white-space: nowrap;
   padding: 0 1rem;
-  font-size: 0.80rem;
+  font-size: 0.95rem;
   color: #ccc;
   flex-shrink: 0;
 }
