@@ -258,11 +258,18 @@ try {
 
   grid.innerHTML = "";
 
-  const sortedByHypeScore = trends
+  const maxVotes = Math.max(...trends.map(t => t.votes));
+  const rankedTrends = trends
     .filter(t => (t.more + t.less) > 0)
-    .sort((a, b) => (b.more / (b.more + b.less)) - (a.more / (a.more + a.less)));
+    .map(t => {
+      const hypeScore = t.more / (t.more + t.less);
+      const voteScore = t.votes / maxVotes; // normalize to 0–1
+      const compositeScore = (hypeScore * 0.6) + (voteScore * 0.4); // weight as needed
+      return { ...t, compositeScore };
+    })
+    .sort((a, b) => b.compositeScore - a.compositeScore);
 
-  const topTrends = sortedByHypeScore.slice(0, 5);
+  const topTrends = rankedTrends.slice(0, 5);
 
   topTrends.forEach(trend => {
     const card = document.createElement("div");
@@ -271,6 +278,7 @@ try {
     const title = document.createElement("div");
     title.className = "trend-title";
     title.textContent = trend.label;
+
 
       // 1. For graphs & status (keep using hype + votes)
 	  const activityRatio = trend.votes > 0 ? trend.hype / trend.votes : 0;
