@@ -186,25 +186,22 @@ async function renderVotePair() {
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  // Lock the current height to avoid layout shift
-  const currentHeight = box.offsetHeight;
-  box.style.minHeight = currentHeight + "px";
-  box.style.opacity = 0;
+  // Make invisible but keep space
+  box.style.opacity = "0";
   box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
-    box.innerHTML = "";
-    resultDiv.innerHTML = "";
-
     const { data: allTrends, error } = await supabase.from("trends").select("*");
 
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
-      box.style.opacity = 1;
+      box.style.opacity = "1";
       return;
     }
 
     const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+    box.innerHTML = ""; // Only clear after fade out
 
     const createVoteBtn = (trend, opponent) => {
       const btn = document.createElement("button");
@@ -225,37 +222,27 @@ async function renderVotePair() {
           return;
         }
 
-        renderVotePair(); // Instantly load next vote
+        renderVotePair(); // Load next pair
       };
       return btn;
     };
 
     box.appendChild(createVoteBtn(a, b));
+
     const vsText = document.createElement("span");
     vsText.textContent = "vs";
     vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
     box.appendChild(vsText);
+
     box.appendChild(createVoteBtn(b, a));
 
-    // Fade back in and remove minHeight lock
+    // Fade back in
     requestAnimationFrame(() => {
-      box.style.opacity = 1;
-      setTimeout(() => box.style.minHeight = "unset", 300);
+      box.style.opacity = "1";
     });
-  }, 200);
+  }, 300);
 }
 
-
-    box.appendChild(createVoteBtn(a, b));
-    const vsText = document.createElement("span");
-    vsText.textContent = "vs";
-    vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
-    box.appendChild(vsText);
-    box.appendChild(createVoteBtn(b, a));
-
-    box.classList.remove("fade-out");
-    box.classList.add("fade-in");
-  }, 300);
 }
 
 //spacing
