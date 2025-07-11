@@ -164,15 +164,16 @@ if (currentUser) {
     });
   }
 
-  fetch("news.json")
-    .then(res => res.json())
-    .then(data => {
-      const wrapper = document.querySelector(".ticker-track-wrapper");
-      if (!wrapper || !Array.isArray(data)) return;
-      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
-    });
+fetch("news.json")
+  .then(res => res.json())
+  .then(data => {
+    const wrapper = document.querySelector(".ticker-track-wrapper");
+    if (!wrapper || !Array.isArray(data)) return;
+    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
+  });
+
 
 // Voting system
 async function renderVotePair() {
