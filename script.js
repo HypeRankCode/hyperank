@@ -170,12 +170,10 @@ if (currentUser) {
       const ticker = document.getElementById("ticker");
       if (!ticker || !Array.isArray(data)) return;
 
-      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      const tickerContent = `
-        <div class="ticker-content">${text}</div>
-        <div class="ticker-content">${text}</div>
-      `;
-      ticker.innerHTML = tickerContent;
+      const joined = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      const repeated = new Array(20).fill(joined).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+
+      ticker.innerHTML = `<div class="ticker-content">${repeated}</div>`;
     });
 
 
