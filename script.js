@@ -314,8 +314,26 @@ if (activityRatio > 0.65) {
 
 const hypeScore = document.createElement("div");
 hypeScore.className = "meta-info";
-const score = Math.round(hypeScoreRatio * 100);
+
+const moreVotes = trend.more || 0;
+const lessVotes = trend.less || 0;
+const totalMoreVotes = moreVotes + lessVotes;
+
+const hypeVotes = trend.hype || 0;
+const deadVotes = trend.dead || 0;
+const midVotes = trend.mid || 0;
+const totalMainVotes = hypeVotes + deadVotes + midVotes;
+
+let score = 0;
+
+if (totalMoreVotes > 0 || totalMainVotes > 0) {
+  const moreRatio = totalMoreVotes > 0 ? (moreVotes / totalMoreVotes) : 0;
+  const mainRatio = totalMainVotes > 0 ? (hypeVotes / totalMainVotes) : 0;
+  score = Math.round(((moreRatio * 0.5) + (mainRatio * 0.5)) * 100);
+}
+
 hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
 
 
       card.appendChild(title);
