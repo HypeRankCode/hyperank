@@ -69,7 +69,9 @@ window.resetPassword = async () => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset.html`
   });
-  document.getElementById('authMsg').textContent = error ? error.message : '📧 Password reset email sent!';
+document.getElementById('authMsg').innerHTML = error
+  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
+  : `<i class="fas fa-envelope" style="color:#4f4;"></i> Password reset email sent!`;
 };
 
 // DOM loaded
@@ -364,7 +366,7 @@ try {
       score = Math.round(((moreRatio * 0.6) + (mainRatio * 0.4)) * 100);
     }
 
-    hypeScore.innerHTML = '<i class="fas fa-fire" style="color:#f44;"></i> HypeScore: ' + score + '%';
+    hypeScore.innerHTML = '<i class="fas fa-burst" style="color:#f44;"></i> HypeScore: ' + score + '%';
 
     card.appendChild(title);
     card.appendChild(meta);
