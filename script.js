@@ -176,9 +176,10 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+    // ✅ Only add separator between items, NOT after the last
     const baseText = data
-      .map(item => item.trim() + separator) // ✅ attach dot here
-      .join(""); // no extra space after last dot
+      .map(item => item.trim())
+      .join(separator); // no separator after last item
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
@@ -198,7 +199,7 @@ fetch("news.json")
       const first = ticker.children[0];
       if (first && position <= -first.offsetWidth) {
         position += first.offsetWidth;
-        ticker.appendChild(first);
+        ticker.appendChild(first); // move to end
       }
 
       requestAnimationFrame(animateTicker);
@@ -206,7 +207,6 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
-
 
 
 

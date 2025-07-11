@@ -341,7 +341,7 @@ header {
 
 .ticker-content {
   white-space: nowrap;
-  padding: 0;
+  padding: 0 1rem;
   flex-shrink: 0;
   display: inline-block;
   color: #ccc;
