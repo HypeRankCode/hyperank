@@ -338,7 +338,7 @@ header {
 
 @keyframes scrollTicker {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-10%); }
+  100% { transform: translateX(-50%); }
 }
 
 .sparkline.green { color: #00e676; }
