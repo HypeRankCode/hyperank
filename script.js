@@ -164,16 +164,16 @@ if (currentUser) {
     });
   }
 
-// 📰 Ticker news
 fetch("news.json")
-.then(res => res.json())
-.then(data => {
-const wrapper = document.querySelector(".ticker-track-wrapper");
-if (!wrapper || !Array.isArray(data)) return;
-const text = data.join("    •    ");
-const repeated = new Array(10).fill(text).join("    •    ");
-wrapper.innerHTML = <div class="ticker-track">${repeated}</div>;
-});
+  .then(res => res.json())
+  .then(data => {
+    const wrapper = document.querySelector(".ticker-track-wrapper");
+    if (!wrapper || !Array.isArray(data)) return;
+    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const tickerContent = text + " &nbsp;&nbsp; • &nbsp;&nbsp; " + text;
+    wrapper.innerHTML = `<div class="ticker-track">${tickerContent}</div>`;
+  });
 
 
 // Voting system

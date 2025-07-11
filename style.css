@@ -451,11 +451,12 @@ header {
 }
 
 .compare-results {
+  min-height: 2rem;
   text-align: center;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  color: #ccc;
+  color: #4f4;
+  transition: opacity 0.3s ease;
 }
+
 
 .nav-links {
     display: flex;
