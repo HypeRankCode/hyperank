@@ -186,17 +186,20 @@ async function renderVotePair() {
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  box.classList.remove("fade-in");
-  box.classList.add("fade-out");
+  // Lock the height BEFORE removing content
+  const currentHeight = box.offsetHeight;
+  box.style.height = currentHeight + "px";
+  box.style.transition = "opacity 0.3s ease";
+  box.style.opacity = 0;
 
   setTimeout(async () => {
     box.innerHTML = "";
     resultDiv.innerHTML = "";
 
     const { data: allTrends, error } = await supabase.from("trends").select("*");
-
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+      box.style.opacity = 1;
       return;
     }
 
@@ -208,24 +211,29 @@ async function renderVotePair() {
       btn.textContent = trend.label;
       btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
       btn.onclick = async () => {
-        const { error: moreError } = await supabase.from("trends").update({
-          more: trend.more + 1
-        }).eq("id", trend.id);
+        await supabase.from("trends").update({ more: trend.more + 1 }).eq("id", trend.id);
+        await supabase.from("trends").update({ less: opponent.less + 1 }).eq("id", opponent.id);
 
-        const { error: lessError } = await supabase.from("trends").update({
-          less: opponent.less + 1
-        }).eq("id", opponent.id);
-
-        if (moreError || lessError) {
-          console.error("Voting error:", moreError || lessError);
-          return;
-        }
-
-
-        setTimeout(() => renderVotePair(), 800);
+        // No more confirmation box
+        renderVotePair(); // Skip fade-out for simplicity
       };
       return btn;
     };
+
+    box.appendChild(createVoteBtn(a, b));
+    const vsText = document.createElement("span");
+    vsText.textContent = "vs";
+    vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+    box.appendChild(vsText);
+    box.appendChild(createVoteBtn(b, a));
+
+    // Let layout settle, then fade in and remove fixed height
+    requestAnimationFrame(() => {
+      box.style.opacity = 1;
+      box.style.height = "auto";
+    });
+  }, 300);
+}
 
     box.appendChild(createVoteBtn(a, b));
     const vsText = document.createElement("span");
