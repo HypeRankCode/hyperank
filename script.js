@@ -165,50 +165,44 @@ if (currentUser) {
   }
   
 // news ticker setup
+// 📰 Ticker news
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
 
-    const ticker = document.createElement("div");
-    ticker.className = "ticker-track";
-    wrapper.appendChild(ticker);
+    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
+    const text = data.join(separator); // no leading/trailing separator
+    const fullContent = `${text}${separator}`; // end with one clean separator
 
-    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const text = data.join(separator);
+    const tickerTrack = document.createElement("div");
+    tickerTrack.className = "ticker-track";
+    tickerTrack.innerHTML = `<div class="ticker-content">${fullContent}</div>`;
 
-    // Create initial content block
-    const span = document.createElement("div");
-    span.className = "ticker-content";
-    span.innerHTML = text + separator; // ensure dot at end
-    ticker.appendChild(span);
+    const clone = tickerTrack.cloneNode(true);
+    wrapper.appendChild(tickerTrack);
+    wrapper.appendChild(clone);
 
-    // Clone for seamless start
-    const clone = span.cloneNode(true);
-    ticker.appendChild(clone);
+    let pos1 = 0;
+    let pos2 = tickerTrack.offsetWidth;
 
-    let position = 0;
-    const speed = 0.5; // slower scroll
+    function scrollTicker() {
+      pos1 -= 0.5;
+      pos2 -= 0.5;
 
-    function animateTicker() {
-      position -= speed;
-      ticker.style.transform = `translateX(${position}px)`;
+      tickerTrack.style.transform = `translateX(${pos1}px)`;
+      clone.style.transform = `translateX(${pos2}px)`;
 
-      const first = ticker.children[0];
-      const second = ticker.children[1];
+      if (pos1 <= -tickerTrack.offsetWidth + 1) pos1 = pos2 + clone.offsetWidth;
+      if (pos2 <= -clone.offsetWidth + 1) pos2 = pos1 + tickerTrack.offsetWidth;
 
-      // Prepend new block BEFORE it fully leaves viewport
-      if (position <= -first.offsetWidth) {
-        position += first.offsetWidth;
-        ticker.appendChild(first); // move to end
-      }
-
-      requestAnimationFrame(animateTicker);
+      requestAnimationFrame(scrollTicker);
     }
 
-    requestAnimationFrame(animateTicker);
+    scrollTicker();
   });
+
 
 
 // Voting system
