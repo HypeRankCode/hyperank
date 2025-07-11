@@ -170,12 +170,13 @@ fetch("news.json")
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
 
-    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+    const text = data.join(separator);
 
-    // Duplicate it once for seamless loop
-    const tickerContent = `<div class="ticker-track"><span class="ticker-content">${text}</span><span class="ticker-content">${text}</span></div>`;
+    // Duplicate it AND add a separator in between so the end-to-start loop looks smooth
+    const tickerContent = text + separator + text;
 
-    wrapper.innerHTML = tickerContent;
+    wrapper.innerHTML = `<div class="ticker-track">${tickerContent}</div>`;
   });
 
 
