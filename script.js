@@ -176,16 +176,18 @@ fetch("news.json")
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
 
-    // Join all items with separator (no bullet at end)
+    // ✅ Join items with separator, and manually add one bullet between clones
     let baseText = data.map(item => item.trim()).join(separator);
 
+    // ✅ Add trailing separator to FIRST span only
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-
-      // ✅ Prepend a dot only on clones after the first
-      span.innerHTML = (i === 0 ? "" : separator) + baseText;
+      
+      // Only FIRST span gets the extra separator at end
+      span.innerHTML = baseText + (i === 0 ? separator : "");
+      
       ticker.appendChild(span);
     }
 
