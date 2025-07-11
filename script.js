@@ -268,36 +268,43 @@ async function renderVotePair() {
       title.className = "trend-title";
       title.textContent = trend.label;
 
-      const totalVotes = trend.more + trend.less;
-	  const ratio = totalVotes > 0 ? trend.more / totalVotes : 0;
+      // 1. For graphs & status (keep using hype + votes)
+	  const activityRatio = trend.votes > 0 ? trend.hype / trend.votes : 0;
+	  
+	  // 2. For HypeScore (based on more vs less)
+	  const totalUseVotes = trend.more + trend.less;
+	  const hypeScoreRatio = totalUseVotes > 0 ? trend.more / totalUseVotes : 0;
+
       const meta = document.createElement("div");
       const spark = document.createElement("div");
 
-      if (ratio > 0.65) {
-        meta.className = "trend-meta rising";
-        meta.textContent = "🔺 Rising";
-        spark.className = "sparkline green";
-        spark.textContent = "▁▃▅▇▆";
-      } else if (ratio < 0.4) {
-        meta.className = "trend-meta falling";
-        meta.textContent = "🔻 Falling";
-        spark.className = "sparkline red";
-        spark.textContent = "▆▅▃▂";
-      } else {
-        meta.className = "trend-meta mid";
-        meta.textContent = "➖ Mid";
-        spark.className = "sparkline orange";
-        spark.textContent = "▄▄▄▅▅";
-      }
+if (activityRatio > 0.65) {
+  meta.className = "trend-meta rising";
+  meta.textContent = "🔺 Rising";
+  spark.className = "sparkline green";
+  spark.textContent = "▁▃▅▇▆";
+} else if (activityRatio < 0.4) {
+  meta.className = "trend-meta falling";
+  meta.textContent = "🔻 Falling";
+  spark.className = "sparkline red";
+  spark.textContent = "▆▅▃▂";
+} else {
+  meta.className = "trend-meta mid";
+  meta.textContent = "➖ Mid";
+  spark.className = "sparkline orange";
+  spark.textContent = "▄▄▄▅▅";
+}
+
 
       const votes = document.createElement("div");
       votes.className = "trend-votes";
       votes.textContent = trend.votes + " votes";
 
-      const hypeScore = document.createElement("div");
-      hypeScore.className = "meta-info";
-      const score = Math.round((trend.hype / trend.votes) * 100);
-      hypeScore.textContent = "💥 HypeScore: " + score + "%";
+const hypeScore = document.createElement("div");
+hypeScore.className = "meta-info";
+const score = Math.round(hypeScoreRatio * 100);
+hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
 
       card.appendChild(title);
       card.appendChild(meta);
