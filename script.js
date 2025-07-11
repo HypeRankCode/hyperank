@@ -175,29 +175,34 @@ fetch("news.json")
     ticker.className = "ticker-track";
     wrapper.appendChild(ticker);
 
-    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator).replace(/\s+/g, ' ') + separator;
+    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
+    const baseText = data.map(item => item.trim()).join(separator);
+    const fullText = baseText + separator;
 
-    // Add multiple spans to preload for seamless scroll
-    const numClones = 3; // number of clones
+    const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = baseText;
+      span.innerHTML = fullText;
+      span.style.display = "inline-block"; // ensure no line breaks
       ticker.appendChild(span);
     }
 
     let position = 0;
-    const speed = 0.5; // adjust scroll speed
+    const speed = 0.5;
 
     function animateTicker() {
       position -= speed;
       ticker.style.transform = `translateX(${position}px)`;
 
       const first = ticker.children[0];
-      if (first && position <= -first.offsetWidth) {
-        position += first.offsetWidth;
-        ticker.appendChild(first); // move to end
+      if (first) {
+        // 👇 Fix: Move earlier to prevent visual gap
+        const threshold = -first.offsetWidth + 1;
+        if (position <= threshold) {
+          position += first.offsetWidth;
+          ticker.appendChild(first); // move to end
+        }
       }
 
       requestAnimationFrame(animateTicker);
@@ -205,6 +210,7 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+
 
 
 
