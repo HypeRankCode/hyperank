@@ -175,16 +175,15 @@ fetch("news.json")
     ticker.className = "ticker-track";
     wrapper.appendChild(ticker);
 
-    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
-    const baseText = data.map(item => item.trim()).join(separator);
-    const fullText = baseText + separator;
+    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+    const baseText = data.map(item => item.trim()).join(separator); // ✅ no extra separator at end
 
+    // Create multiple spans for seamless loop
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = fullText;
-      span.style.display = "inline-block"; // ensure no line breaks
+      span.innerHTML = baseText;
       ticker.appendChild(span);
     }
 
@@ -196,13 +195,9 @@ fetch("news.json")
       ticker.style.transform = `translateX(${position}px)`;
 
       const first = ticker.children[0];
-      if (first) {
-        // 👇 Fix: Move earlier to prevent visual gap
-        const threshold = -first.offsetWidth + 1;
-        if (position <= threshold) {
-          position += first.offsetWidth;
-          ticker.appendChild(first); // move to end
-        }
+      if (first && position <= -first.offsetWidth) {
+        position += first.offsetWidth;
+        ticker.appendChild(first); // move to end
       }
 
       requestAnimationFrame(animateTicker);
