@@ -168,36 +168,23 @@
     }
 
     .ticker-track-wrapper {
-      position: relative;
-      width: 100%;
-      height: 2.5rem;
       overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
       background: #222;
       border-top: 1px solid #333;
       border-bottom: 1px solid #333;
     }
 
     .ticker-track {
-      display: flex;
-      width: max-content;
-      will-change: transform;
-      font-size: 0.95rem;
-      color: #ccc;
-      animation: ticker-slide 40s linear infinite;
-    }
-
-    .ticker-content {
-      white-space: nowrap;
+      display: inline-block;
       padding: 0.5rem 1rem;
+      animation: scroll-left 30s linear infinite;
     }
 
-    @keyframes ticker-slide {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-50%);
-      }
+    @keyframes scroll-left {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
   </style>
 </head>
@@ -216,7 +203,7 @@
   </header>
 
   <div class="ticker-track-wrapper">
-    <div class="ticker-track" id="ticker"></div>
+    <div class="ticker-track">Loading news...</div>
   </div>
 
   <main class="hero-section">
