@@ -333,13 +333,15 @@ header {
   display: flex;
   align-items: center;
   will-change: transform;
+  animation: none;
 }
 
 .ticker-content {
   white-space: nowrap;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
+  padding: 0 1rem;
+  font-size: 0.80rem;
   color: #ccc;
+  flex-shrink: 0;
 }
 
 .sparkline.green { color: #00e676; }

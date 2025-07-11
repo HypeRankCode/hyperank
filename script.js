@@ -164,45 +164,45 @@ if (currentUser) {
     });
   }
   
-// news ticker setup
-// 📰 Ticker news
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
 
-    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
-    const text = data.join(separator); // no leading/trailing separator
-    const fullContent = `${text}${separator}`; // end with one clean separator
+    const ticker = document.createElement("div");
+    ticker.className = "ticker-track";
+    wrapper.appendChild(ticker);
 
-    const tickerTrack = document.createElement("div");
-    tickerTrack.className = "ticker-track";
-    tickerTrack.innerHTML = `<div class="ticker-content">${fullContent}</div>`;
+    const separator = "&nbsp;•&nbsp;";
+    const repeatedItems = data.join(separator) + separator;
 
-    const clone = tickerTrack.cloneNode(true);
-    wrapper.appendChild(tickerTrack);
-    wrapper.appendChild(clone);
-
-    let pos1 = 0;
-    let pos2 = tickerTrack.offsetWidth;
-
-    function scrollTicker() {
-      pos1 -= 0.5;
-      pos2 -= 0.5;
-
-      tickerTrack.style.transform = `translateX(${pos1}px)`;
-      clone.style.transform = `translateX(${pos2}px)`;
-
-      if (pos1 <= -tickerTrack.offsetWidth + 1) pos1 = pos2 + clone.offsetWidth;
-      if (pos2 <= -clone.offsetWidth + 1) pos2 = pos1 + tickerTrack.offsetWidth;
-
-      requestAnimationFrame(scrollTicker);
+    const fillerCount = 3; // Number of repeats to preload
+    for (let i = 0; i < fillerCount; i++) {
+      const span = document.createElement("div");
+      span.className = "ticker-content";
+      span.innerHTML = repeatedItems;
+      ticker.appendChild(span);
     }
 
-    scrollTicker();
-  });
+    let position = 0;
+    const speed = 0.5;
 
+    function animateTicker() {
+      position -= speed;
+      ticker.style.transform = `translateX(${position}px)`;
+
+      const first = ticker.children[0];
+      if (first && position <= -first.offsetWidth) {
+        position += first.offsetWidth;
+        ticker.appendChild(first);
+      }
+
+      requestAnimationFrame(animateTicker);
+    }
+
+    requestAnimationFrame(animateTicker);
+  });
 
 
 // Voting system
