@@ -167,16 +167,15 @@ if (currentUser) {
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
-    const news = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
     const ticker1 = document.getElementById("ticker1");
     const ticker2 = document.getElementById("ticker2");
+
     if (ticker1 && ticker2) {
-      ticker1.innerHTML = news;
-      ticker2.innerHTML = news;
+      ticker1.innerHTML = text;
+      ticker2.innerHTML = text;
     }
   });
-
-
 
 
 // Voting system
