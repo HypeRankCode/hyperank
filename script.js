@@ -289,22 +289,36 @@ try {
 
       const meta = document.createElement("div");
       const spark = document.createElement("div");
+const hype = trend.hype || 0;
+const dead = trend.dead || 0;
+const total = hype + dead;
 
-if (activityRatio > 0.65) {
-  meta.className = "trend-meta rising";
-  meta.textContent = "🔺 Rising";
-  spark.className = "sparkline green";
-  spark.textContent = "▁▃▅▇▆";
-} else if (activityRatio < 0.4) {
-  meta.className = "trend-meta falling";
-  meta.textContent = "🔻 Falling";
-  spark.className = "sparkline red";
-  spark.textContent = "▆▅▃▂";
-} else {
-  meta.className = "trend-meta mid";
-  meta.textContent = "➖ Mid";
-  spark.className = "sparkline orange";
-  spark.textContent = "▄▄▄▅▅";
+let status = "➖ Mid";
+let sparkClass = "orange";
+let sparkText = "▄▄▄▅▅";
+
+if (total > 0) {
+  const hypeRatio = hype / total;
+  const deadRatio = dead / total;
+
+  if (hypeRatio > 0.6) {
+    status = "🔺 Rising";
+    sparkClass = "green";
+    sparkText = "▁▃▅▇▆";
+  } else if (deadRatio > 0.6) {
+    status = "🔻 Falling";
+    sparkClass = "red";
+    sparkText = "▆▅▃▂";
+  }
+}
+
+const meta = document.createElement("div");
+meta.className = `trend-meta ${sparkClass}`;
+meta.textContent = status;
+
+const spark = document.createElement("div");
+spark.className = `sparkline ${sparkClass}`;
+spark.textContent = sparkText;
 }
 
 
@@ -321,8 +335,7 @@ const totalMoreVotes = moreVotes + lessVotes;
 
 const hypeVotes = trend.hype || 0;
 const deadVotes = trend.dead || 0;
-const midVotes = trend.mid || 0;
-const totalMainVotes = hypeVotes + deadVotes + midVotes;
+const totalMainVotes = hypeVotes + deadVotes;
 
 let score = 0;
 
