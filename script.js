@@ -203,8 +203,7 @@ async function renderVotePair() {
       btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
       btn.onclick = async () => {
         await supabase.from("trends").update({
-          votes: trend.votes + 1,
-          hype: trend.hype + 1
+          more: trend.more + 1
         }).eq("id", trend.id);
 
         resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
