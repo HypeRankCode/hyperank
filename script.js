@@ -167,16 +167,15 @@ if (currentUser) {
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
-    const wrapper = document.querySelector(".ticker-track-wrapper");
-    if (!wrapper || !Array.isArray(data)) return;
-
     const news = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const ticker = document.createElement("div");
-    ticker.className = "ticker-track";
-    ticker.innerHTML = `${news} &nbsp;&nbsp; • &nbsp;&nbsp; ${news}`; // doubled
-    wrapper.innerHTML = "";
-    wrapper.appendChild(ticker);
+    const ticker1 = document.getElementById("ticker1");
+    const ticker2 = document.getElementById("ticker2");
+    if (ticker1 && ticker2) {
+      ticker1.innerHTML = news;
+      ticker2.innerHTML = news;
+    }
   });
+
 
 
 
