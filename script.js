@@ -175,29 +175,29 @@ fetch("news.json")
     ticker.className = "ticker-track";
     wrapper.appendChild(ticker);
 
-    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator).replace(/\s+/g, ' ') + separator;
+    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
+    const cleanItems = data.map(item => item.trim());
+    const text = cleanItems.join(separator) + separator; // final dot too
 
-    // Add multiple spans to preload for seamless scroll
-    const numClones = 3; // number of clones
-    for (let i = 0; i < numClones; i++) {
-      const span = document.createElement("div");
-      span.className = "ticker-content";
-      span.innerHTML = baseText;
-      ticker.appendChild(span);
-    }
+    const span = document.createElement("div");
+    span.className = "ticker-content";
+    span.innerHTML = text;
+    ticker.appendChild(span);
+
+    const clone = span.cloneNode(true);
+    ticker.appendChild(clone);
 
     let position = 0;
-    const speed = 0.5; // adjust scroll speed
+    const speed = 0.5;
 
     function animateTicker() {
       position -= speed;
       ticker.style.transform = `translateX(${position}px)`;
 
       const first = ticker.children[0];
-      if (first && position <= -first.offsetWidth) {
+      if (position <= -first.offsetWidth) {
         position += first.offsetWidth;
-        ticker.appendChild(first); // move to end
+        ticker.appendChild(first);
       }
 
       requestAnimationFrame(animateTicker);
@@ -205,6 +205,7 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+
 
 
 
