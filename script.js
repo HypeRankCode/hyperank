@@ -314,30 +314,28 @@ try {
     const dead = trend.dead || 0;
     const total = hype + dead;
 
-let status = "➖ Mid";
-let sparkClass = "orange";
-let sparkText = "▄▄▄▅▅";
+    let status = '<i class="fas fa-minus" style="color:orange;"></i> Mid';
+    let sparkClass = "orange";
+    let sparkText = "▄▄▄▅▅";
 
-if (total > 0) {
-  const hypeRatio = hype / total;
-  const deadRatio = dead / total;
+    if (total > 0) {
+      const hypeRatio = hype / total;
+      const deadRatio = dead / total;
 
-  if (hypeRatio > 0.6) {
-    status = "🔺 Rising";
-    sparkClass = "green";
-    sparkText = "▁▃▅▇▆";
-  } else if (deadRatio > 0.6) {
-    status = "🔻 Falling";
-    sparkClass = "red";
-    sparkText = "▆▅▃▂";
-  }
-}
-
-meta.innerHTML = status; // use .innerHTML to render icons
+      if (hypeRatio > 0.6) {
+        status = '<i class="fas fa-arrow-trend-up" style="color:limegreen;"></i> Rising';
+        sparkClass = "green";
+        sparkText = "▁▃▅▇▆";
+      } else if (deadRatio > 0.6) {
+        status = '<i class="fas fa-arrow-trend-down" style="color:#f44;"></i> Falling';
+        sparkClass = "red";
+        sparkText = "▆▅▃▂";
+      }
+    }
 
     const meta = document.createElement("div");
     meta.className = `trend-meta ${sparkClass}`;
-    meta.textContent = status;
+    meta.innerHTML = status;
 
     const spark = document.createElement("div");
     spark.className = `sparkline ${sparkClass}`;
@@ -367,7 +365,7 @@ meta.innerHTML = status; // use .innerHTML to render icons
     }
 
     hypeScore.innerHTML = '<i class="fas fa-fire" style="color:#f44;"></i> HypeScore: ' + score + '%';
-  
+
     card.appendChild(title);
     card.appendChild(meta);
     card.appendChild(spark);
@@ -378,4 +376,3 @@ meta.innerHTML = status; // use .innerHTML to render icons
 } catch (err) {
   console.error("Error fetching trends:", err);
 }
-});
