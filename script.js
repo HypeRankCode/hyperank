@@ -175,12 +175,10 @@ fetch("news.json")
     ticker.className = "ticker-track";
     wrapper.appendChild(ticker);
 
-    const separator = " &nbsp;&nbsp;•&nbsp;&nbsp; ";
-
-    // ✅ Join with separator but no trailing one
+    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
     const baseText = data
-      .map(item => item.trim())
-      .join(separator);
+      .map(item => item.trim() + separator) // ✅ attach dot here
+      .join(""); // no extra space after last dot
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
@@ -200,7 +198,7 @@ fetch("news.json")
       const first = ticker.children[0];
       if (first && position <= -first.offsetWidth) {
         position += first.offsetWidth;
-        ticker.appendChild(first); // seamless clone scroll
+        ticker.appendChild(first);
       }
 
       requestAnimationFrame(animateTicker);
