@@ -166,6 +166,26 @@
       text-align: center;
       color: #ccc;
     }
+
+    .ticker-track-wrapper {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+      background: #222;
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333;
+    }
+
+    .ticker-track {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      animation: scroll-left 30s linear infinite;
+    }
+
+    @keyframes scroll-left {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
@@ -181,6 +201,10 @@
       <button onclick="logoutUser()" id="logoutBtn" style="display:none;">Log Out</button>
     </nav>
   </header>
+
+  <div class="ticker-track-wrapper">
+    <div class="ticker-track">Loading news...</div>
+  </div>
 
   <main class="hero-section">
     <h2>Track what’s Hype these days!</h2>
