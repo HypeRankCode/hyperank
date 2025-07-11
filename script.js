@@ -176,15 +176,13 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator); // ⛔ no trailing separator
+    const baseText = data.map(item => item.trim()).join(separator);
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-
-      // ✅ Only prepend separator to clones after the first one
-      span.innerHTML = (i > 0 ? separator : "") + baseText;
+      span.innerHTML = (i > 0 ? separator : "") + baseText.trim(); // ✅ trimmed
       ticker.appendChild(span);
     }
 
@@ -198,7 +196,7 @@ fetch("news.json")
       const first = ticker.children[0];
       if (first && position <= -first.offsetWidth) {
         position += first.offsetWidth;
-        ticker.appendChild(first); // move to end
+        ticker.appendChild(first);
       }
 
       requestAnimationFrame(animateTicker);
@@ -206,6 +204,7 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+
 
 
 
