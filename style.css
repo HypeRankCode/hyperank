@@ -324,18 +324,16 @@ header {
 }
 
 .ticker-track-wrapper {
-  white-space: nowrap;
+  position: relative;
   overflow: hidden;
-  background: #222;
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #333;
-  height: 2.5rem;
+  white-space: nowrap;
 }
 
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: ticker-scroll 60s linear infinite;
+  animation: scrollTicker 140s linear infinite;
+  will-change: transform;
 }
 
 .ticker-content {
@@ -343,9 +341,9 @@ header {
   padding-right: 4rem; /* spacing between loops */
 }
 
-@keyframes ticker-scroll {
-  0%   { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
 }
 
 .sparkline.green { color: #00e676; }
