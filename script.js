@@ -164,7 +164,6 @@ if (currentUser) {
     });
   }
   
-// news ticker setup
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
@@ -176,18 +175,17 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    
-    // Join with proper spacing between items only
+
+    // Join all items with separator (no bullet at end)
     let baseText = data.map(item => item.trim()).join(separator);
-    
-    // ✅ Manually add just the bullet at the very end — no spaces
-    baseText += " •";
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = baseText;
+
+      // ✅ Prepend a dot only on clones after the first
+      span.innerHTML = (i === 0 ? "" : separator) + baseText;
       ticker.appendChild(span);
     }
 
