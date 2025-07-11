@@ -324,20 +324,27 @@ header {
 }
 
 .ticker-track-wrapper {
-  position: relative;
-  overflow: hidden;
   white-space: nowrap;
+  overflow: hidden;
+  background: #222;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  height: 2.5rem;
 }
 
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: scrollTicker 140s linear infinite;
-  will-change: transform;
+  animation: ticker-scroll 60s linear infinite;
 }
 
-@keyframes scrollTicker {
-  0% { transform: translateX(0); }
+.ticker-content {
+  display: inline-block;
+  padding-right: 4rem; /* spacing between loops */
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
 }
 

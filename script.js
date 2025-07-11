@@ -169,11 +169,15 @@ fetch("news.json")
   .then(data => {
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
+
     const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const tickerContent = text + " &nbsp;&nbsp; • &nbsp;&nbsp; " + text;
-    wrapper.innerHTML = `<div class="ticker-track">${tickerContent}</div>`;
+
+    // Duplicate it once for seamless loop
+    const tickerContent = `<div class="ticker-track"><span class="ticker-content">${text}</span><span class="ticker-content">${text}</span></div>`;
+
+    wrapper.innerHTML = tickerContent;
   });
+
 
 
 // Voting system
@@ -217,13 +221,6 @@ async function renderVotePair() {
           return;
         }
 
-        resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
-        resultDiv.classList.add("visible");
-
-        setTimeout(() => {
-          resultDiv.classList.remove("visible");
-          resultDiv.innerHTML = "";
-        }, 800);
 
         setTimeout(() => renderVotePair(), 800);
       };
