@@ -173,7 +173,7 @@ if (currentUser) {
       const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
       wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
-	
+
 // Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
@@ -202,12 +202,10 @@ async function renderVotePair() {
       btn.textContent = trend.label;
       btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
       btn.onclick = async () => {
-        // +1 to selected trend's "more"
         const { error: moreError } = await supabase.from("trends").update({
           more: trend.more + 1
         }).eq("id", trend.id);
 
-        // +1 to other trend's "less"
         const { error: lessError } = await supabase.from("trends").update({
           less: opponent.less + 1
         }).eq("id", opponent.id);
@@ -263,8 +261,8 @@ try {
     .filter(t => (t.more + t.less) > 0)
     .map(t => {
       const hypeScore = t.more / (t.more + t.less);
-      const voteScore = t.votes / maxVotes; // normalize to 0–1
-      const compositeScore = (hypeScore * 0.6) + (voteScore * 0.4); // weight as needed
+      const voteScore = t.votes / maxVotes;
+      const compositeScore = (hypeScore * 0.6) + (voteScore * 0.4);
       return { ...t, compositeScore };
     })
     .sort((a, b) => b.compositeScore - a.compositeScore);
@@ -279,84 +277,70 @@ try {
     title.className = "trend-title";
     title.textContent = trend.label;
 
+    const hype = trend.hype || 0;
+    const dead = trend.dead || 0;
+    const total = hype + dead;
 
-      // 1. For graphs & status (keep using hype + votes)
-	  const activityRatio = trend.votes > 0 ? trend.hype / trend.votes : 0;
-	  
-	  // 2. For HypeScore (based on more vs less)
-	  const totalUseVotes = trend.more + trend.less;
-	  const hypeScoreRatio = totalUseVotes > 0 ? trend.more / totalUseVotes : 0;
+    let status = "➖ Mid";
+    let sparkClass = "orange";
+    let sparkText = "▄▄▄▅▅";
 
-      const meta = document.createElement("div");
-      const spark = document.createElement("div");
-const hype = trend.hype || 0;
-const dead = trend.dead || 0;
-const total = hype + dead;
+    if (total > 0) {
+      const hypeRatio = hype / total;
+      const deadRatio = dead / total;
 
-let status = "➖ Mid";
-let sparkClass = "orange";
-let sparkText = "▄▄▄▅▅";
+      if (hypeRatio > 0.6) {
+        status = "🔺 Rising";
+        sparkClass = "green";
+        sparkText = "▁▃▅▇▆";
+      } else if (deadRatio > 0.6) {
+        status = "🔻 Falling";
+        sparkClass = "red";
+        sparkText = "▆▅▃▂";
+      }
+    }
 
-if (total > 0) {
-  const hypeRatio = hype / total;
-  const deadRatio = dead / total;
+    const meta = document.createElement("div");
+    meta.className = `trend-meta ${sparkClass}`;
+    meta.textContent = status;
 
-  if (hypeRatio > 0.6) {
-    status = "🔺 Rising";
-    sparkClass = "green";
-    sparkText = "▁▃▅▇▆";
-  } else if (deadRatio > 0.6) {
-    status = "🔻 Falling";
-    sparkClass = "red";
-    sparkText = "▆▅▃▂";
-  }
+    const spark = document.createElement("div");
+    spark.className = `sparkline ${sparkClass}`;
+    spark.textContent = sparkText;
+
+    const votes = document.createElement("div");
+    votes.className = "trend-votes";
+    votes.textContent = trend.votes + " votes";
+
+    const hypeScore = document.createElement("div");
+    hypeScore.className = "meta-info";
+
+    const moreVotes = trend.more || 0;
+    const lessVotes = trend.less || 0;
+    const totalMoreVotes = moreVotes + lessVotes;
+
+    const hypeVotes = trend.hype || 0;
+    const deadVotes = trend.dead || 0;
+    const totalMainVotes = hypeVotes + deadVotes;
+
+    let score = 0;
+
+    if (totalMoreVotes > 0 || totalMainVotes > 0) {
+      const moreRatio = totalMoreVotes > 0 ? (moreVotes / totalMoreVotes) : 0;
+      const mainRatio = totalMainVotes > 0 ? (hypeVotes / totalMainVotes) : 0;
+      score = Math.round(((moreRatio * 0.6) + (mainRatio * 0.4)) * 100);
+    }
+
+    hypeScore.textContent = "💥 HypeScore: " + score + "%";
+
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(spark);
+    card.appendChild(votes);
+    card.appendChild(hypeScore);
+    grid.appendChild(card);
+  });
+} catch (err) {
+  console.error("Error fetching trends:", err);
 }
-
-const meta = document.createElement("div");
-meta.className = `trend-meta ${sparkClass}`;
-meta.textContent = status;
-
-const spark = document.createElement("div");
-spark.className = `sparkline ${sparkClass}`;
-spark.textContent = sparkText;
-}
-
-
-      const votes = document.createElement("div");
-      votes.className = "trend-votes";
-      votes.textContent = trend.votes + " votes";
-
-const hypeScore = document.createElement("div");
-hypeScore.className = "meta-info";
-
-const moreVotes = trend.more || 0;
-const lessVotes = trend.less || 0;
-const totalMoreVotes = moreVotes + lessVotes;
-
-const hypeVotes = trend.hype || 0;
-const deadVotes = trend.dead || 0;
-const totalMainVotes = hypeVotes + deadVotes;
-
-let score = 0;
-
-if (totalMoreVotes > 0 || totalMainVotes > 0) {
-  const moreRatio = totalMoreVotes > 0 ? (moreVotes / totalMoreVotes) : 0;
-  const mainRatio = totalMainVotes > 0 ? (hypeVotes / totalMainVotes) : 0;
-  score = Math.round(((moreRatio * 0.6) + (mainRatio * 0.4)) * 100);
-}
-
-hypeScore.textContent = "💥 HypeScore: " + score + "%";
-
-
-
-      card.appendChild(title);
-      card.appendChild(meta);
-      card.appendChild(spark);
-      card.appendChild(votes);
-      card.appendChild(hypeScore);
-      grid.appendChild(card);
-    });
-  } catch (err) {
-    console.error("Error fetching trends:", err);
-  }
 });
