@@ -329,7 +329,7 @@ let score = 0;
 if (totalMoreVotes > 0 || totalMainVotes > 0) {
   const moreRatio = totalMoreVotes > 0 ? (moreVotes / totalMoreVotes) : 0;
   const mainRatio = totalMainVotes > 0 ? (hypeVotes / totalMainVotes) : 0;
-  score = Math.round(((moreRatio * 0.5) + (mainRatio * 0.5)) * 100);
+  score = Math.round(((moreRatio * 0.6) + (mainRatio * 0.4)) * 100);
 }
 
 hypeScore.textContent = "💥 HypeScore: " + score + "%";
