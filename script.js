@@ -176,10 +176,12 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    // ✅ Only add separator between items, NOT after the last
-    const baseText = data
-      .map(item => item.trim())
-      .join(separator); // no separator after last item
+    
+    // Join with proper spacing between items only
+    let baseText = data.map(item => item.trim()).join(separator);
+    
+    // ✅ Manually add just the bullet at the very end — no spaces
+    baseText += " •";
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
