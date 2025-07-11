@@ -338,7 +338,7 @@ header {
 
 @keyframes scrollTicker {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+  100% { transform: translateX(-10%); }
 }
 
 .sparkline.green { color: #00e676; }
@@ -458,6 +458,9 @@ header {
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
+  min-height: 120px; /* adjust based on expected button height */
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
 
 .compare-results {
