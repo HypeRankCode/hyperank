@@ -242,31 +242,35 @@ async function renderVotePair() {
   }, 300);
 }
 
+//spacing
+try {
+  const { data: trends, error } = await supabase
+    .from("trends")
+    .select("*");
 
-  try {
-    const { data: trends, error } = await supabase
-      .from("trends")
-      .select("*")
-      .order("votes", { ascending: false });
+  if (error) {
+    console.error("Failed to fetch trends:", error);
+    return;
+  }
 
-    if (error) {
-      console.error("Failed to fetch trends:", error);
-      return;
-    }
+  const grid = document.querySelector(".trending-grid");
+  if (!grid) return;
 
-    const grid = document.querySelector(".trending-grid");
-    if (!grid) return;
+  grid.innerHTML = "";
 
-    grid.innerHTML = "";
-    const topTrends = trends.slice(0, 5);
+  const sortedByHypeScore = trends
+    .filter(t => (t.more + t.less) > 0)
+    .sort((a, b) => (b.more / (b.more + b.less)) - (a.more / (a.more + a.less)));
 
-    topTrends.forEach(trend => {
-      const card = document.createElement("div");
-      card.className = "trend-card";
+  const topTrends = sortedByHypeScore.slice(0, 5);
 
-      const title = document.createElement("div");
-      title.className = "trend-title";
-      title.textContent = trend.label;
+  topTrends.forEach(trend => {
+    const card = document.createElement("div");
+    card.className = "trend-card";
+
+    const title = document.createElement("div");
+    title.className = "trend-title";
+    title.textContent = trend.label;
 
       // 1. For graphs & status (keep using hype + votes)
 	  const activityRatio = trend.votes > 0 ? trend.hype / trend.votes : 0;
