@@ -376,3 +376,4 @@ try {
 } catch (err) {
   console.error("Error fetching trends:", err);
 }
+});
