@@ -167,25 +167,26 @@
       color: #ccc;
     }
 
-    .ticker-track-wrapper {
-      overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-      background: #222;
-      border-top: 1px solid #333;
-      border-bottom: 1px solid #333;
-    }
+.ticker-track-wrapper {
+  overflow: hidden;
+  position: relative;
+  background: #222;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  height: 2.5rem;
+}
 
-    .ticker-track {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      animation: scroll-left 120s linear infinite;
-    }
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-loop 120s linear infinite;
+  will-change: transform;
+}
 
-    @keyframes scroll-left {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
+@keyframes ticker-loop {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
   </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">

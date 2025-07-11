@@ -169,10 +169,15 @@ fetch("news.json")
   .then(data => {
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
-    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
+
+    const news = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+    const ticker = document.createElement("div");
+    ticker.className = "ticker-track";
+    ticker.innerHTML = `${news} &nbsp;&nbsp; • &nbsp;&nbsp; ${news}`; // doubled
+    wrapper.innerHTML = "";
+    wrapper.appendChild(ticker);
   });
+
 
 
 // Voting system
