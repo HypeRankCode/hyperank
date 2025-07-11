@@ -314,7 +314,7 @@ try {
     const dead = trend.dead || 0;
     const total = hype + dead;
 
-let status = '<i class="fas fa-minus" style="color:orange;"></i> Mid';
+let status = "➖ Mid";
 let sparkClass = "orange";
 let sparkText = "▄▄▄▅▅";
 
@@ -323,11 +323,11 @@ if (total > 0) {
   const deadRatio = dead / total;
 
   if (hypeRatio > 0.6) {
-    status = '<i class="fas fa-arrow-trend-up" style="color:limegreen;"></i> Rising';
+    status = "🔺 Rising";
     sparkClass = "green";
     sparkText = "▁▃▅▇▆";
   } else if (deadRatio > 0.6) {
-    status = '<i class="fas fa-arrow-trend-down" style="color:red;"></i> Falling';
+    status = "🔻 Falling";
     sparkClass = "red";
     sparkText = "▆▅▃▂";
   }
