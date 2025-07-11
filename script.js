@@ -163,7 +163,8 @@ if (currentUser) {
       }
     });
   }
-
+  
+// news ticker setup
 fetch("news.json")
   .then(res => res.json())
   .then(data => {
@@ -177,26 +178,28 @@ fetch("news.json")
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
     const text = data.join(separator);
 
-    // Create the first block
+    // Create initial content block
     const span = document.createElement("div");
     span.className = "ticker-content";
-    span.innerHTML = text;
+    span.innerHTML = text + separator; // ensure dot at end
     ticker.appendChild(span);
 
-    // Duplicate once initially
+    // Clone for seamless start
     const clone = span.cloneNode(true);
     ticker.appendChild(clone);
 
     let position = 0;
-    const speed = 1.2; // pixels per frame
+    const speed = 0.5; // slower scroll
 
     function animateTicker() {
       position -= speed;
       ticker.style.transform = `translateX(${position}px)`;
 
-      // If the first item has scrolled out, move it to the end
       const first = ticker.children[0];
-      if (first.offsetWidth + position <= 0) {
+      const second = ticker.children[1];
+
+      // Prepend new block BEFORE it fully leaves viewport
+      if (position <= -first.offsetWidth) {
         position += first.offsetWidth;
         ticker.appendChild(first); // move to end
       }
@@ -206,7 +209,6 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
-
 
 
 // Voting system
