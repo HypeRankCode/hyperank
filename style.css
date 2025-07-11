@@ -336,9 +336,9 @@ header {
   will-change: transform;
 }
 
-@keyframes ticker-scroll {
-0% { transform: translateX(100%); }
-100% { transform: translateX(-100%); }
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .sparkline.green { color: #00e676; }
