@@ -337,9 +337,11 @@ header {
 
 .ticker-content {
   white-space: nowrap;
-  padding: 0.5rem 1rem;
-  font-size: 0.80rem;
+  padding: 0 1rem;
+  flex-shrink: 0;
+  display: inline-block;
   color: #ccc;
+  font-size: 0.85rem;
 }
 
 .sparkline.green { color: #00e676; }
