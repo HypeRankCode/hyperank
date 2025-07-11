@@ -208,6 +208,13 @@ async function renderVotePair() {
         }).eq("id", trend.id);
 
         resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
+resultDiv.classList.add("visible");
+
+setTimeout(() => {
+  resultDiv.classList.remove("visible");
+  resultDiv.innerHTML = "";
+}, 800); // Matches the shuffle delay
+
         setTimeout(() => renderVotePair(), 800); // shuffle to next pair
       };
       return btn;

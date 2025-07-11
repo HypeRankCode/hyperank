@@ -585,6 +585,16 @@ header {
   transition: all 0.3s ease;
 }
 
+.compare-results {
+  min-height: 2rem; /* Reserve space so layout doesn't shift */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.compare-results.visible {
+  opacity: 1;
+}
+
 
 
 
