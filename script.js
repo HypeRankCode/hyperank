@@ -18,7 +18,9 @@ window.signIn = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  document.getElementById('authMsg').textContent = error ? error.message : '✅ Signed in!';
+document.getElementById('authMsg').innerHTML = error
+  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
+  : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
   if (!error) setTimeout(() => location.reload(), 1000);
 };
 window.signUp = async () => {
@@ -27,7 +29,7 @@ window.signUp = async () => {
   const username = document.getElementById('authUsername')?.value.trim();
 
   if (!email || !password || !username) {
-    document.getElementById('authMsg').textContent = '⚠️ Please fill in all fields (email, password, username).';
+    document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in all fields (email, password, username).';
     return;
   }
 
@@ -43,14 +45,14 @@ window.signUp = async () => {
 
   if (signUpError) {
     if (signUpError.message.includes("already registered")) {
-      document.getElementById('authMsg').textContent = '⚠️ Email already in use. Try signing in.';
+      document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.';
     } else {
       document.getElementById('authMsg').textContent = signUpError.message;
     }
     return;
   }
 
-  document.getElementById('authMsg').textContent = '✅ Account created!';
+    document.getElementById('authMsg').innerHTML = '<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!';
 };
 
 window.logoutUser = async () => {
@@ -312,24 +314,26 @@ try {
     const dead = trend.dead || 0;
     const total = hype + dead;
 
-    let status = "➖ Mid";
-    let sparkClass = "orange";
-    let sparkText = "▄▄▄▅▅";
+let status = '<i class="fas fa-minus" style="color:orange;"></i> Mid';
+let sparkClass = "orange";
+let sparkText = "▄▄▄▅▅";
 
-    if (total > 0) {
-      const hypeRatio = hype / total;
-      const deadRatio = dead / total;
+if (total > 0) {
+  const hypeRatio = hype / total;
+  const deadRatio = dead / total;
 
-      if (hypeRatio > 0.6) {
-        status = "🔺 Rising";
-        sparkClass = "green";
-        sparkText = "▁▃▅▇▆";
-      } else if (deadRatio > 0.6) {
-        status = "🔻 Falling";
-        sparkClass = "red";
-        sparkText = "▆▅▃▂";
-      }
-    }
+  if (hypeRatio > 0.6) {
+    status = '<i class="fas fa-arrow-trend-up" style="color:limegreen;"></i> Rising';
+    sparkClass = "green";
+    sparkText = "▁▃▅▇▆";
+  } else if (deadRatio > 0.6) {
+    status = '<i class="fas fa-arrow-trend-down" style="color:red;"></i> Falling';
+    sparkClass = "red";
+    sparkText = "▆▅▃▂";
+  }
+}
+
+meta.innerHTML = status; // use .innerHTML to render icons
 
     const meta = document.createElement("div");
     meta.className = `trend-meta ${sparkClass}`;
@@ -362,8 +366,8 @@ try {
       score = Math.round(((moreRatio * 0.6) + (mainRatio * 0.4)) * 100);
     }
 
-    hypeScore.textContent = "💥 HypeScore: " + score + "%";
-
+    hypeScore.innerHTML = '<i class="fas fa-fire" style="color:#f44;"></i> HypeScore: ' + score + '%';
+  
     card.appendChild(title);
     card.appendChild(meta);
     card.appendChild(spark);
