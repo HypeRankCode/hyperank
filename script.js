@@ -175,19 +175,13 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+    const baseText = data.map(item => item.trim()).join(separator); // no trailing separator
 
-    // ✅ Join items with separator, and manually add one bullet between clones
-    let baseText = data.map(item => item.trim()).join(separator);
-
-    // ✅ Add trailing separator to FIRST span only
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      
-      // Only FIRST span gets the extra separator at end
-      span.innerHTML = baseText + (i === 0 ? separator : "");
-      
+      span.innerHTML = baseText;
       ticker.appendChild(span);
     }
 
@@ -201,7 +195,7 @@ fetch("news.json")
       const first = ticker.children[0];
       if (first && position <= -first.offsetWidth) {
         position += first.offsetWidth;
-        ticker.appendChild(first); // move to end
+        ticker.appendChild(first);
       }
 
       requestAnimationFrame(animateTicker);
