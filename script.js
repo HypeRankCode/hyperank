@@ -186,21 +186,22 @@ async function renderVotePair() {
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  box.classList.remove("fade-in");
-  box.classList.add("fade-out");
+  // Fade out only (but preserve layout)
+  box.style.opacity = "0";
+  box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
-    box.innerHTML = "";
-    resultDiv.innerHTML = "";
-
     const { data: allTrends, error } = await supabase.from("trends").select("*");
 
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+      box.style.opacity = "1";
       return;
     }
 
     const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+    box.innerHTML = ""; // Clear after fade out
 
     const createVoteBtn = (trend, opponent) => {
       const btn = document.createElement("button");
@@ -221,30 +222,28 @@ async function renderVotePair() {
           return;
         }
 
-        resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
-        resultDiv.classList.add("visible");
-
-        setTimeout(() => {
-          resultDiv.classList.remove("visible");
-          resultDiv.innerHTML = "";
-        }, 800);
-
-        setTimeout(() => renderVotePair(), 800);
+        // Skip confirmation box — go straight to next pair
+        renderVotePair();
       };
       return btn;
     };
 
     box.appendChild(createVoteBtn(a, b));
+
     const vsText = document.createElement("span");
     vsText.textContent = "vs";
     vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
     box.appendChild(vsText);
+
     box.appendChild(createVoteBtn(b, a));
 
-    box.classList.remove("fade-out");
-    box.classList.add("fade-in");
+    // Fade back in smoothly
+    requestAnimationFrame(() => {
+      box.style.opacity = "1";
+    });
   }, 300);
 }
+
 
 //spacing
 try {
