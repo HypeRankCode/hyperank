@@ -176,30 +176,26 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const text = data.join(separator);
+    const baseText = data.join(separator) + separator;
 
-    // Create initial content block
-    const span = document.createElement("div");
-    span.className = "ticker-content";
-    span.innerHTML = text + separator; // ensure dot at end
-    ticker.appendChild(span);
-
-    // Clone for seamless start
-    const clone = span.cloneNode(true);
-    ticker.appendChild(clone);
+    // Add multiple spans to preload for seamless scroll
+    const numClones = 3; // number of clones
+    for (let i = 0; i < numClones; i++) {
+      const span = document.createElement("div");
+      span.className = "ticker-content";
+      span.innerHTML = baseText;
+      ticker.appendChild(span);
+    }
 
     let position = 0;
-    const speed = 0.5; // slower scroll
+    const speed = 0.5; // adjust scroll speed
 
     function animateTicker() {
       position -= speed;
       ticker.style.transform = `translateX(${position}px)`;
 
       const first = ticker.children[0];
-      const second = ticker.children[1];
-
-      // Prepend new block BEFORE it fully leaves viewport
-      if (position <= -first.offsetWidth) {
+      if (first && position <= -first.offsetWidth) {
         position += first.offsetWidth;
         ticker.appendChild(first); // move to end
       }
@@ -209,6 +205,7 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+
 
 
 // Voting system
