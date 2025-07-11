@@ -6,7 +6,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
@@ -95,12 +94,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (voteNotice) voteNotice.style.display = 'block';
   }
 
-if (currentUser) {
-  renderVotePair(); // 🎯 Load first voting pair automatically
-}
+  if (currentUser) {
+    renderVotePair(); // 🎯 Load first voting pair automatically
+  }
 
-
-//cutoff
+  // Submit form
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", async (e) => {
@@ -164,16 +162,17 @@ if (currentUser) {
     });
   }
 
-fetch("news.json")
-  .then(res => res.json())
-  .then(data => {
-    const wrapper = document.querySelector(".ticker-track-wrapper");
-    if (!wrapper || !Array.isArray(data)) return;
-    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const tickerContent = text + " &nbsp;&nbsp; • &nbsp;&nbsp; " + text;
-    wrapper.innerHTML = `<div class="ticker-track">${tickerContent}</div>`;
-  });
+  // 📰 Ticker news
+  fetch("news.json")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.querySelector(".ticker-track-wrapper");
+      if (!wrapper || !Array.isArray(data)) return;
+      const text = data.join("    •    ");
+      const repeated = new Array(10).fill(text).join("    •    ");
+      wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
+    });
+});
 
 
 // Voting system
