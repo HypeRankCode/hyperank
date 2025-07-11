@@ -186,17 +186,18 @@ async function renderVotePair() {
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  // Lock the height BEFORE removing content
+  // Lock the current height to avoid layout shift
   const currentHeight = box.offsetHeight;
-  box.style.height = currentHeight + "px";
-  box.style.transition = "opacity 0.3s ease";
+  box.style.minHeight = currentHeight + "px";
   box.style.opacity = 0;
+  box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
     box.innerHTML = "";
     resultDiv.innerHTML = "";
 
     const { data: allTrends, error } = await supabase.from("trends").select("*");
+
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
       box.style.opacity = 1;
@@ -211,11 +212,20 @@ async function renderVotePair() {
       btn.textContent = trend.label;
       btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
       btn.onclick = async () => {
-        await supabase.from("trends").update({ more: trend.more + 1 }).eq("id", trend.id);
-        await supabase.from("trends").update({ less: opponent.less + 1 }).eq("id", opponent.id);
+        const { error: moreError } = await supabase.from("trends").update({
+          more: trend.more + 1
+        }).eq("id", trend.id);
 
-        // No more confirmation box
-        renderVotePair(); // Skip fade-out for simplicity
+        const { error: lessError } = await supabase.from("trends").update({
+          less: opponent.less + 1
+        }).eq("id", opponent.id);
+
+        if (moreError || lessError) {
+          console.error("Voting error:", moreError || lessError);
+          return;
+        }
+
+        renderVotePair(); // Instantly load next vote
       };
       return btn;
     };
@@ -227,13 +237,14 @@ async function renderVotePair() {
     box.appendChild(vsText);
     box.appendChild(createVoteBtn(b, a));
 
-    // Let layout settle, then fade in and remove fixed height
+    // Fade back in and remove minHeight lock
     requestAnimationFrame(() => {
       box.style.opacity = 1;
-      box.style.height = "auto";
+      setTimeout(() => box.style.minHeight = "unset", 300);
     });
-  }, 300);
+  }, 200);
 }
+
 
     box.appendChild(createVoteBtn(a, b));
     const vsText = document.createElement("span");
