@@ -146,7 +146,7 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   display: none;
   text-align: center;
   color: #f44;
-  margin-top: 0.5rem; /* or 0.25rem for even tighter spacing */
+  margin-top: -1rem; /* or 0.25rem for even tighter spacing */
 }
 
 
