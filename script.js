@@ -175,23 +175,20 @@ fetch("news.json")
     ticker.className = "ticker-track";
     wrapper.appendChild(ticker);
 
-    const separator = "&nbsp;&nbsp;•&nbsp;&nbsp;";
-    const baseText = data.map(item => item.trim()).join(separator);
-
-    // 👇 Append one trailing separator to complete the loop cleanly
-    const fullText = baseText + separator;
+    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
+    const baseText = data.map(item => item.trim()).join(separator).replace(/\s+/g, ' ') + separator;
 
     // Add multiple spans to preload for seamless scroll
-    const numClones = 3;
+    const numClones = 3; // number of clones
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = fullText;
+      span.innerHTML = baseText;
       ticker.appendChild(span);
     }
 
     let position = 0;
-    const speed = 0.5;
+    const speed = 0.5; // adjust scroll speed
 
     function animateTicker() {
       position -= speed;
@@ -208,7 +205,6 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
-
 
 
 
