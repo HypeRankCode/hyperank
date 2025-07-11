@@ -176,7 +176,7 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    cconst cleanItems = data.map(item =>
+    const cleanItems = data.map(item =>
   item.replace(/\s+/g, ' ').replace(/[\r\n]+/g, '').trim()
 );
 const baseText = cleanItems.join(separator) + separator;
