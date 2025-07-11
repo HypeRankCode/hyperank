@@ -176,13 +176,15 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator);
+    const baseText = data
+      .map(item => item.trim() + separator) // ✅ attach dot here
+      .join(""); // no extra space after last dot
 
     const numClones = 3;
     for (let i = 0; i < numClones; i++) {
       const span = document.createElement("div");
       span.className = "ticker-content";
-      span.innerHTML = (i > 0 ? separator : "") + baseText.trim(); // ✅ trimmed
+      span.innerHTML = baseText;
       ticker.appendChild(span);
     }
 
