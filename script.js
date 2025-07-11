@@ -6,6 +6,49 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
+async function renderVotePair() {
+  const box = document.querySelector(".comparison-box");
+  const resultDiv = document.querySelector(".compare-results");
+  if (!box || !resultDiv) return;
+
+  box.innerHTML = "";
+  resultDiv.innerHTML = "";
+
+  const { data: allTrends, error } = await supabase.from("trends").select("*");
+
+  if (error || !allTrends || allTrends.length < 2) {
+    box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+    return;
+  }
+
+  const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+  const createVoteBtn = (trend) => {
+    const btn = document.createElement("button");
+    btn.className = "vote-option";
+    btn.textContent = trend.label;
+    btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+    btn.onclick = async () => {
+      await supabase.from("trends").update({
+        votes: trend.votes + 1,
+        hype: trend.hype + 1
+      }).eq("id", trend.id);
+
+      resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
+      setTimeout(() => renderVotePair(), 800); // ⏱️ automatically load next pair
+    };
+    return btn;
+  };
+
+  box.appendChild(createVoteBtn(a));
+  const vsText = document.createElement("span");
+  vsText.textContent = "vs";
+  vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+  box.appendChild(vsText);
+  box.appendChild(createVoteBtn(b));
+}
+
+
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
@@ -93,6 +136,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     logoutBtn.style.display = 'none';
     if (voteNotice) voteNotice.style.display = 'block';
   }
+
+if (currentUser) {
+  renderVotePair(); // 🎯 Load first voting pair automatically
+}
 
 
 //cutoff
