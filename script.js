@@ -189,7 +189,7 @@ fetch("news.json")
     }
 
     let position = 0;
-    const speed = 0.5;
+    const speed = 0.8;
 
     function animateTicker() {
       position -= speed;
