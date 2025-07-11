@@ -176,7 +176,11 @@ fetch("news.json")
     wrapper.appendChild(ticker);
 
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator).replace(/\s+/g, ' ') + separator;
+    cconst cleanItems = data.map(item =>
+  item.replace(/\s+/g, ' ').replace(/[\r\n]+/g, '').trim()
+);
+const baseText = cleanItems.join(separator) + separator;
+
 
     // Add multiple spans to preload for seamless scroll
     const numClones = 3; // number of clones
