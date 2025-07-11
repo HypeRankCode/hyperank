@@ -6,7 +6,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
@@ -95,12 +94,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (voteNotice) voteNotice.style.display = 'block';
   }
 
-if (currentUser) {
-  renderVotePair(); // 🎯 Load first voting pair automatically
-}
+  if (currentUser) {
+    renderVotePair();
+  }
 
-
-//cutoff
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", async (e) => {
@@ -170,12 +167,10 @@ if (currentUser) {
       const ticker = document.getElementById("ticker");
       if (!ticker || !Array.isArray(data)) return;
 
-      const joined = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-      const repeated = new Array(20).fill(joined).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-
-      ticker.innerHTML = `<div class="ticker-content">${repeated}</div>`;
+      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      ticker.innerHTML = `<div class="ticker-content">${text}</div><div class="ticker-content">${text}</div>`;
     });
-
+});
 
 
 // Voting system
