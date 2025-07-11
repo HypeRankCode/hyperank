@@ -330,16 +330,15 @@ header {
 }
 
 .ticker-track {
-  display: flex;
-  align-items: center;
+  display: inline-block;
+  white-space: nowrap;
+  animation: scrollTicker 140s linear infinite;
   will-change: transform;
 }
 
-.ticker-content {
-  white-space: nowrap;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  color: #ccc;
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .sparkline.green { color: #00e676; }
