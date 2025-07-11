@@ -170,13 +170,41 @@ fetch("news.json")
     const wrapper = document.querySelector(".ticker-track-wrapper");
     if (!wrapper || !Array.isArray(data)) return;
 
+    const ticker = document.createElement("div");
+    ticker.className = "ticker-track";
+    wrapper.appendChild(ticker);
+
     const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
     const text = data.join(separator);
 
-    // Duplicate it AND add a separator in between so the end-to-start loop looks smooth
-    const tickerContent = text + separator + text;
+    // Create the first block
+    const span = document.createElement("div");
+    span.className = "ticker-content";
+    span.innerHTML = text;
+    ticker.appendChild(span);
 
-    wrapper.innerHTML = `<div class="ticker-track">${tickerContent}</div>`;
+    // Duplicate once initially
+    const clone = span.cloneNode(true);
+    ticker.appendChild(clone);
+
+    let position = 0;
+    const speed = 1.2; // pixels per frame
+
+    function animateTicker() {
+      position -= speed;
+      ticker.style.transform = `translateX(${position}px)`;
+
+      // If the first item has scrolled out, move it to the end
+      const first = ticker.children[0];
+      if (first.offsetWidth + position <= 0) {
+        position += first.offsetWidth;
+        ticker.appendChild(first); // move to end
+      }
+
+      requestAnimationFrame(animateTicker);
+    }
+
+    requestAnimationFrame(animateTicker);
   });
 
 

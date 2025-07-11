@@ -324,21 +324,22 @@ header {
 }
 
 .ticker-track-wrapper {
-  position: relative;
   overflow: hidden;
   white-space: nowrap;
+  position: relative;
 }
 
 .ticker-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: scrollTicker 140s linear infinite;
+  display: flex;
+  align-items: center;
   will-change: transform;
 }
 
-@keyframes scrollTicker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.ticker-content {
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  color: #ccc;
 }
 
 .sparkline.green { color: #00e676; }
