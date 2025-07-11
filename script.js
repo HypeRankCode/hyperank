@@ -173,8 +173,8 @@ if (currentUser) {
       const repeated = new Array(10).fill(text).join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
       wrapper.innerHTML = `<div class="ticker-track">${repeated}</div>`;
     });
-
-  // Voting system
+	
+// Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
   const resultDiv = document.querySelector(".compare-results");
@@ -196,41 +196,51 @@ async function renderVotePair() {
 
     const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
 
-    const createVoteBtn = (trend) => {
+    const createVoteBtn = (trend, opponent) => {
       const btn = document.createElement("button");
       btn.className = "vote-option";
       btn.textContent = trend.label;
       btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
       btn.onclick = async () => {
-        await supabase.from("trends").update({
+        // +1 to selected trend's "more"
+        const { error: moreError } = await supabase.from("trends").update({
           more: trend.more + 1
         }).eq("id", trend.id);
 
+        // +1 to other trend's "less"
+        const { error: lessError } = await supabase.from("trends").update({
+          less: opponent.less + 1
+        }).eq("id", opponent.id);
+
+        if (moreError || lessError) {
+          console.error("Voting error:", moreError || lessError);
+          return;
+        }
+
         resultDiv.innerHTML = `<p style="text-align:center; color:#4f4;">✅ Voted for <b>${trend.label}</b></p>`;
-resultDiv.classList.add("visible");
+        resultDiv.classList.add("visible");
 
-setTimeout(() => {
-  resultDiv.classList.remove("visible");
-  resultDiv.innerHTML = "";
-}, 800); // Matches the shuffle delay
+        setTimeout(() => {
+          resultDiv.classList.remove("visible");
+          resultDiv.innerHTML = "";
+        }, 800);
 
-        setTimeout(() => renderVotePair(), 800); // shuffle to next pair
+        setTimeout(() => renderVotePair(), 800);
       };
       return btn;
     };
 
-    box.appendChild(createVoteBtn(a));
+    box.appendChild(createVoteBtn(a, b));
     const vsText = document.createElement("span");
     vsText.textContent = "vs";
     vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
     box.appendChild(vsText);
-    box.appendChild(createVoteBtn(b));
+    box.appendChild(createVoteBtn(b, a));
 
     box.classList.remove("fade-out");
     box.classList.add("fade-in");
-  }, 300); // matches transition speed
+  }, 300);
 }
-
 
 
   try {
@@ -258,7 +268,8 @@ setTimeout(() => {
       title.className = "trend-title";
       title.textContent = trend.label;
 
-      const ratio = trend.hype / trend.votes;
+      const totalVotes = trend.more + trend.less;
+	  const ratio = totalVotes > 0 ? trend.more / totalVotes : 0;
       const meta = document.createElement("div");
       const spark = document.createElement("div");
 
