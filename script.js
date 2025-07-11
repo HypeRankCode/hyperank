@@ -164,18 +164,20 @@ if (currentUser) {
     });
   }
 
-fetch("news.json")
-  .then(res => res.json())
-  .then(data => {
-    const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
-    const ticker1 = document.getElementById("ticker1");
-    const ticker2 = document.getElementById("ticker2");
+  fetch("news.json")
+    .then(res => res.json())
+    .then(data => {
+      const ticker = document.getElementById("ticker");
+      if (!ticker || !Array.isArray(data)) return;
 
-    if (ticker1 && ticker2) {
-      ticker1.innerHTML = text;
-      ticker2.innerHTML = text;
-    }
-  });
+      const text = data.join(" &nbsp;&nbsp; • &nbsp;&nbsp; ");
+      const tickerContent = `
+        <div class="ticker-content">${text}</div>
+        <div class="ticker-content">${text}</div>
+      `;
+      ticker.innerHTML = tickerContent;
+    });
+
 
 
 // Voting system
