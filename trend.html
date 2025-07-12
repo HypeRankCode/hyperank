@@ -66,6 +66,27 @@
       color: white;
     }
 
+    .chart-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 768px) {
+      .chart-wrapper div {
+        width: 100% !important;
+      }
+
+      .chart-wrapper canvas {
+        max-width: 100% !important;
+        height: auto !important;
+      }
+
+      .trend-result {
+        padding: 0 1rem;
+      }
+    }
+
     /* ✅ Loader styles */
     #loader {
       position: fixed;
@@ -147,8 +168,8 @@
         resultBox.innerHTML = `<strong>${match.label}</strong>:`;
         trendInfo.innerHTML = `
           <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
-          <div style="display: flex; justify-content: center; margin-top: 2rem;">
-            <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
+          <div class="chart-wrapper">
+            <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; max-width: 100%; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
               <h3>Total Votes: ${match.votes}</h3>
               <div class="bar-container" style="margin-top: 1rem; text-align: left;">
                 <div style="margin-bottom: 0.3rem; font-weight: bold;"><i class="fas fa-fire" style="color:#ff3c3c;"></i> Hype: ${firePercent}%</div>
