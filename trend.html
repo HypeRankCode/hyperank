@@ -8,7 +8,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-ZC93ESXDWX');
   </script>
@@ -64,30 +64,10 @@
       background: #555;
       color: white;
     }
-
-    .back-button {
-      display: inline-block;
-      margin-top: 2rem;
-      padding: 0.5rem 1rem;
-      background: #ff3c3c;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: #888;
-      font-size: 0.9rem;
-    }
   </style>
 </head>
 
 <body>
-  <!-- Shared header container -->
   <div id="siteHeader"></div>
 
   <main class="content-wrapper">
@@ -98,18 +78,13 @@
     </div>
   </main>
 
-  <footer>
-    &copy; 2025 HypeRank. All rights reserved.
-    · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
-    · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
-  </footer>
+  <div id="siteFooter"></div>
 
-  <!-- Supabase & Logic -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
     const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // truncated for clarity
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
@@ -117,8 +92,7 @@
     const trendInfo = document.getElementById("trendInfo");
 
     function similarity(a, b) {
-      a = a.toLowerCase();
-      b = b.toLowerCase();
+      a = a.toLowerCase(); b = b.toLowerCase();
       if (a === b) return 1;
       if (a.includes(b) || b.includes(a)) return 0.7;
       let matches = 0;
@@ -130,21 +104,16 @@
 
     async function fetchAndMatchTrend() {
       const { data: trends, error } = await supabase.from("trends").select("*");
-
       if (error || !trends || trends.length === 0) {
         resultBox.textContent = "There was an error loading trend data.";
-        console.error("Supabase error:", error);
         return;
       }
 
-      const match = trends.find(
-        t => t.name.toLowerCase() === query || t.label.toLowerCase() === query
-      );
+      const match = trends.find(t => t.name.toLowerCase() === query || t.label.toLowerCase() === query);
 
       if (match) {
         const firePercent = Math.round((match.hype / match.votes) * 100);
         const deadPercent = 100 - firePercent;
-
         resultBox.innerHTML = `<strong>${match.label}</strong>:`;
         trendInfo.innerHTML = `
           <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
@@ -158,14 +127,10 @@
                 <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
               </div>
             </div>
-          </div>
-        `;
+          </div>`;
       } else {
         resultBox.innerHTML = `No trends found for "<strong>${query}</strong>".`;
-
-        let bestMatch = null;
-        let bestScore = 0;
-
+        let bestMatch = null, bestScore = 0;
         for (const t of trends) {
           const score = similarity(query, t.name);
           if (score > bestScore) {
@@ -173,7 +138,6 @@
             bestMatch = t.name;
           }
         }
-
         if (bestScore >= 0.5 && bestMatch) {
           trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(bestMatch)}" style="color:#ff3c3c;">${bestMatch}</a>?`;
         }
@@ -183,7 +147,6 @@
     fetchAndMatchTrend();
   </script>
 
-  <!-- Include shared header loader -->
   <script src="/includes/includes.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -196,6 +159,7 @@
           `;
         }
       });
+      loadInclude("siteFooter", "/includes/footer.html");
     });
   </script>
 </body>
