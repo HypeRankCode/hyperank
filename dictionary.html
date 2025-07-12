@@ -58,53 +58,6 @@
       flex-direction: column;
     }
 
-    .site-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: #1a1a1a;
-      border-bottom: 1px solid #333;
-    }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .logo-container * {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      height: 36px;
-      margin-right: 10px;
-    }
-
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: white;
-    }
-
-    .logo-text .highlight {
-      color: #ff3c3c;
-    }
-
-    .nav-links a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: white;
-      font-weight: 500;
-    }
-
-    .nav-links a:hover {
-      color: #ff3c3c;
-    }
-
     main {
       flex: 1;
       padding: 2rem;
@@ -153,15 +106,8 @@
 </head>
 
 <body>
-  <header class="site-header">
-    <a href="index.html" class="logo-container">
-      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
-      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
-    </a>
-    <nav class="nav-links">
-      <a href="index.html">← Back to Home</a>
-    </nav>
-  </header>
+  <!-- Shared header placeholder -->
+  <div id="siteHeader"></div>
 
   <main>
     <h2 style="margin-bottom: 1rem;">Dictionary</h2>
@@ -180,7 +126,7 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
     const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // (full key kept in your code)
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     let trends = [];
@@ -257,6 +203,19 @@
         e.preventDefault();
         button.click();
       }
+    });
+  </script>
+
+  <!-- Header include loader -->
+  <script src="/includes/includes.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadInclude("siteHeader", "/includes/header.html", () => {
+        const nav = document.getElementById("headerNav");
+        if (nav) {
+          nav.innerHTML = `<a href="index.html">← Back to Home</a>`;
+        }
+      });
     });
   </script>
 </body>

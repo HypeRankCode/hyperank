@@ -1,151 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6150405281394443" crossorigin="anonymous"></script>
 
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6150405281394443"
-     crossorigin="anonymous"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZC93ESXDWX');
+  </script>
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-ZC93ESXDWX');
-</script>
+  <!-- Meta -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trend - HypeRank</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- Meta -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Trend - HypeRank</title>
-<link rel="stylesheet" href="style.css" />
-<link rel="icon" type="image/png" href="favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #111;
+      color: white;
+      font-family: 'Urbanist', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
 
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #111;
-    color: white;
-    font-family: 'Urbanist', sans-serif;
-    display: flex;
-    flex-direction: column;
-  }
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 2rem 1rem 3rem;
+    }
 
-  .site-header {
-    padding: 1rem 2rem;
-    background-color: #1a1a1a;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #333;
-  }
+    .trend-result {
+      max-width: 600px;
+      margin: 0 auto;
+    }
 
-  .logo-container {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-  }
+    .bar {
+      height: 24px;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      line-height: 24px;
+      font-weight: bold;
+    }
 
-  .logo-container * {
-    color: inherit;
-    text-decoration: none;
-  }
+    .fire-bar {
+      background: #ff3c3c;
+      color: white;
+    }
 
-  .logo-icon {
-    height: 36px;
-    margin-right: 10px;
-  }
+    .dead-bar {
+      background: #555;
+      color: white;
+    }
 
-  .logo-text {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
-  }
+    .back-button {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      background: #ff3c3c;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
 
-  .logo-text .highlight {
-    color: #ff3c3c;
-  }
-
-  .nav-links a {
-    margin-left: 1.5rem;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-  }
-
-  .nav-links a:hover {
-    color: #ff3c3c;
-  }
-
-  .content-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2rem 1rem 3rem;
-  }
-
-  .trend-result {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .bar {
-    height: 24px;
-    margin: 0.5rem 0;
-    border-radius: 8px;
-    line-height: 24px;
-    font-weight: bold;
-  }
-
-  .fire-bar {
-    background: #ff3c3c;
-    color: white;
-  }
-
-  .dead-bar {
-    background: #555;
-    color: white;
-  }
-
-  .back-button {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 0.5rem 1rem;
-    background: #ff3c3c;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-  }
-
-  footer {
-    text-align: center;
-    padding: 1rem;
-    background: #111;
-    color: #888;
-    font-size: 0.9rem;
-  }
-</style>
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #111;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 
 <body>
-  <header class="site-header">
-    <a href="index.html" class="logo-container">
-      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
-      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
-    </a>
-    <nav class="nav-links">
-      <a href="index.html">← Back to Home</a>
-      <a href="dictionary.html">Dictionary</a>
-    </nav>
-  </header>
+  <!-- Shared header container -->
+  <div id="siteHeader"></div>
 
   <main class="content-wrapper">
     <div class="trend-result">
@@ -161,83 +104,99 @@
     · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
   </footer>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
+  <!-- Supabase & Logic -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-  const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // truncated for clarity
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
-  const resultBox = document.getElementById("resultBox");
-  const trendInfo = document.getElementById("trendInfo");
+    const query = new URLSearchParams(window.location.search).get("term")?.toLowerCase();
+    const resultBox = document.getElementById("resultBox");
+    const trendInfo = document.getElementById("trendInfo");
 
-  function similarity(a, b) {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-    if (a === b) return 1;
-    if (a.includes(b) || b.includes(a)) return 0.7;
-    let matches = 0;
-    for (let i = 0; i < Math.min(a.length, b.length); i++) {
-      if (a[i] === b[i]) matches++;
-    }
-    return matches / Math.max(a.length, b.length);
-  }
-
-  async function fetchAndMatchTrend() {
-    const { data: trends, error } = await supabase.from("trends").select("*");
-
-    if (error || !trends || trends.length === 0) {
-      resultBox.textContent = "There was an error loading trend data.";
-      console.error("Supabase error:", error);
-      return;
+    function similarity(a, b) {
+      a = a.toLowerCase();
+      b = b.toLowerCase();
+      if (a === b) return 1;
+      if (a.includes(b) || b.includes(a)) return 0.7;
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
     }
 
-    const match = trends.find(
-      t => t.name.toLowerCase() === query || t.label.toLowerCase() === query
-    );
+    async function fetchAndMatchTrend() {
+      const { data: trends, error } = await supabase.from("trends").select("*");
 
-    if (match) {
-      const firePercent = Math.round((match.hype / match.votes) * 100);
-      const deadPercent = 100 - firePercent;
+      if (error || !trends || trends.length === 0) {
+        resultBox.textContent = "There was an error loading trend data.";
+        console.error("Supabase error:", error);
+        return;
+      }
 
-      resultBox.innerHTML = `<strong>${match.label}</strong>:`;
-      trendInfo.innerHTML = `
-        <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
-        <div style="display: flex; justify-content: center; margin-top: 2rem;">
-          <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
-            <h3>Total Votes: ${match.votes}</h3>
-            <div class="bar-container" style="margin-top: 1rem; text-align: left;">
-              <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
-              <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
-              <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
-              <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
+      const match = trends.find(
+        t => t.name.toLowerCase() === query || t.label.toLowerCase() === query
+      );
+
+      if (match) {
+        const firePercent = Math.round((match.hype / match.votes) * 100);
+        const deadPercent = 100 - firePercent;
+
+        resultBox.innerHTML = `<strong>${match.label}</strong>:`;
+        trendInfo.innerHTML = `
+          <p style="margin: 1rem auto; max-width: 400px;">${match.description}</p>
+          <div style="display: flex; justify-content: center; margin-top: 2rem;">
+            <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
+              <h3>Total Votes: ${match.votes}</h3>
+              <div class="bar-container" style="margin-top: 1rem; text-align: left;">
+                <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
+                <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
+                <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
+                <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    } else {
-      resultBox.innerHTML = `No trends found for "<strong>${query}</strong>".`;
+        `;
+      } else {
+        resultBox.innerHTML = `No trends found for "<strong>${query}</strong>".`;
 
-      // Generate suggestion
-      let bestMatch = null;
-      let bestScore = 0;
+        let bestMatch = null;
+        let bestScore = 0;
 
-      for (const t of trends) {
-        const score = similarity(query, t.name);
-        if (score > bestScore) {
-          bestScore = score;
-          bestMatch = t.name;
+        for (const t of trends) {
+          const score = similarity(query, t.name);
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = t.name;
+          }
+        }
+
+        if (bestScore >= 0.5 && bestMatch) {
+          trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(bestMatch)}" style="color:#ff3c3c;">${bestMatch}</a>?`;
         }
       }
-
-      if (bestScore >= 0.5 && bestMatch) {
-        trendInfo.innerHTML = `Did you mean: <a href="trend.html?term=${encodeURIComponent(bestMatch)}" style="color:#ff3c3c;">${bestMatch}</a>?`;
-      }
     }
-  }
 
-  fetchAndMatchTrend();
-</script>
+    fetchAndMatchTrend();
+  </script>
+
+  <!-- Include shared header loader -->
+  <script src="/includes/includes.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadInclude("siteHeader", "/includes/header.html", () => {
+        const nav = document.getElementById("headerNav");
+        if (nav) {
+          nav.innerHTML = `
+            <a href="index.html">← Back to Home</a>
+            <a href="dictionary.html">Dictionary</a>
+          `;
+        }
+      });
+    });
+  </script>
 </body>
 </html>
