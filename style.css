@@ -10,15 +10,84 @@ body {
 }
 
 body, input, textarea, button {
-font-family: 'Urbanist', sans-serif;
-font-weight: 400;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
 }
 
 h1, h2, h3, .logo-text, .highlight {
-font-family: 'Sora', sans-serif;
-font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
 }
 
+/* Responsive Typography */
+body {
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .trend-card, .vote-card {
+    width: 100% !important;
+  }
+
+  .matchup-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .result-bar {
+    height: 24px;
+  }
+
+  .vote-up, .vote-down {
+    width: 100%;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .trend-box, .submit-form, .spotlight-card {
+    max-width: 100%;
+    margin: 1rem;
+  }
+
+  .auth-box {
+    width: 95%;
+  }
+
+  .ticker-content {
+    font-size: 0.8rem;
+  }
+
+  .compare-btn {
+    margin: 0.5rem 0;
+    width: 100%;
+  }
+}
+
+/* Existing styles below (unchanged) */
 .site-header {
   display: flex;
   justify-content: space-between;
@@ -36,12 +105,12 @@ font-weight: 700;
 }
 
 .logo-container:visited {
-  color: inherit;         /* Prevent purple flash after clicking */
+  color: inherit;
 }
 
 .logo-container:focus,
 .logo-container:active {
-  outline: none;          /* Prevents browser glow effect */
+  outline: none;
 }
 
 .logo-icon {
@@ -74,6 +143,7 @@ font-weight: 700;
   opacity: 0.7;
   color: #ff3c3c;
 }
+
 
 .trend-box {
 background: #1a1a1a;
