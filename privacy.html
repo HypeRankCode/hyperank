@@ -1,17 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-ZC93ESXDWX');
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy | HypeRank</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="How HypeRank handles your privacy and data." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: 'Urbanist', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: #1a1a1a;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-icon {
+      height: 36px;
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .logo-text .highlight {
+      color: #ff3c3c;
+    }
+
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-home-btn:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 768px;
+      margin: 0 auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #111;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: #ff3c3c;
+      text-decoration: underline;
+    }
+
+    h1 {
+      border-bottom: 2px solid #ff3c3c;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+    }
+  </style>
 </head>
+
 <body>
+  <header class="site-header">
+    <a href="index.html" class="logo-container">
+      <img src="hyperank_icon.png" alt="HypeRank Icon" class="logo-icon" />
+      <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" class="back-home-btn">← Back to Home</a>
+    </nav>
+  </header>
+
   <main>
     <h1>Privacy Policy</h1>
-    <p>Last updated: July 12, 2025</p>
-    <p>HypeRank does not collect personally identifiable information unless explicitly provided by users. We use Google Analytics to understand site usage and improve our platform. By using this website, you agree to the use of cookies and analytics tools.</p>
-    <p>For questions or concerns, contact us at <a href="mailto:info@hyperank.ca">info@hyperank.ca</a>.</p>
+    <p><em>Last updated: July 12, 2025</em></p>
+    <p>HypeRank does not collect personally identifiable information unless explicitly provided by users.</p>
+    <p>We use Google Analytics and Google AdSense, which may use cookies to personalize ads and analyze usage data.</p>
+    <p>By using this site, you agree to the use of cookies and analytics services. We do not sell your personal data to third parties.</p>
+    <h2>Contact</h2>
+    <p>Questions? Email us at <a href="mailto:hyperank.contact@gmail.com" style="text-decoration: underline;">hyperank.contact@gmail.com</a></p>
   </main>
+
+  <footer>
+    &copy; 2025 HypeRank. All rights reserved.
+    · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
+    · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
+  </footer>
 </body>
 </html>
