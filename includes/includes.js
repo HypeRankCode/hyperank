@@ -1,13 +1,20 @@
-export function loadInclude(id, url, callback) {
+function loadInclude(id, url, callback) {
   const container = document.getElementById(id);
   if (!container) return;
 
   fetch(url)
-    .then(res => res.ok ? res.text() : Promise.reject(`Failed to load ${url}`))
+    .then(response => {
+      if (!response.ok) throw new Error(`Failed to load ${url}`);
+      return response.text();
+    })
     .then(html => {
       container.innerHTML = html;
       if (callback) callback();
     })
-    .catch(err => console.error(`Include error (${url}):`, err));
+    .catch(error => {
+      console.error(`Include error (${url}):`, error);
+    });
 }
+
+// Make it globally accessible
 window.loadInclude = loadInclude;
