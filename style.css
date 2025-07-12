@@ -729,28 +729,3 @@ footer a:hover {
   color: #ff1e40; /* your red highlight */
 }
 
-.trend-chart-box {
-  background: #1a1a1a;
-  padding: 1.5rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 700px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .trend-chart-box {
-    padding: 1rem;
-    max-width: 95%;
-    font-size: 0.95rem;
-  }
-}
-
-body {
-  overflow-x: hidden; /* ✅ removes horizontal scrollbars globally */
-}
-
-.bar {
-  max-width: 100%;
-}
