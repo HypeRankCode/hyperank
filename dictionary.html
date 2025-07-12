@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6150405281394443"
-    crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6150405281394443" crossorigin="anonymous"></script>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
@@ -14,7 +13,6 @@
     gtag('config', 'G-ZC93ESXDWX');
   </script>
 
-  <!-- Basic Meta -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hype Dictionary – Internet Slang & Trend Terms | HypeRank</title>
@@ -98,7 +96,7 @@
 </head>
 
 <body>
-  <!-- Global header and footer containers -->
+  <!-- Injected global layout -->
   <div id="siteHeader"></div>
 
   <main>
@@ -116,17 +114,14 @@
 
     const supabase = createClient(
       'https://rrnucumzptbwdxtkccyx.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz...'
     );
 
     let trends = [];
 
     async function fetchTrends() {
       const { data, error } = await supabase.from('trends').select('*');
-      if (error) {
-        console.error('Error fetching trends from Supabase:', error);
-        return;
-      }
+      if (error) return console.error('Supabase error:', error);
       trends = data;
     }
 
@@ -145,8 +140,7 @@
 
     function similarity(a, b) {
       let matches = 0;
-      const len = Math.min(a.length, b.length);
-      for (let i = 0; i < len; i++) {
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
         if (a[i] === b[i]) matches++;
       }
       return matches / Math.max(a.length, b.length);
@@ -164,14 +158,12 @@
           result.innerHTML = `No exact match. Did you mean: 
             <a class="suggestion-link" href="#" id="suggestion-link">${suggestions[0]}</a>?`;
           setTimeout(() => {
-            const suggestionEl = document.getElementById('suggestion-link');
-            if (suggestionEl) {
-              suggestionEl.addEventListener('click', e => {
-                e.preventDefault();
-                input.value = suggestions[0];
-                runSearch(suggestions[0]);
-              });
-            }
+            const el = document.getElementById('suggestion-link');
+            if (el) el.onclick = (e) => {
+              e.preventDefault();
+              input.value = suggestions[0];
+              runSearch(suggestions[0]);
+            };
           }, 0);
         } else {
           result.innerHTML = `No definition found for <strong>${term}</strong>.`;
@@ -179,35 +171,35 @@
       }
     }
 
-    button.addEventListener("click", () => {
+    button.onclick = () => {
       const term = input.value.trim();
       if (!term) {
         result.innerHTML = "Please enter a term.";
         return;
       }
       runSearch(term);
-    });
+    };
 
-    input.addEventListener("keypress", (e) => {
+    input.onkeypress = (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         button.click();
       }
-    });
+    };
   </script>
 
-  <!-- Load reusable header & footer -->
-<script src="/includes/includes.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    loadInclude("siteHeader", "/includes/header.html", () => {
-      const nav = document.getElementById("headerNav");
-      if (nav) {
-        nav.innerHTML = `<a href="/index.html">← Back to Home</a>`;
-      }
+  <!-- Load header and footer HTML -->
+  <script src="/includes/includes.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadInclude("siteHeader", "/includes/header.html", () => {
+        const nav = document.getElementById("headerNav");
+        if (nav) {
+          nav.innerHTML = `<a href="/index.html">← Back to Home</a>`;
+        }
+      });
+      loadInclude("siteFooter", "/includes/footer.html");
     });
-    loadInclude("siteFooter", "/includes/footer.html");
-  });
-</script>
+  </script>
 </body>
 </html>
