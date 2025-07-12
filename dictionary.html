@@ -94,19 +94,11 @@
       text-decoration: underline;
       cursor: pointer;
     }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: #888;
-      font-size: 0.9rem;
-    }
   </style>
 </head>
 
 <body>
-  <!-- Shared header placeholder -->
+  <!-- Global header and footer containers -->
   <div id="siteHeader"></div>
 
   <main>
@@ -116,18 +108,16 @@
     <div id="dictResult"></div>
   </main>
 
-  <footer>
-    &copy; 2025 HypeRank. All rights reserved.
-    · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
-    · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
-  </footer>
+  <div id="siteFooter"></div>
 
+  <!-- Supabase Logic -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
 
-    const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'; // (full key kept in your code)
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(
+      'https://rrnucumzptbwdxtkccyx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
+    );
 
     let trends = [];
 
@@ -206,16 +196,15 @@
     });
   </script>
 
-  <!-- Header include loader -->
+  <!-- Load reusable header & footer -->
   <script src="/includes/includes.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       loadInclude("siteHeader", "/includes/header.html", () => {
         const nav = document.getElementById("headerNav");
-        if (nav) {
-          nav.innerHTML = `<a href="index.html">← Back to Home</a>`;
-        }
+        if (nav) nav.innerHTML = `<a href="index.html">← Back to Home</a>`;
       });
+      loadInclude("siteFooter", "/includes/footer.html");
     });
   </script>
 </body>
