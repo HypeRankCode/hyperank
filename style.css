@@ -658,34 +658,3 @@ footer a {
 footer a:hover {
   color: #ff1e40; /* your red highlight */
 }
-
-.loader-screen {
-  position: fixed;
-  inset: 0;
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  transition: opacity 0.3s ease;
-}
-
-.loader-icon {
-  width: 60px;
-  height: auto;
-  animation: stockBounce 1.2s ease-in-out infinite;
-}
-
-@keyframes stockBounce {
-  0%   { transform: translateY(0); }
-  20%  { transform: translateY(-15px); }
-  40%  { transform: translateY(0); }
-  60%  { transform: translateY(10px); }
-  80%  { transform: translateY(0); }
-  100% { transform: translateY(-5px); }
-}
-
-/* Hide loader after load */
-body.loaded .loader-screen {
-  display: none;
-}
