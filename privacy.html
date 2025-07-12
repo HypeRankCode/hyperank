@@ -58,7 +58,6 @@
       text-decoration: underline;
     }
 
-    /* Loader styles */
     #loaderOverlay {
       position: fixed;
       top: 0;
@@ -102,11 +101,53 @@
   <main>
     <h1>Privacy Policy</h1>
     <p><em>Last updated: July 12, 2025</em></p>
-    <p>HypeRank does not collect personally identifiable information unless explicitly provided by users.</p>
-    <p>We use Google Analytics and Google AdSense, which may use cookies to personalize ads and analyze usage data.</p>
-    <p>By using this site, you agree to the use of cookies and analytics services. We do not sell your personal data to third parties.</p>
+    <p>At HypeRank, accessible at <a href="https://hyperank.ca">https://hyperank.ca</a>, we value your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights.</p>
+
+    <h2>Consent</h2>
+    <p>By using our site, you consent to our Privacy Policy and agree to its terms.</p>
+
+    <h2>Information We Collect</h2>
+    <p>We do not collect personally identifiable information unless explicitly provided by users (e.g. via email).</p>
+    <p>When you contact us, we may receive your name, email, message, and other details you choose to share.</p>
+
+    <h2>How We Use Information</h2>
+    <p>We may use the collected data to:</p>
+    <ul>
+      <li>Operate and maintain the site</li>
+      <li>Understand and analyze website usage</li>
+      <li>Improve and personalize user experience</li>
+      <li>Prevent fraud and monitor security</li>
+      <li>Serve relevant ads via Google AdSense</li>
+    </ul>
+
+    <h2>Log Files</h2>
+    <p>We use standard log files, including IP address, browser type, ISP, date/time, referring/exit pages, and clicks. These do not personally identify you.</p>
+
+    <h2>Cookies and Web Beacons</h2>
+    <p>We use cookies to store preferences and optimize the experience. Google AdSense may also use cookies and technologies to personalize ads.</p>
+
+    <h2>Third Party Services</h2>
+    <p>We use Google services like:</p>
+    <ul>
+      <li><a href="https://policies.google.com/technologies/ads" target="_blank">Google AdSense</a></li>
+      <li><a href="https://policies.google.com/technologies/cookies" target="_blank">Google Analytics</a></li>
+    </ul>
+    <p>These services may use cookies, IP addresses, and analytics tools. We have no control over third-party cookies.</p>
+
+    <h2>Your Data Protection Rights</h2>
+    <p>If you're a resident of the EEA or California, you may have rights under GDPR or CCPA, such as:</p>
+    <ul>
+      <li>Access, update, or delete your data</li>
+      <li>Object or restrict processing</li>
+      <li>Withdraw consent</li>
+    </ul>
+    <p>To exercise these rights, email us below.</p>
+
+    <h2>Children’s Privacy</h2>
+    <p>We do not knowingly collect information from children under 13. If you believe your child has submitted personal data, please contact us immediately.</p>
+
     <h2>Contact</h2>
-    <p>Questions? Email us at <a href="mailto:hyperank.contact@gmail.com">hyperank.contact@gmail.com</a></p>
+    <p>Questions or concerns? Email us at <a href="mailto:hyperank.contact@gmail.com">hyperank.contact@gmail.com</a></p>
   </main>
 
   <footer>
@@ -126,7 +167,6 @@
         }
       });
 
-      // Hide loader after content is loaded
       window.addEventListener("load", () => {
         const loader = document.getElementById("loaderOverlay");
         if (loader) loader.classList.add("fade-out");
