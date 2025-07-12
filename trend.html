@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="favicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
     html, body {
@@ -64,10 +65,39 @@
       background: #555;
       color: white;
     }
+
+    /* ✅ Loader styles */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    #loader img {
+      height: 60px;
+      animation: bounce 1.2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    body.loaded #loader {
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 
 <body>
+  <!-- ✅ Loader HTML -->
+  <div id="loader">
+    <img src="hyperank_icon.png" alt="Loading..." />
+  </div>
+
   <div id="siteHeader"></div>
 
   <main class="content-wrapper">
@@ -121,9 +151,9 @@
             <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 12px; width: 700px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);">
               <h3>Total Votes: ${match.votes}</h3>
               <div class="bar-container" style="margin-top: 1rem; text-align: left;">
-                <div style="margin-bottom: 0.3rem; font-weight: bold;">🔥 Hype: ${firePercent}%</div>
+                <div style="margin-bottom: 0.3rem; font-weight: bold;"><i class="fas fa-fire" style="color:#ff3c3c;"></i> Hype: ${firePercent}%</div>
                 <div class="bar fire-bar" style="width:${firePercent}%; min-width: 4px;"></div>
-                <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;">💀 Dead: ${deadPercent}%</div>
+                <div style="margin-top: 1rem; margin-bottom: 0.3rem; font-weight: bold;"><i class="fas fa-skull" style="color:#aaa;"></i> Dead: ${deadPercent}%</div>
                 <div class="bar dead-bar" style="width:${deadPercent}%; min-width: 4px;"></div>
               </div>
             </div>
@@ -160,6 +190,17 @@
         }
       });
       loadInclude("siteFooter", "/includes/footer.html");
+    });
+  </script>
+
+  <!-- ✅ Loader Script -->
+  <script>
+    window.addEventListener("load", () => {
+      document.body.classList.add("loaded");
+      setTimeout(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+      }, 600);
     });
   </script>
 </body>
