@@ -2,125 +2,137 @@
 <html lang="en">
 <head>
 
+<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6150405281394443"
      crossorigin="anonymous"></script>
-	 <!-- Google tag (gtag.js) -->
+
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-ZC93ESXDWX');
 </script>
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trend - HypeRank</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="favicon.png">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: #111;
-      color: white;
-      font-family: 'Urbanist', sans-serif;
-      display: flex;
-      flex-direction: column;
-    }
+<!-- Meta -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trend - HypeRank</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
 
-    .site-header {
-      padding: 1rem 2rem;
-      background-color: #1a1a1a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #333;
-    }
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #111;
+    color: white;
+    font-family: 'Urbanist', sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-    }
+  .site-header {
+    padding: 1rem 2rem;
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+  }
 
-    .logo-icon {
-      height: 36px;
-      margin-right: 10px;
-    }
+  .logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
 
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
+  .logo-container * {
+    color: inherit;
+    text-decoration: none;
+  }
 
-    .logo-text .highlight {
-      color: #ff3c3c;
-    }
+  .logo-icon {
+    height: 36px;
+    margin-right: 10px;
+  }
 
-    .nav-links a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: white;
-      font-weight: 500;
-    }
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+  }
 
-    .nav-links a:hover {
-      color: #ff3c3c;
-    }
+  .logo-text .highlight {
+    color: #ff3c3c;
+  }
 
-    .content-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 2rem 1rem 3rem;
-    }
+  .nav-links a {
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+  }
 
-    .trend-result {
-      max-width: 600px;
-      margin: 0 auto;
-    }
+  .nav-links a:hover {
+    color: #ff3c3c;
+  }
 
-    .bar {
-      height: 24px;
-      margin: 0.5rem 0;
-      border-radius: 8px;
-      line-height: 24px;
-      font-weight: bold;
-    }
+  .content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem 3rem;
+  }
 
-    .fire-bar {
-      background: #ff3c3c;
-      color: white;
-    }
+  .trend-result {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-    .dead-bar {
-      background: #555;
-      color: white;
-    }
+  .bar {
+    height: 24px;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    line-height: 24px;
+    font-weight: bold;
+  }
 
-    .back-button {
-      display: inline-block;
-      margin-top: 2rem;
-      padding: 0.5rem 1rem;
-      background: #ff3c3c;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
+  .fire-bar {
+    background: #ff3c3c;
+    color: white;
+  }
 
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: #888;
-      font-size: 0.9rem;
-    }
-  </style>
+  .dead-bar {
+    background: #555;
+    color: white;
+  }
+
+  .back-button {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.5rem 1rem;
+    background: #ff3c3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1rem;
+    background: #111;
+    color: #888;
+    font-size: 0.9rem;
+  }
+</style>
 </head>
 
 <body>
@@ -130,8 +142,8 @@
       <h1 class="logo-text">Hype<span class="highlight">Rank</span></h1>
     </a>
     <nav class="nav-links">
-      <a href="index.html" class="nav-link">← Back to Home</a>
-      <a href="dictionary.html" class="nav-link">Dictionary</a>
+      <a href="index.html">← Back to Home</a>
+      <a href="dictionary.html">Dictionary</a>
     </nav>
   </header>
 
@@ -143,11 +155,11 @@
     </div>
   </main>
 
-<footer>
-  &copy; 2025 HypeRank. All rights reserved.
-  · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
-  · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
-</footer>
+  <footer>
+    &copy; 2025 HypeRank. All rights reserved.
+    · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
+    · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
+  </footer>
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
