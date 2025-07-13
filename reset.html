@@ -41,6 +41,9 @@
       margin-top: -0.5rem;
       margin-bottom: 0.5rem;
     }
+    #siteFooter {
+      margin-top: auto;
+    }
     @media (max-width: 480px) {
       .auth-box {
         padding: 1.5rem;
@@ -68,6 +71,19 @@
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirm').value;
       const btn = document.getElementById('resetBtn');
+
+      const rules = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        number: /[0-9]/.test(password),
+        symbol: /[^A-Za-z0-9]/.test(password)
+      };
+
+      const allValid = Object.values(rules).every(Boolean);
+      if (!allValid) {
+        showMessage("Password must meet all strength requirements.", 'error');
+        return;
+      }
 
       if (password !== confirm) {
         showMessage("Passwords don't match.", 'error');
