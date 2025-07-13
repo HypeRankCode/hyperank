@@ -126,13 +126,30 @@
 
   <!-- Header include loader -->
 <script>
+  function loadInclude(id, url, callback) {
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch include: " + url);
+        return res.text();
+      })
+      .then(html => {
+        document.getElementById(id).innerHTML = html;
+        if (callback) callback();
+      })
+      .catch(err => {
+        console.error(err);
+        if (callback) callback(); // resolve anyway
+      });
+  }
+
   window.addEventListener("load", () => {
     Promise.all([
       new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
       new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
     ]).then(() => {
-      // Fully loaded, now fade in
       document.body.classList.add("loaded");
+      const loader = document.getElementById("loaderOverlay");
+      if (loader) loader.classList.add("fade-out");
     });
   });
 </script>
