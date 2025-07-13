@@ -197,24 +197,55 @@
     const button = document.getElementById('dictSearchBtn');
     const result = document.getElementById('dictResult');
 
-    function runSearch(term) {
-      const lowered = term.trim().toLowerCase();
-      const match = trends.find(entry => entry.label.toLowerCase() === lowered);
+function getSuggestions(term) {
+  const lowered = term.toLowerCase();
+  return trends
+    .map(entry => entry.label)
+    .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
+}
 
-      if (match) {
-        result.innerHTML = `
-          <div class="dict-entry">
-            <strong>${match.label}</strong>
-            <div class="dict-meta">${match.part_of_speech || 'noun'} · <em>${match.pronunciation || ''}</em></div>
-            <div>${match.description}</div>
-            ${match.origin ? `<div class="dict-meta">Origin: ${match.origin}</div>` : ''}
-            ${match.example ? `<div class="dict-example">"${match.example}"</div>` : ''}
-            ${match.tags ? `<div class="dict-tags">Tags: ${match.tags}</div>` : ''}
-          </div>`;
-      } else {
-        result.innerHTML = `No definition found for <strong>${term}</strong>.`;
-      }
+function similarity(a, b) {
+  let matches = 0;
+  for (let i = 0; i < Math.min(a.length, b.length); i++) {
+    if (a[i] === b[i]) matches++;
+  }
+  return matches / Math.max(a.length, b.length);
+}
+
+function runSearch(term) {
+  const lowered = term.trim().toLowerCase();
+  const match = trends.find(entry => entry.label.toLowerCase() === lowered);
+
+  if (match) {
+    result.innerHTML = `
+      <div class="dict-entry">
+        <strong>${match.label}</strong>
+        <div class="dict-meta">${match.part_of_speech || 'noun'} · <em>${match.pronunciation || ''}</em></div>
+        <div>${match.description}</div>
+        ${match.origin ? `<div class="dict-meta">Origin: ${match.origin}</div>` : ''}
+        ${match.example ? `<div class="dict-example">"${match.example}"</div>` : ''}
+        ${match.tags ? `<div class="dict-tags">Tags: ${Array.isArray(match.tags) ? match.tags.join(", ") : match.tags}</div>` : ''}
+      </div>`;
+  } else {
+    const suggestions = getSuggestions(lowered);
+    if (suggestions.length > 0) {
+      result.innerHTML = `
+        No exact match. Did you mean:
+        <a class="suggestion-link" href="#" id="suggestion-link">${suggestions[0]}</a>?`;
+
+      setTimeout(() => {
+        const el = document.getElementById('suggestion-link');
+        if (el) el.onclick = (e) => {
+          e.preventDefault();
+          input.value = suggestions[0];
+          runSearch(suggestions[0]);
+        };
+      }, 0);
+    } else {
+      result.innerHTML = `No definition found for <strong>${term}</strong>.`;
     }
+  }
+}
 
     button.onclick = () => {
       const term = input.value.trim();
