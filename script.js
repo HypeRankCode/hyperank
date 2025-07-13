@@ -131,9 +131,6 @@ function animateCount(el, endValue) {
   requestAnimationFrame(update);
 }
 
-  requestAnimationFrame(update);
-}
-
 
 // DOM loaded
 
