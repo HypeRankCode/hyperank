@@ -140,10 +140,12 @@ if (currentUser) {
     });
   }
 
-  const updateText = document.querySelector(".update-time p");
-  if (updateText) {
-    updateText.textContent = `Last updated: ${new Date().toLocaleString()}`;
-  }
+const { data, error } = await supabase
+  .from('trends')
+  .select('updated_at')
+  .order('updated_at', { ascending: false })
+  .limit(1);
+
 
   const searchForm = document.getElementById("trendSearchForm");
   if (searchForm) {
