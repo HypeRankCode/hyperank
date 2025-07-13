@@ -28,19 +28,25 @@
       e.preventDefault();
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirm').value;
+      const btn = document.getElementById('resetBtn');
 
       if (password !== confirm) {
         showMessage("Passwords don't match.", 'error');
         return;
       }
 
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Updating...`;
+
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
         showMessage(error.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Update Password';
       } else {
         showMessage("Password updated! Redirecting...", 'success');
-        setTimeout(() => window.location.href = '/', 2000);
+        setTimeout(() => window.location.href = '/login', 2000);
       }
     };
 
@@ -59,15 +65,66 @@
     }
   </script>
 </head>
+
 <body>
   <div class="auth-box" style="margin: 4rem auto; max-width: 400px; padding: 2rem;">
     <h2 style="text-align: center; margin-bottom: 1.5rem;">Reset Your Password</h2>
     <form id="resetForm" onsubmit="handleReset(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-      <input type="password" id="password" placeholder="New password" required style="padding: 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
-      <input type="password" id="confirm" placeholder="Confirm password" required style="padding: 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
-      <button type="submit" style="background:#ff3c3c; color:white; font-weight:bold; border-radius:8px; padding:0.75rem; border:none; width:100%; cursor:pointer;">Update Password</button>
+      <!-- Password input group -->
+      <div style="position: relative;">
+        <input type="password" id="password" placeholder="New password" required
+          style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
+        <i class="fas fa-eye toggle-password"
+          onclick="toggleVisibility('password', this)"
+          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
+      </div>
+
+      <!-- Strength meter -->
+      <div id="strengthMeter" style="height: 6px; border-radius: 4px; background: #333;"></div>
+
+      <!-- Confirm input group -->
+      <div style="position: relative;">
+        <input type="password" id="confirm" placeholder="Confirm password" required
+          style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
+        <i class="fas fa-eye toggle-password"
+          onclick="toggleVisibility('confirm', this)"
+          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
+      </div>
+
+      <!-- Submit button -->
+      <button id="resetBtn" type="submit"
+        style="background:#ff3c3c; color:white; font-weight:bold; border-radius:8px; padding:0.75rem; border:none; width:100%; cursor:pointer;">Update Password</button>
     </form>
     <p id="message" class="auth-msg" style="margin-top: 1rem; text-align: center;"></p>
   </div>
+
+  <!-- Font Awesome (icons) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+  <!-- Password utilities -->
+  <script>
+    function toggleVisibility(id, icon) {
+      const input = document.getElementById(id);
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    }
+
+    const strengthMeter = document.getElementById('strengthMeter');
+    const passwordInput = document.getElementById('password');
+
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      let strength = 0;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const colors = ['#333', '#ff3c3c', '#ffa500', '#4caf50'];
+      strengthMeter.style.background = colors[strength] || '#333';
+    });
+  </script>
 </body>
 </html>
