@@ -17,29 +17,35 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const { error } = await supabase.auth.getSession();
       if (error) {
+        showMessage('Invalid or expired reset link.', 'error');
         document.getElementById('resetForm').style.display = 'none';
-        document.getElementById('message').textContent = 'Invalid or expired reset link.';
       }
     });
 
-    async function handleReset(e) {
+    window.handleReset = async (e) => {
       e.preventDefault();
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirm').value;
 
       if (password !== confirm) {
-        alert("Passwords don't match.");
+        showMessage("Passwords don't match.", 'error');
         return;
       }
 
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        alert(error.message);
+        showMessage(error.message, 'error');
       } else {
-        alert("Password reset! You can now sign in.");
-        window.location.href = '/';
+        showMessage("✅ Password updated! Redirecting...", 'success');
+        setTimeout(() => window.location.href = '/', 2000);
       }
+    };
+
+    function showMessage(text, type = 'info') {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.style.color = type === 'error' ? '#ff3c3c' : (type === 'success' ? '#2ecc71' : '#ccc');
     }
   </script>
 </head>
@@ -49,9 +55,9 @@
     <form id="resetForm" onsubmit="handleReset(event)">
       <input type="password" id="password" placeholder="New password" required />
       <input type="password" id="confirm" placeholder="Confirm password" required />
-      <button type="submit">Update Password</button>
+      <button type="submit" style="background:#ff3c3c; color:white; font-weight:bold; border-radius:8px; padding:0.6rem; border:none; width:100%; cursor:pointer;">Update Password</button>
     </form>
-    <p id="message" class="auth-msg"></p>
+    <p id="message" class="auth-msg" style="margin-top: 1rem;"></p>
   </div>
 </body>
 </html>
