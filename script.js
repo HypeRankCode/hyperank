@@ -113,20 +113,23 @@ function formatTimeAgo(date) {
 // Run it immediately
 updateLastUpdatedTime();
 
-function animateCount(el, endValue, duration = 1000) {
-  let start = 0;
-  const stepTime = Math.max(Math.floor(duration / endValue), 20);
+function animateCount(el, endValue) {
+  const duration = Math.min(4000, 500 + endValue * 0.01); // Cap at 4s max
+  const start = 0;
   const startTime = performance.now();
 
   function update(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    const value = Math.floor(progress * endValue);
+    const value = Math.floor(progress * (endValue - start) + start);
     el.textContent = value.toLocaleString() + " votes";
     if (progress < 1) {
       requestAnimationFrame(update);
     }
   }
+
+  requestAnimationFrame(update);
+}
 
   requestAnimationFrame(update);
 }
