@@ -84,13 +84,13 @@ async function updateLastUpdatedTime() {
     .order('updated_at', { ascending: false })
     .limit(1);
 
-  if (error || !data || !data[0] || !data[0].created_at) {
+  if (error || !data || !data[0] || !data[0].updated_at) {
     updateText.textContent = "Last updated: unknown";
     console.error(error || "No valid data returned from Supabase.");
     return;
   }
 
-  const updatedAt = new Date(data[0].created_at);
+  const updatedAt = new Date(data[0].updated_at);
   updateText.textContent = `Last updated: ${formatTimeAgo(updatedAt)}`;
 }
 
