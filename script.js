@@ -80,8 +80,8 @@ async function updateLastUpdatedTime() {
 
   const { data, error } = await supabase
     .from('trends')
-    .select('created_at')
-    .order('created_at', { ascending: false })
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
     .limit(1);
 
   if (error || !data || !data[0] || !data[0].created_at) {
