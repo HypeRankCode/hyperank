@@ -6,6 +6,8 @@
   <title>Reset Password | HypeRank</title>
   <link rel="stylesheet" href="/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
@@ -37,15 +39,23 @@
       if (error) {
         showMessage(error.message, 'error');
       } else {
-        showMessage("✅ Password updated! Redirecting...", 'success');
+        showMessage("Password updated! Redirecting...", 'success');
         setTimeout(() => window.location.href = '/', 2000);
       }
     };
 
     function showMessage(text, type = 'info') {
       const msg = document.getElementById('message');
-      msg.textContent = text;
-      msg.style.color = type === 'error' ? '#ff3c3c' : (type === 'success' ? '#2ecc71' : '#ccc');
+      if (type === 'success') {
+        msg.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 6px;"></i> ${text}`;
+        msg.style.color = '#2ecc71';
+      } else if (type === 'error') {
+        msg.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> ${text}`;
+        msg.style.color = '#ff3c3c';
+      } else {
+        msg.textContent = text;
+        msg.style.color = '#ccc';
+      }
     }
   </script>
 </head>
