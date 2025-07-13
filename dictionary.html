@@ -121,6 +121,34 @@
     #dictResult {
       margin-top: 2rem;
       font-size: 1.1rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .dict-entry strong {
+      font-size: 1.4rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .dict-meta {
+      font-size: 0.95rem;
+      color: #aaa;
+      margin-bottom: 0.75rem;
+    }
+
+    .dict-example {
+      font-style: italic;
+      color: #ccc;
+      margin-top: 0.5rem;
+    }
+
+    .dict-tags {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #888;
     }
 
     .suggestion-link {
@@ -130,18 +158,13 @@
     }
   </style>
 </head>
-
 <body>
-
-  <!-- Loader -->
   <div id="loader" class="loader-screen">
     <img src="/assets/arrow-logo.png" alt="Loading..." class="loader-icon" />
   </div>
 
-  <!-- Global Header -->
   <div id="siteHeader"></div>
 
-  <!-- Main Content -->
   <main>
     <h2 style="margin-bottom: 1rem;">Dictionary</h2>
     <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." />
@@ -149,7 +172,6 @@
     <div id="dictResult"></div>
   </main>
 
-  <!-- Global Footer -->
   <div id="siteFooter"></div>
 
   <!-- Supabase -->
@@ -175,43 +197,22 @@
     const button = document.getElementById('dictSearchBtn');
     const result = document.getElementById('dictResult');
 
-    function getSuggestions(term) {
-      const lowered = term.toLowerCase();
-      return trends
-        .map(entry => entry.label)
-        .filter(t => t.toLowerCase().includes(lowered) || similarity(t.toLowerCase(), lowered) > 0.5);
-    }
-
-    function similarity(a, b) {
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
-    }
-
     function runSearch(term) {
       const lowered = term.trim().toLowerCase();
       const match = trends.find(entry => entry.label.toLowerCase() === lowered);
 
       if (match) {
-        result.innerHTML = `<strong>${match.label}</strong>: ${match.description}`;
+        result.innerHTML = `
+          <div class="dict-entry">
+            <strong>${match.label}</strong>
+            <div class="dict-meta">${match.part_of_speech || 'noun'} · <em>${match.pronunciation || ''}</em></div>
+            <div>${match.description}</div>
+            ${match.origin ? `<div class="dict-meta">Origin: ${match.origin}</div>` : ''}
+            ${match.example ? `<div class="dict-example">"${match.example}"</div>` : ''}
+            ${match.tags ? `<div class="dict-tags">Tags: ${match.tags}</div>` : ''}
+          </div>`;
       } else {
-        const suggestions = getSuggestions(lowered);
-        if (suggestions.length > 0) {
-          result.innerHTML = `No exact match. Did you mean: 
-            <a class="suggestion-link" href="#" id="suggestion-link">${suggestions[0]}</a>?`;
-          setTimeout(() => {
-            const el = document.getElementById('suggestion-link');
-            if (el) el.onclick = (e) => {
-              e.preventDefault();
-              input.value = suggestions[0];
-              runSearch(suggestions[0]);
-            };
-          }, 0);
-        } else {
-          result.innerHTML = `No definition found for <strong>${term}</strong>.`;
-        }
+        result.innerHTML = `No definition found for <strong>${term}</strong>.`;
       }
     }
 
@@ -232,47 +233,44 @@
     };
   </script>
 
-  <!-- Header/Footer Includes -->
-<script src="/includes/includes.js"></script>
-<script>
-  const includesLoaded = { header: false, footer: false };
-  let dataReady = false;
+  <script src="/includes/includes.js"></script>
+  <script>
+    const includesLoaded = { header: false, footer: false };
+    let dataReady = false;
 
-  function tryHideLoader() {
-    if (includesLoaded.header && includesLoaded.footer && dataReady) {
-      document.body.classList.add("loaded");
-    }
-  }
-
-  // Wait for DOM and includes
-  document.addEventListener("DOMContentLoaded", () => {
-    loadInclude("siteHeader", "/includes/header.html", () => {
-      const nav = document.getElementById("headerNav");
-      if (nav) {
-        nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+    function tryHideLoader() {
+      if (includesLoaded.header && includesLoaded.footer && dataReady) {
+        document.body.classList.add("loaded");
       }
-      includesLoaded.header = true;
-      tryHideLoader();
-    });
-
-    loadInclude("siteFooter", "/includes/footer.html", () => {
-      includesLoaded.footer = true;
-      tryHideLoader();
-    });
-  });
-
-  // Wait for window + Supabase data
-  window.addEventListener("load", async () => {
-    try {
-      const { data, error } = await supabase.from('trends').select('*');
-      if (error) console.error("Supabase error:", error);
-      else trends = data || [];
-    } catch (err) {
-      console.error("Fetch error:", err);
     }
-    dataReady = true;
-    tryHideLoader();
-  });
-</script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadInclude("siteHeader", "/includes/header.html", () => {
+        const nav = document.getElementById("headerNav");
+        if (nav) {
+          nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+        }
+        includesLoaded.header = true;
+        tryHideLoader();
+      });
+
+      loadInclude("siteFooter", "/includes/footer.html", () => {
+        includesLoaded.footer = true;
+        tryHideLoader();
+      });
+    });
+
+    window.addEventListener("load", async () => {
+      try {
+        const { data, error } = await supabase.from('trends').select('*');
+        if (error) console.error("Supabase error:", error);
+        else trends = data || [];
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+      dataReady = true;
+      tryHideLoader();
+    });
+  </script>
 </body>
 </html>
