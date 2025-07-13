@@ -729,3 +729,47 @@ footer a:hover {
   color: #ff1e40; /* your red highlight */
 }
 
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1rem;
+  }
+
+  .logo-container {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .logo-icon {
+    height: 28px;
+    margin-right: 6px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  .nav-links a {
+    font-size: 0.95rem;
+    margin-left: 0;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #222;
+  }
+}
+
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111 !important;
+  }
+  html {
+    background-color: #111 !important;
+  }
+}
