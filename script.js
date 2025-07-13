@@ -6,7 +6,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
@@ -18,9 +17,9 @@ window.signIn = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-document.getElementById('authMsg').innerHTML = error
-  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
-  : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+  document.getElementById('authMsg').innerHTML = error
+    ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
+    : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
   if (!error) setTimeout(() => location.reload(), 1000);
 };
 window.signUp = async () => {
@@ -52,7 +51,7 @@ window.signUp = async () => {
     return;
   }
 
-    document.getElementById('authMsg').innerHTML = '<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!';
+  document.getElementById('authMsg').innerHTML = '<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!';
 };
 
 window.logoutUser = async () => {
@@ -69,10 +68,46 @@ window.resetPassword = async () => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset`
   });
-document.getElementById('authMsg').innerHTML = error
-  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
-  : `<i class="fas fa-envelope" style="color:#4f4;"></i> Password reset email sent!`;
+  document.getElementById('authMsg').innerHTML = error
+    ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
+    : `<i class="fas fa-envelope" style="color:#4f4;"></i> Password reset email sent!`;
 };
+
+// Add last updated fetch for update-time
+async function updateLastUpdatedTime() {
+  const updateText = document.querySelector(".update-time p");
+  if (!updateText) return;
+
+  const { data, error } = await supabase
+    .from('trends')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+  if (error || !data.length) {
+    updateText.textContent = "Last updated: unknown";
+    console.error(error || "No data returned from Supabase.");
+    return;
+  }
+
+  const updatedAt = new Date(data[0].updated_at);
+  updateText.textContent = `Last updated: ${formatTimeAgo(updatedAt)}`;
+}
+
+function formatTimeAgo(date) {
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  if (seconds < 60) return `${seconds} seconds ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} days ago`;
+}
+
+// Run it immediately
+updateLastUpdatedTime();
 
 // DOM loaded
 
