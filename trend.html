@@ -16,6 +16,7 @@
   <!-- Meta -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111111" />
   <title>Trend - HypeRank</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="favicon.png">
@@ -66,37 +67,72 @@
       color: white;
     }
 
-  @media (max-width: 768px) {
-    /* shrink the inner trend result card */
-    .trend-result {
-      max-width: 100%;
-      padding: 0 1rem;
+    /* ✅ Loader Styles */
+    #loaderOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
     }
 
-    #trendInfo > div {
-      overflow-x: hidden;
+    #loaderOverlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
 
-    #trendInfo > div > div {
-      width: 100% !important;
-      max-width: 100% !important;
-      box-sizing: border-box;
+    .loader-icon {
+      animation: bounce 1.2s infinite;
+      width: 48px;
+      height: 48px;
     }
 
-    .bar-container {
-      padding: 0 0.5rem;
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
     }
 
-    .bar {
-      font-size: 0.85rem;
-      height: 20px;
-      line-height: 20px;
+    @media (max-width: 768px) {
+      .trend-result {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+
+      #trendInfo > div {
+        overflow-x: hidden;
+      }
+
+      #trendInfo > div > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+      }
+
+      .bar-container {
+        padding: 0 0.5rem;
+      }
+
+      .bar {
+        font-size: 0.85rem;
+        height: 20px;
+        line-height: 20px;
+      }
     }
-  }
-</style>
+  </style>
 </head>
 
 <body>
+  <!-- ✅ Loader HTML -->
+  <div id="loaderOverlay">
+    <img src="/hyperank_icon.png" alt="Loading..." class="loader-icon" />
+  </div>
+
   <div id="siteHeader"></div>
 
   <main class="content-wrapper">
@@ -184,11 +220,17 @@
         if (nav) {
           nav.innerHTML = `
             <a href="https://hyperank.ca">← Back to Home</a>
-			<a href="https://hyperank.ca/dictionary">Dictionary</a>
+            <a href="https://hyperank.ca/dictionary">Dictionary</a>
           `;
         }
       });
       loadInclude("siteFooter", "/includes/footer.html");
+    });
+
+    // ✅ Hide loader after everything loads
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loaderOverlay");
+      if (loader) loader.classList.add("fade-out");
     });
   </script>
 </body>

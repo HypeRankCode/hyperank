@@ -763,13 +763,3 @@ footer a:hover {
     border-bottom: 1px solid #222;
   }
 }
-
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111 !important;
-  }
-  html {
-    background-color: #111 !important;
-  }
-}
