@@ -129,22 +129,46 @@
   </footer>
 
   <!-- Header include loader -->
-  <script src="/includes/includes.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      loadInclude("siteHeader", "/includes/header.html", () => {
-        const nav = document.getElementById("headerNav");
-        if (nav) {
-          nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
-        }
-      });
+<script src="/includes/includes.js"></script>
+<script>
+  const includesLoaded = { header: false, footer: false };
+  let dataReady = false;
 
-      // Hide loader after content is fully loaded
-      window.addEventListener("load", () => {
-        const loader = document.getElementById("loaderOverlay");
-        if (loader) loader.classList.add("fade-out");
-      });
+  function tryHideLoader() {
+    if (includesLoaded.header && includesLoaded.footer && dataReady) {
+      document.body.classList.add("loaded");
+    }
+  }
+
+  // Wait for DOM and includes
+  document.addEventListener("DOMContentLoaded", () => {
+    loadInclude("siteHeader", "/includes/header.html", () => {
+      const nav = document.getElementById("headerNav");
+      if (nav) {
+        nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+      }
+      includesLoaded.header = true;
+      tryHideLoader();
     });
-  </script>
+
+    loadInclude("siteFooter", "/includes/footer.html", () => {
+      includesLoaded.footer = true;
+      tryHideLoader();
+    });
+  });
+
+  // Wait for window + Supabase data
+  window.addEventListener("load", async () => {
+    try {
+      const { data, error } = await supabase.from('trends').select('*');
+      if (error) console.error("Supabase error:", error);
+      else trends = data || [];
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+    dataReady = true;
+    tryHideLoader();
+  });
+</script>
 </body>
 </html>

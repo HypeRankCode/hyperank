@@ -212,38 +212,48 @@
     fetchAndMatchTrend();
   </script>
 
-  <script src="/includes/includes.js"></script>
-  <script>
-    const includesLoaded = {
-      header: false,
-      footer: false
-    };
+ <script src="/includes/includes.js"></script>
+<script>
+  const includesLoaded = { header: false, footer: false };
+  let pageReady = false;
 
-    function tryHideLoader() {
-      if (includesLoaded.header && includesLoaded.footer) {
-        const loader = document.getElementById("loaderOverlay");
-        if (loader) loader.classList.add("fade-out");
-      }
+  function tryHideLoader() {
+    if (includesLoaded.header && includesLoaded.footer && pageReady) {
+      const loader = document.getElementById("loaderOverlay");
+      if (loader) loader.classList.add("fade-out");
     }
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadInclude("siteHeader", "/includes/header.html", () => {
-        const nav = document.getElementById("headerNav");
-        if (nav) {
-          nav.innerHTML = `
-            <a href="https://hyperank.ca">← Back to Home</a>
-            <a href="https://hyperank.ca/dictionary">Dictionary</a>
-          `;
-        }
-        includesLoaded.header = true;
-        tryHideLoader();
-      });
-
-      loadInclude("siteFooter", "/includes/footer.html", () => {
-        includesLoaded.footer = true;
-        tryHideLoader();
-      });
+  document.addEventListener("DOMContentLoaded", () => {
+    loadInclude("siteHeader", "/includes/header.html", () => {
+      const nav = document.getElementById("headerNav");
+      if (nav) {
+        nav.innerHTML = `
+          <a href="https://hyperank.ca">← Back to Home</a>
+          <a href="https://hyperank.ca/dictionary">Dictionary</a>
+        `;
+      }
+      includesLoaded.header = true;
+      tryHideLoader();
     });
-  </script>
+
+    loadInclude("siteFooter", "/includes/footer.html", () => {
+      includesLoaded.footer = true;
+      tryHideLoader();
+    });
+  });
+
+  window.addEventListener("load", () => {
+    if (typeof fetchAndMatchTrend === 'function') {
+      fetchAndMatchTrend().then(() => {
+        pageReady = true;
+        tryHideLoader();
+      });
+    } else {
+      pageReady = true;
+      tryHideLoader();
+    }
+  });
+</script>
 </body>
 </html>
