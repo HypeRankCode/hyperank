@@ -136,8 +136,9 @@
         document.getElementById(id).innerHTML = html;
         if (id === "siteHeader") {
           const nav = document.getElementById("headerNav");
-            nav.innerHTML = `<a href="https://hyperank.ca" style="color:#ffffff;text-decoration:none;font-weight:600;">← Back to Home</a>`;
           if (nav) {
+            nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+            nav.classList.add("nav-links"); // ensures proper CSS is applied
           }
         }
         if (callback) callback();
