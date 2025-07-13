@@ -296,14 +296,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <section id="spotlight" class="spotlight-trend">
-    <h2>Spotlight Trend</h2>
-    <div class="spotlight-card">
-      <h3>“Rizz”</h3>
-      <p>Classic Gen Z slang for charisma or pickup game. Still used, but fading in 2025.</p>
-      <span class="rank-meta"><i class="fas fa-fire" style="color:#f44;"></i> Ranked #2 this week</span>
-    </div>
-  </section>
+<div id="spotlight-container"></div>
 
 <div class="update-time">
   <p>Last updated...</p>
@@ -411,6 +404,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     });
   });
+</script>
+
+<script>
+  fetch('spotlight.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('spotlight-container').innerHTML = html;
+    })
+    .catch(error => {
+      console.error("Failed to load spotlight section:", error);
+    });
 </script>
 
 </body>
