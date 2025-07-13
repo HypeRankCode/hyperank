@@ -113,6 +113,25 @@ function formatTimeAgo(date) {
 // Run it immediately
 updateLastUpdatedTime();
 
+function animateCount(el, endValue, duration = 1000) {
+  let start = 0;
+  const stepTime = Math.max(Math.floor(duration / endValue), 20);
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const value = Math.floor(progress * endValue);
+    el.textContent = value.toLocaleString() + " votes";
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+
 // DOM loaded
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -395,7 +414,7 @@ try {
 
     const votes = document.createElement("div");
     votes.className = "trend-votes";
-    votes.textContent = trend.votes + " votes";
+    animateCount(votes, trend.votes);
 
     const hypeScore = document.createElement("div");
     hypeScore.className = "meta-info";
