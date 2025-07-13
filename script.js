@@ -414,7 +414,19 @@ try {
 
     const votes = document.createElement("div");
     votes.className = "trend-votes";
-    animateCount(votes, trend.votes);
+    votes.textContent = "0 votes"; // placeholder
+
+const observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCount(votes, trend.votes);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+observer.observe(votes);
+
 
     const hypeScore = document.createElement("div");
     hypeScore.className = "meta-info";
