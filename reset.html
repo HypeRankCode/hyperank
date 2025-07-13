@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password | HypeRank</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      'https://rrnucumzptbwdxtkccyx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
+    );
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const { error } = await supabase.auth.getSession();
+      if (error) {
+        document.getElementById('resetForm').style.display = 'none';
+        document.getElementById('message').textContent = 'Invalid or expired reset link.';
+      }
+    });
+
+    async function handleReset(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (password !== confirm) {
+        alert("Passwords don't match.");
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        alert(error.message);
+      } else {
+        alert("Password reset! You can now sign in.");
+        window.location.href = '/';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="auth-box" style="margin: 4rem auto; max-width: 400px;">
+    <h2 style="text-align: center;">Reset Your Password</h2>
+    <form id="resetForm" onsubmit="handleReset(event)">
+      <input type="password" id="password" placeholder="New password" required />
+      <input type="password" id="confirm" placeholder="Confirm password" required />
+      <button type="submit">Update Password</button>
+    </form>
+    <p id="message" class="auth-msg"></p>
+  </div>
+</body>
+</html>
