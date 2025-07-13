@@ -385,11 +385,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ✅ Your trend suggestion was submitted
   </div>
 
-<footer>
-  &copy; 2025 HypeRank. All rights reserved.
-  · <a href="/privacy" style="text-decoration: underline;">Privacy Policy</a>
-  · <a href="/terms" style="text-decoration: underline;">Terms of Service</a>
-</footer>
+<div id="siteFooter"></div>
 
 <script>
   window.addEventListener("load", () => {
@@ -415,6 +411,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .catch(error => {
       console.error("Failed to load spotlight section:", error);
     });
+</script>
+
+<!-- Footer Include Only -->
+<script src="/includes/includes.js"></script>
+<script>
+  const includesLoaded = { footer: false };
+  let dataReady = false;
+
+  function tryHideLoader() {
+    if (includesLoaded.footer && dataReady) {
+      document.body.classList.add("loaded");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadInclude("siteFooter", "/includes/footer.html", () => {
+      includesLoaded.footer = true;
+      tryHideLoader();
+    });
+  });
+
+  window.addEventListener("load", async () => {
+    try {
+      const { data, error } = await supabase.from('trends').select('*');
+      if (error) console.error("Supabase error:", error);
+      else trends = data || [];
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+    dataReady = true;
+    tryHideLoader();
+  });
 </script>
 
 </body>
