@@ -65,7 +65,35 @@
       background: #555;
       color: white;
     }
-  </style>
+
+  @media (max-width: 768px) {
+    /* shrink the inner trend result card */
+    .trend-result {
+      max-width: 100%;
+      padding: 0 1rem;
+    }
+
+    #trendInfo > div {
+      overflow-x: hidden;
+    }
+
+    #trendInfo > div > div {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+
+    .bar-container {
+      padding: 0 0.5rem;
+    }
+
+    .bar {
+      font-size: 0.85rem;
+      height: 20px;
+      line-height: 20px;
+    }
+  }
+</style>
 </head>
 
 <body>
