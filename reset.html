@@ -45,8 +45,8 @@
         btn.disabled = false;
         btn.innerHTML = 'Update Password';
       } else {
-        showMessage("Password updated! Redirecting...", 'success');
-        setTimeout(() => window.location.href = '/login', 2000);
+        showMessage("Password updated! Redirecting to login...", 'success');
+        setTimeout(() => window.location.href = '/?login=true', 2000);
       }
     };
 

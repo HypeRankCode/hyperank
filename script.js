@@ -67,7 +67,7 @@ window.resetPassword = async () => {
     return;
   }
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset.html`
+    redirectTo: `${window.location.origin}/reset`
   });
 document.getElementById('authMsg').innerHTML = error
   ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
@@ -85,6 +85,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const authBtn = document.getElementById('authBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const voteNotice = document.getElementById('voteNotice');
+  
+  const params = new URLSearchParams(window.location.search);
+if (params.get('login') === 'true') {
+  const modal = document.getElementById('authModal');
+  if (modal) modal.style.display = 'flex';
+
+  // Optional: Clear ?login=true from URL
+  history.replaceState({}, document.title, window.location.pathname);
+}
 
   if (user) {
     const username = user.user_metadata?.display_name || user.email;
