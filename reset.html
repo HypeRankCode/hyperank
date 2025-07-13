@@ -33,9 +33,11 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
-    #strengthHint {
-      font-size: 0.875rem;
-      color: #999;
+    #validationList {
+      font-size: 0.9rem;
+      color: #ccc;
+      list-style: none;
+      padding-left: 1rem;
       margin-top: -0.5rem;
       margin-bottom: 0.5rem;
     }
@@ -113,7 +115,12 @@
         <i class="fas fa-eye toggle-password" onclick="toggleVisibility('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
       </div>
       <div id="strengthMeter" style="height: 6px; border-radius: 4px; background: #333;"></div>
-      <div id="strengthHint">Must be at least 8 characters, include uppercase, numbers, and symbols.</div>
+      <ul id="validationList">
+        <li id="val-length"><i class="fas fa-times-circle" style="color:#ff3c3c;"></i> At least 8 characters</li>
+        <li id="val-uppercase"><i class="fas fa-times-circle" style="color:#ff3c3c;"></i> Includes uppercase letter</li>
+        <li id="val-number"><i class="fas fa-times-circle" style="color:#ff3c3c;"></i> Includes a number</li>
+        <li id="val-symbol"><i class="fas fa-times-circle" style="color:#ff3c3c;"></i> Includes a symbol</li>
+      </ul>
 
       <div style="position: relative;">
         <input type="password" id="confirm" placeholder="Confirm password" required />
@@ -143,52 +150,69 @@
     passwordInput.addEventListener('input', () => {
       const val = passwordInput.value;
       let strength = 0;
-      if (val.length >= 8) strength++;
-      if (/[A-Z]/.test(val)) strength++;
-      if (/[0-9]/.test(val)) strength++;
-      if (/[^A-Za-z0-9]/.test(val)) strength++;
 
+      const rules = {
+        length: val.length >= 8,
+        uppercase: /[A-Z]/.test(val),
+        number: /[0-9]/.test(val),
+        symbol: /[^A-Za-z0-9]/.test(val)
+      };
+
+      Object.values(rules).forEach(rule => { if (rule) strength++; });
       const colors = ['#333', '#ff3c3c', '#ffa500', '#4caf50', '#00cc88'];
       const color = colors[Math.min(strength, colors.length - 1)];
       strengthMeter.style.background = color;
+
+      updateValidation('val-length', rules.length);
+      updateValidation('val-uppercase', rules.uppercase);
+      updateValidation('val-number', rules.number);
+      updateValidation('val-symbol', rules.symbol);
     });
+
+    function updateValidation(id, valid) {
+      const el = document.getElementById(id);
+      const text = el.textContent.split(' ').slice(1).join(' ');
+      el.innerHTML = valid
+        ? `<i class="fas fa-check-circle" style="color:#2ecc71;"></i> ${text}`
+        : `<i class="fas fa-times-circle" style="color:#ff3c3c;"></i> ${text}`;
+    }
   </script>
 
-<!-- Header/footer injection with back to home -->
-<script>
-  function loadInclude(id, url, callback) {
-    fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch include: " + url);
-        return res.text();
-      })
-      .then(html => {
-        document.getElementById(id).innerHTML = html;
-        if (id === "siteHeader") {
-          const nav = document.getElementById("headerNav");
-          if (nav) {
-            nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
-            nav.classList.add("nav-links"); // for styling consistency
+  <!-- Header/footer injection with back to home -->
+  <script>
+    function loadInclude(id, url, callback) {
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch include: " + url);
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById(id).innerHTML = html;
+          if (id === "siteHeader") {
+            const nav = document.getElementById("headerNav");
+            if (nav) {
+              nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+              nav.classList.add("nav-links");
+            }
           }
-        }
-        if (callback) callback();
-      })
-      .catch(err => {
-        console.error(err);
-        if (callback) callback(); // resolve anyway
-      });
-  }
+          if (callback) callback();
+        })
+        .catch(err => {
+          console.error(err);
+          if (callback) callback();
+        });
+    }
 
-  window.addEventListener("load", () => {
-    Promise.all([
-      new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
-      new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
-    ]).then(() => {
-      document.body.classList.add("loaded");
-      const loader = document.getElementById("loaderOverlay");
-      if (loader) loader.classList.add("fade-out");
+    window.addEventListener("load", () => {
+      Promise.all([
+        new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
+        new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
+      ]).then(() => {
+        document.body.classList.add("loaded");
+        const loader = document.getElementById("loaderOverlay");
+        if (loader) loader.classList.add("fade-out");
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
