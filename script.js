@@ -9,10 +9,14 @@ let currentUser = null;
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
+  document.body.classList.add('modal-open'); // prevent scroll
 };
+
 window.closeAuth = () => {
   document.getElementById('authModal').style.display = 'none';
+  document.body.classList.remove('modal-open'); // allow scroll
 };
+
 window.signIn = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
