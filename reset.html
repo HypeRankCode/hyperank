@@ -7,7 +7,44 @@
   <link rel="stylesheet" href="/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Urbanist', sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .auth-box {
+      margin: 4rem auto;
+      max-width: 400px;
+      padding: 2rem;
+      width: 90%;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem 2.25rem 0.75rem 0.75rem;
+      border-radius: 8px;
+      border: none;
+      background: #2a2a2a;
+      color: white;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    #strengthHint {
+      font-size: 0.875rem;
+      color: #999;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    @media (max-width: 480px) {
+      .auth-box {
+        padding: 1.5rem;
+      }
+    }
+  </style>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
@@ -65,43 +102,32 @@
     }
   </script>
 </head>
-
 <body>
-  <div class="auth-box" style="margin: 4rem auto; max-width: 400px; padding: 2rem;">
+  <div id="siteHeader"></div>
+
+  <div class="auth-box">
     <h2 style="text-align: center; margin-bottom: 1.5rem;">Reset Your Password</h2>
     <form id="resetForm" onsubmit="handleReset(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-      <!-- Password input group -->
       <div style="position: relative;">
-        <input type="password" id="password" placeholder="New password" required
-          style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
-        <i class="fas fa-eye toggle-password"
-          onclick="toggleVisibility('password', this)"
-          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
+        <input type="password" id="password" placeholder="New password" required />
+        <i class="fas fa-eye toggle-password" onclick="toggleVisibility('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
       </div>
-
-      <!-- Strength meter -->
       <div id="strengthMeter" style="height: 6px; border-radius: 4px; background: #333;"></div>
+      <div id="strengthHint">Must be at least 8 characters, include uppercase, numbers, and symbols.</div>
 
-      <!-- Confirm input group -->
       <div style="position: relative;">
-        <input type="password" id="confirm" placeholder="Confirm password" required
-          style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 0.75rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; font-size: 1rem;" />
-        <i class="fas fa-eye toggle-password"
-          onclick="toggleVisibility('confirm', this)"
-          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
+        <input type="password" id="confirm" placeholder="Confirm password" required />
+        <i class="fas fa-eye toggle-password" onclick="toggleVisibility('confirm', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer;"></i>
       </div>
 
-      <!-- Submit button -->
-      <button id="resetBtn" type="submit"
-        style="background:#ff3c3c; color:white; font-weight:bold; border-radius:8px; padding:0.75rem; border:none; width:100%; cursor:pointer;">Update Password</button>
+      <button id="resetBtn" type="submit" style="background:#ff3c3c; color:white; font-weight:bold; border-radius:8px; padding:0.75rem; border:none; width:100%; cursor:pointer;">Update Password</button>
     </form>
     <p id="message" class="auth-msg" style="margin-top: 1rem; text-align: center;"></p>
   </div>
 
-  <!-- Font Awesome (icons) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <div id="siteFooter"></div>
 
-  <!-- Password utilities -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
   <script>
     function toggleVisibility(id, icon) {
       const input = document.getElementById(id);
@@ -122,9 +148,47 @@
       if (/[0-9]/.test(val)) strength++;
       if (/[^A-Za-z0-9]/.test(val)) strength++;
 
-      const colors = ['#333', '#ff3c3c', '#ffa500', '#4caf50'];
-      strengthMeter.style.background = colors[strength] || '#333';
+      const colors = ['#333', '#ff3c3c', '#ffa500', '#4caf50', '#00cc88'];
+      const color = colors[Math.min(strength, colors.length - 1)];
+      strengthMeter.style.background = color;
     });
   </script>
+
+<!-- Header/footer injection with back to home -->
+<script>
+  function loadInclude(id, url, callback) {
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch include: " + url);
+        return res.text();
+      })
+      .then(html => {
+        document.getElementById(id).innerHTML = html;
+        if (id === "siteHeader") {
+          const nav = document.getElementById("headerNav");
+          if (nav) {
+            nav.innerHTML = `<a href="https://hyperank.ca">← Back to Home</a>`;
+            nav.classList.add("nav-links"); // for styling consistency
+          }
+        }
+        if (callback) callback();
+      })
+      .catch(err => {
+        console.error(err);
+        if (callback) callback(); // resolve anyway
+      });
+  }
+
+  window.addEventListener("load", () => {
+    Promise.all([
+      new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
+      new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
+    ]).then(() => {
+      document.body.classList.add("loaded");
+      const loader = document.getElementById("loaderOverlay");
+      if (loader) loader.classList.add("fade-out");
+    });
+  });
+</script>
 </body>
 </html>
