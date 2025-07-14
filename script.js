@@ -206,6 +206,32 @@ if (currentUser) {
 
 
 //cutoff
+  const supabase = createClient(
+    'https://rrnucumzptbwdxtkccyx.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
+  );
+
+  async function checkAuthForSubmitForm() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const overlay = document.getElementById('submitOverlay');
+    const form = document.querySelector('.submit-form');
+
+    if (!user) {
+      overlay.style.display = 'flex';
+      form.style.pointerEvents = 'none';
+      form.style.opacity = '0.3';
+    } else {
+      overlay.style.display = 'none';
+      form.style.pointerEvents = 'auto';
+      form.style.opacity = '1';
+    }
+  }
+
+  // Run the check once page loads
+  checkAuthForSubmitForm();
+
+
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", async (e) => {
