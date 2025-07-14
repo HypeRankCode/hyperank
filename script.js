@@ -321,10 +321,10 @@ async function renderVotePair() {
   box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
-    const { data: allTrends, error } = await supabase
-      .from("trends")
-      .select("*")
-      .contains("tags", ["slang"]);
+const { data: allTrends, error } = await supabase
+  .from("trends")
+  .select("*")
+  .or("tags.ilike.%slang%,tags.ilike.%genz%,tags.ilike.%dating%");
 
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
