@@ -320,7 +320,7 @@ async function renderVotePair() {
   box.style.opacity = "0";
   box.style.transition = "opacity 0.3s ease";
 
-  setTimeout(async () => {
+setTimeout(async () => {
   const box = document.querySelector(".comparison-box");
 
   let allTrends = [];
@@ -391,21 +391,6 @@ async function renderVotePair() {
   });
 }, 300);
 
-    box.appendChild(createVoteBtn(a, b));
-
-    const vsText = document.createElement("span");
-    vsText.textContent = "vs";
-    vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
-    box.appendChild(vsText);
-
-    box.appendChild(createVoteBtn(b, a));
-
-    // Fade back in smoothly
-    requestAnimationFrame(() => {
-      box.style.opacity = "1";
-    });
-  }, 300);
-}
 
 
 //spacing
