@@ -168,18 +168,34 @@ if (params.get('login') === 'true') {
   history.replaceState({}, document.title, window.location.pathname);
 }
 
-  if (user) {
-    const username = user.user_metadata?.display_name || user.email;
-    emailSpan.textContent = `Welcome, ${username}`;
-    authBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
-    if (voteNotice) voteNotice.style.display = 'none';
-  } else {
-    emailSpan.textContent = '';
-    authBtn.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
-    if (voteNotice) voteNotice.style.display = 'block';
+if (user) {
+  const meta = user.user_metadata || {};
+
+  // Try to extract a better display name
+  const username =
+    meta.display_name ||
+    meta.full_name || // Google
+    meta.name ||      // Discord
+    meta.user_name || // Discord fallback
+    user.email;
+
+  // Persist it into user_metadata if not already stored
+  if (!meta.display_name && username !== user.email) {
+    await supabase.auth.updateUser({
+      data: { display_name: username }
+    });
   }
+
+  emailSpan.textContent = `Welcome, ${username}`;
+  authBtn.style.display = 'none';
+  logoutBtn.style.display = 'inline-block';
+  if (voteNotice) voteNotice.style.display = 'none';
+} else {
+  emailSpan.textContent = '';
+  authBtn.style.display = 'inline-block';
+  logoutBtn.style.display = 'none';
+  if (voteNotice) voteNotice.style.display = 'block';
+}
 
 if (currentUser) {
   renderVotePair(); // 🎯 Load first voting pair automatically
