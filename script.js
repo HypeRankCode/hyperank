@@ -63,7 +63,7 @@ window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: 'https://hyperank.ca/auth/v1/callback',
+      redirectTo: 'https://rrnucumzptbwdxtkccyx.supabase.co/auth/v1/callback',
     },
   });
 
