@@ -767,3 +767,41 @@ footer a:hover {
 body.modal-open {
   overflow: hidden;
 }
+
+.oauth-divider {
+  text-align: center;
+  margin: 1rem 0;
+  font-weight: bold;
+  color: #666;
+}
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.oauth-btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.google-btn {
+  background-color: white;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.discord-btn {
+  background-color: #5865F2;
+  color: white;
+}

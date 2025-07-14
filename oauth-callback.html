@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signing in...</title>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const supabase = createClient(
+      'https://rrnucumzptbwdxtkccyx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
+    );
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        // Redirect back to home or wherever
+        window.location.href = '/';
+      } else {
+        document.body.innerHTML = 'Sign-in failed. Try again.';
+      }
+    });
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html>

@@ -58,6 +58,21 @@ window.signUp = async () => {
   document.getElementById('authMsg').innerHTML = '<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!';
 };
 
+
+window.signInWithProvider = async (provider) => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${window.location.origin}/oauth-callback.html`,
+    },
+  });
+
+  if (error) {
+    console.error(`OAuth sign-in error with ${provider}:`, error.message);
+  }
+};
+
+
 window.logoutUser = async () => {
   await supabase.auth.signOut();
   location.reload();
