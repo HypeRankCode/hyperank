@@ -320,77 +320,65 @@ async function renderVotePair() {
   box.style.opacity = "0";
   box.style.transition = "opacity 0.3s ease";
 
-setTimeout(async () => {
-  const box = document.querySelector(".comparison-box");
+  setTimeout(async () => {
+    const { data: allTrends, error } = await supabase
+      .from("trends")
+      .select("*")
+      .contains("tags", ["slang"]);
 
-  let allTrends = [];
-  let error = null;
+    if (error || !allTrends || allTrends.length < 2) {
+      box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+      box.style.opacity = "1";
+      return;
+    }
 
-  // Try fetching only slang-tagged trends
-  const slangResult = await supabase
-    .from("trends")
-    .select("*")
-    .contains("tags", ["slang"]);
+    const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
 
-  if (slangResult.data?.length >= 2) {
-    allTrends = slangResult.data;
-  } else {
-    // Fallback to all trends if not enough slang entries
-    const fallbackResult = await supabase.from("trends").select("*");
-    allTrends = fallbackResult.data || [];
-    error = fallbackResult.error;
-  }
+    box.innerHTML = ""; // Clear after fade out
 
-  if (error || allTrends.length < 2) {
-    box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
-    box.style.opacity = "1";
-    return;
-  }
+    const createVoteBtn = (trend, opponent) => {
+      const btn = document.createElement("button");
+      btn.className = "vote-option";
+      btn.textContent = trend.label;
+      btn.style =
+        "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+      btn.onclick = async () => {
+        const { error: moreError } = await supabase
+          .from("trends")
+          .update({ more: trend.more + 1 })
+          .eq("id", trend.id);
 
-  const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+        const { error: lessError } = await supabase
+          .from("trends")
+          .update({ less: opponent.less + 1 })
+          .eq("id", opponent.id);
 
-  box.innerHTML = ""; // Clear after fade out
+        if (moreError || lessError) {
+          console.error("Voting error:", moreError || lessError);
+          return;
+        }
 
-  const createVoteBtn = (trend, opponent) => {
-    const btn = document.createElement("button");
-    btn.className = "vote-option";
-    btn.textContent = trend.label;
-    btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
-    btn.onclick = async () => {
-      const { error: moreError } = await supabase.from("trends").update({
-        more: trend.more + 1
-      }).eq("id", trend.id);
-
-      const { error: lessError } = await supabase.from("trends").update({
-        less: opponent.less + 1
-      }).eq("id", opponent.id);
-
-      if (moreError || lessError) {
-        console.error("Voting error:", moreError || lessError);
-        return;
-      }
-
-      // Skip confirmation box — go straight to next pair
-      renderVotePair();
+        renderVotePair(); // Load next pair
+      };
+      return btn;
     };
-    return btn;
-  };
 
-  box.appendChild(createVoteBtn(a, b));
+    box.appendChild(createVoteBtn(a, b));
 
-  const vsText = document.createElement("span");
-  vsText.textContent = "vs";
-  vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
-  box.appendChild(vsText);
+    const vsText = document.createElement("span");
+    vsText.textContent = "vs";
+    vsText.style =
+      "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+    box.appendChild(vsText);
 
-  box.appendChild(createVoteBtn(b, a));
+    box.appendChild(createVoteBtn(b, a));
 
-  // Fade back in smoothly
-  requestAnimationFrame(() => {
-    box.style.opacity = "1";
-  });
-}, 300);
-
+    // Fade back in smoothly
+    requestAnimationFrame(() => {
+      box.style.opacity = "1";
+    });
+  }, 300);
+}
 
 
 //spacing
