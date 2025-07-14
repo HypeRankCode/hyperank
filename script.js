@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
   const logoutBtn = document.getElementById('logoutBtn');
-  const voteNotice = document.getElementById('voteNotice');
+  const submitNotice = document.getElementById('submitNotice');
   
   const params = new URLSearchParams(window.location.search);
 if (params.get('login') === 'true') {
@@ -189,12 +189,12 @@ if (user) {
   emailSpan.textContent = `Welcome, ${username}`;
   authBtn.style.display = 'none';
   logoutBtn.style.display = 'inline-block';
-  if (voteNotice) voteNotice.style.display = 'none';
+  if (submitNotice) submitNotice.style.display = 'none';
 } else {
   emailSpan.textContent = '';
   authBtn.style.display = 'inline-block';
   logoutBtn.style.display = 'none';
-  if (voteNotice) voteNotice.style.display = 'block';
+  if (submitNotice) submitNotice.style.display = 'block';
 }
 
 if (currentUser) {
