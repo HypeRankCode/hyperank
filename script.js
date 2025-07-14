@@ -397,18 +397,21 @@ try {
 
   grid.innerHTML = "";
 
-  const maxVotes = Math.max(...trends.map(t => t.votes));
+  const maxVotes = Math.max(...trends.map(t => t.votes || 0));
   const rankedTrends = trends
-    .filter(t => (t.more + t.less) > 0)
+    .filter(t => (t.hype + t.dead + t.votes) > 0) // include only active trends
     .map(t => {
-      const hypeScore = t.more / (t.more + t.less);
-      const voteScore = t.votes / maxVotes;
-      const compositeScore = (hypeScore * 0.6) + (voteScore * 0.4);
+      const hypeRatio = t.hype / Math.max(1, (t.hype + t.dead));
+      const voteScore = t.votes / Math.max(1, maxVotes);
+      const moreRatio = t.more / Math.max(1, (t.more + t.less));
+
+      const compositeScore = (hypeRatio * 0.6) + (voteScore * 0.35) + (moreRatio * 0.05);
       return { ...t, compositeScore };
     })
     .sort((a, b) => b.compositeScore - a.compositeScore);
 
   const topTrends = rankedTrends.slice(0, 5);
+
 
   topTrends.forEach(trend => {
     const card = document.createElement("div");
