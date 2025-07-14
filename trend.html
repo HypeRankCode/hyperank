@@ -255,24 +255,5 @@
     }
   });
 </script>
-
-<!-- Other content... -->
-
-<script>
-  // Save scroll position before reload
-  window.addEventListener('beforeunload', () => {
-    localStorage.setItem('scrollY', window.scrollY);
-  });
-
-  // Restore scroll position after reload
-  window.addEventListener('load', () => {
-    const scrollY = localStorage.getItem('scrollY');
-    if (scrollY !== null) {
-      window.scrollTo(0, parseInt(scrollY));
-      localStorage.removeItem('scrollY');
-    }
-  });
-</script>
-
 </body>
 </html>
