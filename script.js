@@ -321,45 +321,75 @@ async function renderVotePair() {
   box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
-    const { data: allTrends, error } = await supabase
-  .from("trends")
-  .select("*")
-  .contains("tags", ["slang"]);
+  const box = document.querySelector(".comparison-box");
 
-    if (error || !allTrends || allTrends.length < 2) {
-      box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
-      box.style.opacity = "1";
-      return;
-    }
+  let allTrends = [];
+  let error = null;
 
-    const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
+  // Try fetching only slang-tagged trends
+  const slangResult = await supabase
+    .from("trends")
+    .select("*")
+    .contains("tags", ["slang"]);
 
-    box.innerHTML = ""; // Clear after fade out
+  if (slangResult.data?.length >= 2) {
+    allTrends = slangResult.data;
+  } else {
+    // Fallback to all trends if not enough slang entries
+    const fallbackResult = await supabase.from("trends").select("*");
+    allTrends = fallbackResult.data || [];
+    error = fallbackResult.error;
+  }
 
-    const createVoteBtn = (trend, opponent) => {
-      const btn = document.createElement("button");
-      btn.className = "vote-option";
-      btn.textContent = trend.label;
-      btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
-      btn.onclick = async () => {
-        const { error: moreError } = await supabase.from("trends").update({
-          more: trend.more + 1
-        }).eq("id", trend.id);
+  if (error || allTrends.length < 2) {
+    box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
+    box.style.opacity = "1";
+    return;
+  }
 
-        const { error: lessError } = await supabase.from("trends").update({
-          less: opponent.less + 1
-        }).eq("id", opponent.id);
+  const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
 
-        if (moreError || lessError) {
-          console.error("Voting error:", moreError || lessError);
-          return;
-        }
+  box.innerHTML = ""; // Clear after fade out
 
-        // Skip confirmation box — go straight to next pair
-        renderVotePair();
-      };
-      return btn;
+  const createVoteBtn = (trend, opponent) => {
+    const btn = document.createElement("button");
+    btn.className = "vote-option";
+    btn.textContent = trend.label;
+    btn.style = "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+    btn.onclick = async () => {
+      const { error: moreError } = await supabase.from("trends").update({
+        more: trend.more + 1
+      }).eq("id", trend.id);
+
+      const { error: lessError } = await supabase.from("trends").update({
+        less: opponent.less + 1
+      }).eq("id", opponent.id);
+
+      if (moreError || lessError) {
+        console.error("Voting error:", moreError || lessError);
+        return;
+      }
+
+      // Skip confirmation box — go straight to next pair
+      renderVotePair();
     };
+    return btn;
+  };
+
+  box.appendChild(createVoteBtn(a, b));
+
+  const vsText = document.createElement("span");
+  vsText.textContent = "vs";
+  vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+  box.appendChild(vsText);
+
+  box.appendChild(createVoteBtn(b, a));
+
+  // Fade back in smoothly
+  requestAnimationFrame(() => {
+    box.style.opacity = "1";
+  });
+}, 300);
 
     box.appendChild(createVoteBtn(a, b));
 
