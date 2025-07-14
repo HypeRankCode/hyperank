@@ -150,6 +150,9 @@ function animateCount(el, endValue) {
 // DOM loaded
 
 document.addEventListener("DOMContentLoaded", async () => {
+	
+  renderVotePair(); // 🎯 Load first voting pair automatically
+	
   const { data: sessionData } = await supabase.auth.getSession();
   const user = sessionData.session?.user;
   currentUser = user;
@@ -160,9 +163,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const submitNotice = document.getElementById('submitNotice');
   
   const params = new URLSearchParams(window.location.search);
-  
-   renderVotePair();
-   
 if (params.get('login') === 'true') {
   const modal = document.getElementById('authModal');
   if (modal) modal.style.display = 'flex';
@@ -198,6 +198,10 @@ if (user) {
   authBtn.style.display = 'inline-block';
   logoutBtn.style.display = 'none';
   if (submitNotice) submitNotice.style.display = 'block';
+}
+
+if (currentUser) {
+  checkAuthForSubmitForm();
 }
 
 
