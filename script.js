@@ -63,12 +63,12 @@ window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${window.location.origin}/oauth-callback.html`,
+      redirectTo: 'https://hyperank.ca/oauth-callback',
     },
   });
 
   if (error) {
-    console.error(`OAuth sign-in error with ${provider}:`, error.message);
+    document.getElementById('authMsg').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
   }
 };
 
