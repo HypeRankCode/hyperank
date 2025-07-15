@@ -270,10 +270,25 @@ window.signUp = async () => {
 
   msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
 
-  setTimeout(() => {
-    window.closeAuth();
-    location.reload(); // let checkVerificationAndUsername handle everything
-  }, 1000);
+  // Show verify modal immediately (make sure showVerifyModal() is defined globally)
+  if (!document.getElementById("verifyEmailModal")) {
+    showVerifyModal();
+  }
+  window.closeAuth();
+
+  // Start polling every 3 seconds until user is signed in (email verified)
+  const pollInterval = setInterval(async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData.session?.user;
+
+    if (user) {
+      clearInterval(pollInterval);
+      const modal = document.getElementById("verifyEmailModal");
+      if (modal) modal.remove();
+      document.body.style.overflow = ""; // re-enable scroll if needed
+      location.reload(); // now reload and let checkVerificationAndUsername do the rest
+    }
+  }, 3000);
 };
 
 window.signInWithProvider = async (provider) => {
