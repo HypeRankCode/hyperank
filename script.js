@@ -6,6 +6,55 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
+// ⬇️ New modal logic to force username after OAuth
+function forceUsernameModal() {
+  const modal = document.createElement("div");
+  modal.style = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
+    align-items: center; justify-content: center; z-index: 9999; flex-direction: column;
+    font-family: 'Urbanist', sans-serif; color: white;
+  `;
+
+  modal.innerHTML = `
+    <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; max-width: 90%; width: 350px; text-align: center;">
+      <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
+      <input type="text" id="forceUsernameInput" placeholder="Unique username" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;" />
+      <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
+      <button id="forceUsernameBtn" style="margin-top: 1rem; padding: 0.6rem 1.2rem; background: #ff3c3c; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer;">
+        Save Username
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document.getElementById("forceUsernameBtn").onclick = async () => {
+    const input = document.getElementById("forceUsernameInput");
+    const errorText = document.getElementById("forceUsernameError");
+    const username = input.value.trim().toLowerCase();
+
+    if (!username.match(/^[a-z0-9_]{3,20}$/)) {
+      errorText.textContent = "Only a-z, 0-9, _ (3-20 chars)";
+      return;
+    }
+
+    const { data: existing } = await supabase.auth.admin.listUsers();
+    const taken = existing.users.find(u => (u.user_metadata?.display_name || '').toLowerCase() === username);
+    if (taken) {
+      errorText.textContent = "Username already taken.";
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ data: { display_name: username } });
+    if (error) {
+      errorText.textContent = error.message;
+    } else {
+      modal.remove();
+      location.reload();
+    }
+  };
+}
+
 // Auth modal functions
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
@@ -156,6 +205,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { data: sessionData } = await supabase.auth.getSession();
   const user = sessionData.session?.user;
   currentUser = user;
+
+  const meta = user?.user_metadata || {};
+
+  const username =
+    meta.display_name ||
+    meta.full_name ||
+    meta.name ||
+    meta.user_name ||
+    user?.email;
+
+  if (user && !meta.display_name && username === user.email) {
+    forceUsernameModal();
+  }
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
