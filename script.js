@@ -31,15 +31,15 @@ function forceUsernameModal() {
   document.getElementById("forceUsernameBtn").onclick = async () => {
     const input = document.getElementById("forceUsernameInput");
     const errorText = document.getElementById("forceUsernameError");
-    const username = input.value.trim().toLowerCase();
+    const username = input.value.trim();
 
-    if (!username.match(/^[a-z0-9_]{3,20}$/)) {
-      errorText.textContent = "Only a-z, 0-9, _ (3-20 chars)";
+    if (!username.match(/^[a-zA-Z0-9_]{3,20}$/)) {
+      errorText.textContent = "Only a-z, A-Z, 0-9, _ (3-20 chars)";
       return;
     }
 
     const { data: existing } = await supabase.auth.admin.listUsers();
-    const taken = existing.users.find(u => (u.user_metadata?.display_name || '').toLowerCase() === username);
+    const taken = existing.users.find(u => (u.user_metadata?.display_name || '') === username);
     if (taken) {
       errorText.textContent = "Username already taken.";
       return;
