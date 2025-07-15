@@ -33,8 +33,8 @@ function forceUsernameModal() {
     const errorText = document.getElementById("forceUsernameError");
     const username = input.value.trim();
 
-    if (!username.match(/^[a-z0-9_]{3,20}$/)) {
-      errorText.textContent = "Only lowercase a-z, 0-9, _ (3–20 characters)";
+    if (!username.match(/^[a-zA-Z0-9_]{3,20}$/)) {
+      errorText.textContent = "Only a-z, A-Z, 0-9, _ (3–20 characters)";
       return;
     }
 
