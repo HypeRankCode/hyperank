@@ -315,12 +315,22 @@ if (user) {
       }
     }, 3000);
   } else {
-    const { data: usernameRow } = await supabase
-      .from("usernames")
-      .select("username")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (!usernameRow || !usernameRow.username) forceUsernameModal();
+    if (user) {
+  const confirmed = user.confirmed_at || user.email_confirmed_at;
+
+  if (!confirmed) {
+    forceEmailVerifyModal();
+    return; // don't show username modal until verified
+  }
+
+  const { data: usernameRow, error } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!usernameRow || !usernameRow.username) {
+    forceUsernameModal();
   }
 }
 
