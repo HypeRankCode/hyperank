@@ -6,6 +6,24 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
+function showVerifyEmailModal() {
+  const modal = document.createElement("div");
+  modal.id = "verifyEmailModal";
+  modal.style = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
+    align-items: center; justify-content: center; z-index: 9998; flex-direction: column;
+    font-family: 'Urbanist', sans-serif; color: white;
+  `;
+  modal.innerHTML = `
+    <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
+      <h2>Verify Your Email</h2>
+      <p style="margin-top: 0.5rem; font-size: 0.95rem;">Please check your inbox and click the verification link to continue.</p>
+      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa;">This page will refresh once verified.</p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
 // ⬇️ New modal logic to force username after OAuth
 function forceUsernameModal() {
   const modal = document.createElement("div");
@@ -146,8 +164,8 @@ window.signIn = async () => {
 
 
 window.signUp = async () => {
-  const email = document.getElementById('authEmail').value;
-  const password = document.getElementById('authPassword').value;
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
   const msgBox = document.getElementById('authMsg');
 
   if (!email || !password) {
@@ -155,9 +173,12 @@ window.signUp = async () => {
     return;
   }
 
-  const { data, error: signUpError } = await supabase.auth.signUp({
+  const { error: signUpError } = await supabase.auth.signUp({
     email,
-    password
+    password,
+    options: {
+      emailRedirectTo: window.location.origin
+    }
   });
 
   if (signUpError) {
@@ -169,17 +190,13 @@ window.signUp = async () => {
     return;
   }
 
-  msgBox.innerHTML = `<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!`;
+  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
 
-  // ✅ Wait a bit, then close auth modal and show username picker
-  setTimeout(async () => {
-    window.closeAuth(); // close modal
-
-    // Let session finish setting before opening username popup
-    setTimeout(forceUsernameModal, 500);
+  setTimeout(() => {
+    window.closeAuth();
+    showVerifyModal(); // ⬅️ New function
   }, 1000);
 };
-
 
 window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
@@ -280,14 +297,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentUser = user;
 
 if (user) {
-  const { data: usernameRow, error } = await supabase
-    .from("usernames")
-    .select("username")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!usernameRow || !usernameRow.username) {
-    forceUsernameModal();
+  const verified = user.email_confirmed_at || user.confirmed_at;
+  if (!verified) {
+    showVerifyEmailModal();
+    const interval = setInterval(async () => {
+      const { data: refreshed } = await supabase.auth.getUser();
+      const newUser = refreshed?.user;
+      if (newUser?.email_confirmed_at || newUser?.confirmed_at) {
+        document.getElementById("verifyEmailModal")?.remove();
+        clearInterval(interval);
+        const { data: nameRow } = await supabase
+          .from("usernames")
+          .select("username")
+          .eq("id", newUser.id)
+          .maybeSingle();
+        if (!nameRow || !nameRow.username) forceUsernameModal();
+      }
+    }, 3000);
+  } else {
+    const { data: usernameRow } = await supabase
+      .from("usernames")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (!usernameRow || !usernameRow.username) forceUsernameModal();
   }
 }
 
