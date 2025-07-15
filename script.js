@@ -297,32 +297,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentUser = user;
 
 if (user) {
-  const verified = user.email_confirmed_at || user.confirmed_at;
-  if (!verified) {
+  const confirmed = user.email_confirmed_at || user.confirmed_at;
+
+  if (!confirmed) {
     showVerifyEmailModal();
+
     const interval = setInterval(async () => {
       const { data: refreshed } = await supabase.auth.getUser();
       const newUser = refreshed?.user;
+
       if (newUser?.email_confirmed_at || newUser?.confirmed_at) {
         document.getElementById("verifyEmailModal")?.remove();
         clearInterval(interval);
+
+        // ✅ Now check for username
         const { data: nameRow } = await supabase
           .from("usernames")
           .select("username")
           .eq("id", newUser.id)
           .maybeSingle();
-        if (!nameRow || !nameRow.username) forceUsernameModal();
+
+        if (!nameRow || !nameRow.username) {
+          forceUsernameModal();
+        }
       }
     }, 3000);
-  } else {
-    if (user) {
-  const confirmed = user.confirmed_at || user.email_confirmed_at;
 
-  if (!confirmed) {
-    forceEmailVerifyModal();
-    return; // don't show username modal until verified
+    return; // prevent checking username yet
   }
 
+  // ✅ Already verified — check for username immediately
   const { data: usernameRow, error } = await supabase
     .from("usernames")
     .select("username")
