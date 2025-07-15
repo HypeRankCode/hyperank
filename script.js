@@ -6,7 +6,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-function showVerifyEmailModal() {
+function showVerifyModal() {
   const modal = document.createElement("div");
   modal.id = "verifyEmailModal";
   modal.style = `
