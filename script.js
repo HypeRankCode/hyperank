@@ -130,27 +130,36 @@ window.signIn = async () => {
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
+  const msgBox = document.getElementById('authMsg');
 
-if (!email || !password) {
-  document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.';
-  return;
-}
+  if (!email || !password) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.`;
+    return;
+  }
 
-const { data, error: signUpError } = await supabase.auth.signUp({
-  email,
-  password
-});
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password
+  });
 
   if (signUpError) {
     if (signUpError.message.includes("already registered")) {
-      document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.';
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
     } else {
-      document.getElementById('authMsg').textContent = signUpError.message;
+      msgBox.textContent = signUpError.message;
     }
     return;
   }
 
-  document.getElementById('authMsg').innerHTML = '<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!';
+  msgBox.innerHTML = `<i class="fas fa-check-circle" style="color:#4f4;"></i> Account created!`;
+
+  // ✅ Wait a bit, then close auth modal and show username picker
+  setTimeout(async () => {
+    window.closeAuth(); // close modal
+
+    // Let session finish setting before opening username popup
+    setTimeout(forceUsernameModal, 500);
+  }, 1000);
 };
 
 
