@@ -129,25 +129,11 @@ window.signIn = async () => {
     return;
   }
 
-  const { data: userData, error: listError } = await supabase.auth.admin.listUsers({ email });
-  const foundUser = userData?.users?.[0];
-
-  if (!foundUser) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> No account found. You might’ve signed up with Google or Discord.`;
-    return;
-  }
-
-  const provider = foundUser.app_metadata?.provider;
-  if (provider && provider !== 'email') {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> This account uses ${provider.charAt(0).toUpperCase() + provider.slice(1)} login. Please sign in with that provider.`;
-    return;
-  }
-
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    if (error.message.toLowerCase().includes('invalid login credentials')) {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Incorrect password.`;
+    if (error.message.toLowerCase().includes("invalid login credentials")) {
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Invalid email or password.<br>You may have signed up with Google or Discord.`;
     } else {
       msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
     }
@@ -157,6 +143,7 @@ window.signIn = async () => {
   msgBox.innerHTML = `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
   setTimeout(() => location.reload(), 1000);
 };
+
 
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
