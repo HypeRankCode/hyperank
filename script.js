@@ -100,22 +100,16 @@ window.signIn = async () => {
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
-  const username = document.getElementById('authUsername')?.value.trim();
 
-  if (!email || !password || !username) {
-    document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in all fields (email, password, username).';
-    return;
-  }
+if (!email || !password) {
+  document.getElementById('authMsg').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.';
+  return;
+}
 
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        display_name: username
-      }
-    }
-  });
+const { data, error: signUpError } = await supabase.auth.signUp({
+  email,
+  password
+});
 
   if (signUpError) {
     if (signUpError.message.includes("already registered")) {
