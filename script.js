@@ -91,10 +91,21 @@ window.closeAuth = () => {
 window.signIn = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  document.getElementById('authMsg').innerHTML = error
-    ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
-    : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+  const { data: userData } = await supabase.auth.admin.listUsers({ email });
+const match = userData?.users?.[0];
+
+if (match && match.app_metadata?.provider !== 'email') {
+  document.getElementById('authMsg').innerHTML =
+    `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> This account uses ${match.app_metadata.provider} login. Please sign in with that provider.`;
+  return;
+}
+
+const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+document.getElementById('authMsg').innerHTML = error
+  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
+  : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+
   if (!error) setTimeout(() => location.reload(), 1000);
 };
 window.signUp = async () => {
