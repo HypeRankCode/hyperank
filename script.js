@@ -89,25 +89,44 @@ window.closeAuth = () => {
 };
 
 window.signIn = async () => {
-  const email = document.getElementById('authEmail').value;
+  const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
-  const { data: userData } = await supabase.auth.admin.listUsers({ email });
-const match = userData?.users?.[0];
+  const msgBox = document.getElementById('authMsg');
 
-if (match && match.app_metadata?.provider !== 'email') {
-  document.getElementById('authMsg').innerHTML =
-    `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> This account uses ${match.app_metadata.provider} login. Please sign in with that provider.`;
-  return;
-}
+  if (!email || !password) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please enter both email and password.`;
+    return;
+  }
 
-const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data: userData, error: listError } = await supabase.auth.admin.listUsers({ email });
+  const foundUser = userData?.users?.[0];
 
-document.getElementById('authMsg').innerHTML = error
-  ? `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`
-  : `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+  if (!foundUser) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> No account found with that email.`;
+    return;
+  }
 
-  if (!error) setTimeout(() => location.reload(), 1000);
+  const provider = foundUser.app_metadata?.provider;
+  if (provider && provider !== 'email') {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> This account uses ${provider.charAt(0).toUpperCase() + provider.slice(1)} login. Please sign in with that provider.`;
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    if (error.message.toLowerCase().includes('invalid login credentials')) {
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Incorrect password.`;
+    } else {
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
+    }
+    return;
+  }
+
+  msgBox.innerHTML = `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+  setTimeout(() => location.reload(), 1000);
 };
+
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
