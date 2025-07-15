@@ -62,7 +62,11 @@ function forceUsernameModal() {
 
     const { error: insertError } = await supabase
       .from("usernames")
-      .insert({ id: user.id, username });
+      .insert({
+      id: user.id,
+      username: username,
+      email: user.email
+    });
 
     if (insertError) {
       errorText.textContent = insertError.message;
