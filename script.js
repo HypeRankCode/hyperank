@@ -247,24 +247,18 @@ if (params.get('login') === 'true') {
 }
 
 if (user) {
-  const meta = user.user_metadata || {};
+  const { data: usernameData, error: usernameError } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", user.id)
+    .single();
 
-  // Try to extract a better display name
-  const username =
-    meta.display_name ||
-  //  meta.full_name || // Google
-  //  meta.name ||      // Discord
-  //  meta.user_name || // Discord fallback
-    user.email;
+  const username = usernameData?.username;
 
- // Persist it into user_metadata if not already stored
- // if (!meta.display_name && username !== user.email) {
- //   await supabase.auth.updateUser({
- //     data: { display_name: username }
- //   });
- // }
+  emailSpan.textContent = username
+    ? `Welcome, ${username}`
+    : "Welcome!";
 
-  emailSpan.textContent = `Welcome, ${username}`;
   authBtn.style.display = 'none';
   logoutBtn.style.display = 'inline-block';
   if (submitNotice) submitNotice.style.display = 'none';
@@ -278,6 +272,7 @@ if (user) {
 if (currentUser) {
   checkAuthForSubmitForm();
 }
+
 
 
 //cutoff
