@@ -102,7 +102,7 @@ window.signIn = async () => {
   const foundUser = userData?.users?.[0];
 
   if (!foundUser) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> No account found with that email.`;
+    msgBox.innerHTML = `<i class="fas fa-exclamation-circle" style="color:goldenrod;"></i> No account found. You might’ve signed up with Google or Discord.`;
     return;
   }
 
