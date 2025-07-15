@@ -321,7 +321,7 @@ window.closeAuth();
 
 // ✅ Let polling handle everything else (verification + username)
 startVerificationAndSessionPolling();
-
+};
 
 window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
