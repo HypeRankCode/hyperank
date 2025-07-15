@@ -208,14 +208,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const meta = user?.user_metadata || {};
 
-  const username =
-    meta.display_name ||
-    meta.full_name ||
-    meta.name ||
-    meta.user_name ||
-    user?.email;
-
-  if (user && !meta.display_name && username === user.email) {
+  // ❗ Force username for all OAuth sign-ins if missing
+  if (user && !meta.display_name) {
     forceUsernameModal();
   }
 
