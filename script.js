@@ -14,8 +14,8 @@ function showVerifyModal() {
     align-items: center; justify-content: center; z-index: 9998; flex-direction: column;
     font-family: 'Urbanist', sans-serif; color: white;
   `;
-	document.body.style.overflow = "hidden"; // ⛔ disable page scroll
-	
+  document.body.style.overflow = "hidden";
+
   modal.innerHTML = `
     <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
       <h2>Verify Your Email</h2>
@@ -24,60 +24,56 @@ function showVerifyModal() {
     </div>
   `;
   document.body.appendChild(modal);
-  document.body.style.overflow = "hidden";
 }
 
-// ⬇️ New modal logic to force username after OAuth
 function forceUsernameModal() {
   const modal = document.createElement("div");
-modal.style = `
-  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999; flex-direction: column;
-  font-family: 'Urbanist', sans-serif; color: white;
-  overflow: hidden;
-`;
-	document.body.style.overflow = "hidden"; // ⛔ disable page scroll
-
-modal.innerHTML = `
-  <div style="
-    background: #1a1a1a;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 360px;
-    box-sizing: border-box;
-    text-align: center;
-  ">
-    <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
-    <input type="text" id="forceUsernameInput" placeholder="Unique username" style="
-      width: 100%;
-      padding: 0.8rem;
-      border-radius: 8px;
-      border: none;
-      background: #2a2a2a;
-      color: white;
-      box-sizing: border-box;
-    " />
-    <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
-    <button id="forceUsernameBtn" style="
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      background: #ff3c3c;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-    ">
-      Save Username
-    </button>
-  </div>
-`;
-
-  document.body.appendChild(modal);
+  modal.style = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; flex-direction: column;
+    font-family: 'Urbanist', sans-serif; color: white;
+    overflow: hidden;
+  `;
   document.body.style.overflow = "hidden";
 
+  modal.innerHTML = `
+    <div style="
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      box-sizing: border-box;
+      text-align: center;
+    ">
+      <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
+      <input type="text" id="forceUsernameInput" placeholder="Unique username" style="
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: none;
+        background: #2a2a2a;
+        color: white;
+        box-sizing: border-box;
+      " />
+      <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
+      <button id="forceUsernameBtn" style="
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        background: #ff3c3c;
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+      ">
+        Save Username
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
 
   document.getElementById("forceUsernameBtn").onclick = async () => {
     const input = document.getElementById("forceUsernameInput");
@@ -114,19 +110,77 @@ modal.innerHTML = `
     const { error: insertError } = await supabase
       .from("usernames")
       .insert({
-      id: user.id,
-      username: username,
-      email: user.email
-    });
+        id: user.id,
+        username: username,
+        email: user.email
+      });
 
     if (insertError) {
       errorText.textContent = insertError.message;
     } else {
       modal.remove();
-      location.reload();
       document.body.style.overflow = ""; // ✅ re-enable scroll
+      location.reload();
     }
   };
+}
+
+async function checkVerificationAndUsername() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData.session?.user;
+  currentUser = user;
+
+  if (!user) {
+    // No user signed in - hide modals if any
+    const modal = document.getElementById("verifyEmailModal");
+    if (modal) modal.remove();
+    document.body.classList.remove('modal-open');
+    return;
+  }
+
+  const confirmed = user.email_confirmed_at || user.confirmed_at;
+
+  if (!confirmed) {
+    // Show verify modal if not already shown
+    if (!document.getElementById("verifyEmailModal")) {
+      showVerifyModal();
+      document.body.classList.add('modal-open');
+    }
+
+    // Poll for verification
+    const interval = setInterval(async () => {
+      const { data: refreshed } = await supabase.auth.getUser();
+      const newUser = refreshed?.user;
+      const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
+
+      if (verified) {
+        clearInterval(interval);
+        const modal = document.getElementById("verifyEmailModal");
+        if (modal) modal.remove();
+        document.body.classList.remove('modal-open');
+        location.reload();
+      }
+    }, 3000);
+  } else {
+    // Already verified, check if username exists
+    const modal = document.getElementById("verifyEmailModal");
+    if (modal) {
+      modal.remove();
+      document.body.classList.remove('modal-open');
+    }
+
+    const { data: nameRow } = await supabase
+      .from("usernames")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!nameRow?.username) {
+      if (!document.querySelector("#forceUsernameInput")) {
+        forceUsernameModal();
+      }
+    }
+  }
 }
 
 // Auth modal functions
@@ -197,7 +251,7 @@ window.signUp = async () => {
 
   setTimeout(() => {
     window.closeAuth();
-    showVerifyModal(); // ⬅️ New function
+    location.reload(); // let checkVerificationAndUsername handle everything
   }, 1000);
 };
 
@@ -294,55 +348,7 @@ function animateCount(el, endValue) {
 document.addEventListener("DOMContentLoaded", async () => {
 	
   renderVotePair(); // 🎯 Load first voting pair automatically
-	
-  const { data: sessionData } = await supabase.auth.getSession();
-  const user = sessionData.session?.user;
-  currentUser = user;
-
-if (user) {
-  const confirmed = user.email_confirmed_at || user.confirmed_at;
-
-  if (!confirmed) {
-    showVerifyEmailModal();
-    document.body.classList.add('modal-open');
-
-    const interval = setInterval(async () => {
-      const { data: refreshed } = await supabase.auth.getUser();
-      const newUser = refreshed?.user;
-      const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
-
-      if (verified) {
-        const modal = document.getElementById("verifyEmailModal");
-        if (modal) modal.remove();
-        document.body.classList.remove('modal-open');
-        clearInterval(interval);
-
-        // 👇 THEN check if they have a username
-        const { data: nameRow } = await supabase
-          .from("usernames")
-          .select("username")
-          .eq("id", newUser.id)
-          .maybeSingle();
-
-        if (!nameRow?.username) {
-          forceUsernameModal();
-        }
-      }
-    }, 3000);
-    return; // ⛔ Don't continue further if not verified
-  }
-
-  // ✅ Already verified, now check username
-  const { data: nameRow } = await supabase
-    .from("usernames")
-    .select("username")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!nameRow?.username) {
-    forceUsernameModal();
-  }
-}
+  await checkVerificationAndUsername();
 
 
   const emailSpan = document.getElementById('userEmailDisplay');
