@@ -31,23 +31,41 @@ function forceUsernameModal() {
   document.getElementById("forceUsernameBtn").onclick = async () => {
     const input = document.getElementById("forceUsernameInput");
     const errorText = document.getElementById("forceUsernameError");
-    const username = input.value.trim();
+    const username = input.value.trim().toLowerCase();
 
-    if (!username.match(/^[a-zA-Z0-9_]{3,20}$/)) {
-      errorText.textContent = "Only a-z, A-Z, 0-9, _ (3-20 chars)";
+    if (!username.match(/^[a-z0-9_]{3,20}$/)) {
+      errorText.textContent = "Only lowercase a-z, 0-9, _ (3–20 characters)";
       return;
     }
 
-    const { data: existing } = await supabase.auth.admin.listUsers();
-    const taken = existing.users.find(u => (u.user_metadata?.display_name || '') === username);
-    if (taken) {
+    const session = await supabase.auth.getSession();
+    const user = session?.data?.session?.user;
+    if (!user) {
+      errorText.textContent = "User not authenticated.";
+      return;
+    }
+
+    const { data: existing, error: checkError } = await supabase
+      .from("usernames")
+      .select("username")
+      .ilike("username", username);
+
+    if (checkError) {
+      errorText.textContent = checkError.message;
+      return;
+    }
+
+    if (existing && existing.length > 0) {
       errorText.textContent = "Username already taken.";
       return;
     }
 
-    const { error } = await supabase.auth.updateUser({ data: { display_name: username } });
-    if (error) {
-      errorText.textContent = error.message;
+    const { error: insertError } = await supabase
+      .from("usernames")
+      .insert({ id: user.id, username });
+
+    if (insertError) {
+      errorText.textContent = insertError.message;
     } else {
       modal.remove();
       location.reload();
