@@ -4,6 +4,13 @@ const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Listen for auth state changes (like after OAuth redirect or multi-tab login)
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (session?.user) {
+    checkVerificationAndUsername();
+  }
+});
+
 let currentUser = null;
 
 function showVerifyModal() {
@@ -366,11 +373,11 @@ if (params.get('login') === 'true') {
   history.replaceState({}, document.title, window.location.pathname);
 }
 
-if (user) {
+if (currentUser) {
   const { data: usernameData, error: usernameError } = await supabase
     .from("usernames")
     .select("username")
-    .eq("id", user.id)
+    .eq("id", currentUser.id)
     .single();
 
   const username = usernameData?.username;
@@ -389,7 +396,7 @@ if (user) {
   if (submitNotice) submitNotice.style.display = 'block';
 }
 
-if (currentUser) {
+if (currentUser && document.querySelector('.submit-form')) {
   checkAuthForSubmitForm();
 }
 
