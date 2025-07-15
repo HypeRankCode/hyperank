@@ -7,15 +7,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 let currentUser = null;
 
 // Auth modal functions
-async function isUsernameTaken(username) {
-  const { data, error } = await supabase
-    .from('auth.users')
-    .select('user_metadata')
-    .ilike('user_metadata->>display_name', username);
-
-  return data && data.length > 0;
-}
-
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
   document.body.classList.add('modal-open'); // prevent scroll
