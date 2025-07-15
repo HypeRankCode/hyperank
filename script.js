@@ -234,17 +234,17 @@ if (user) {
   // Try to extract a better display name
   const username =
     meta.display_name ||
-    meta.full_name || // Google
-    meta.name ||      // Discord
-    meta.user_name || // Discord fallback
+  //  meta.full_name || // Google
+  //  meta.name ||      // Discord
+  //  meta.user_name || // Discord fallback
     user.email;
 
-  // Persist it into user_metadata if not already stored
-  if (!meta.display_name && username !== user.email) {
-    await supabase.auth.updateUser({
-      data: { display_name: username }
-    });
-  }
+ // Persist it into user_metadata if not already stored
+ // if (!meta.display_name && username !== user.email) {
+ //   await supabase.auth.updateUser({
+ //     data: { display_name: username }
+ //   });
+ // }
 
   emailSpan.textContent = `Welcome, ${username}`;
   authBtn.style.display = 'none';
