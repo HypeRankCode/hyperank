@@ -325,7 +325,7 @@ window.signUp = async () => {
       location.reload(); // reload and let main logic trigger username check
     }
   }, 3000);
-
+};
 
 window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
