@@ -293,39 +293,35 @@ window.signUp = async () => {
     }
   });
 
-  if (signUpError) {
-    if (signUpError.message.includes("already registered")) {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
-    } else {
-      msgBox.textContent = signUpError.message;
-    }
-    return;
+if (signUpError) {
+  const message = signUpError.message.toLowerCase();
+
+  if (
+    message.includes("user already registered") ||
+    message.includes("duplicate key") ||
+    (message.includes("email") && message.includes("already"))
+  ) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
+  } else {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
   }
+  return; // 🔴 early return if error
+}
 
-  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
+// ✅ No error — proceed with verify modal + polling
+msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
 
-  window.signUpEmail = email;
+window.signUpEmail = email;
 
-  if (!document.getElementById("verifyEmailModal")) {
-    showVerifyModal();
-  }
+if (!document.getElementById("verifyEmailModal")) {
+  showVerifyModal();
+}
 
-  window.closeAuth();
+window.closeAuth();
 
-  // Start polling every 3 seconds until user is signed in (email verified)
-  const pollInterval = setInterval(async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
+// ✅ Let polling handle everything else (verification + username)
+startVerificationAndSessionPolling();
 
-    if (user) {
-      clearInterval(pollInterval);
-      const modal = document.getElementById("verifyEmailModal");
-      if (modal) modal.remove();
-      document.body.style.overflow = ""; // re-enable scroll
-      location.reload(); // reload and let main logic trigger username check
-    }
-  }, 3000);
-};
 
 window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
