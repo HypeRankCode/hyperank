@@ -12,6 +12,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 });
 
 let currentUser = null;
+let verificationInterval = null; // <-- global interval handle
 
 function showVerifyModal() {
   const modal = document.createElement("div");
@@ -137,6 +138,12 @@ async function checkVerificationAndUsername() {
   const user = sessionData.session?.user;
   currentUser = user;
 
+  // Clear any previous interval to avoid multiple polling loops
+  if (verificationInterval) {
+    clearInterval(verificationInterval);
+    verificationInterval = null;
+  }
+
   if (!user) {
     // No user signed in - hide modals if any
     const modal = document.getElementById("verifyEmailModal");
@@ -154,28 +161,35 @@ async function checkVerificationAndUsername() {
       document.body.classList.add('modal-open');
     }
 
-    // Poll for verification
-    const interval = setInterval(async () => {
+    // Start polling to check verification status every 3 seconds
+    verificationInterval = setInterval(async () => {
+      console.log("Polling for email verification...");
       const { data: refreshed } = await supabase.auth.getUser();
       const newUser = refreshed?.user;
       const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
+      console.log("Verified status:", verified);
 
       if (verified) {
-        clearInterval(interval);
+        clearInterval(verificationInterval);
+        verificationInterval = null;
+
         const modal = document.getElementById("verifyEmailModal");
         if (modal) modal.remove();
         document.body.classList.remove('modal-open');
+
         location.reload();
       }
     }, 3000);
+
   } else {
-    // Already verified, check if username exists
+    // Already verified, remove verify modal if present
     const modal = document.getElementById("verifyEmailModal");
     if (modal) {
       modal.remove();
       document.body.classList.remove('modal-open');
     }
 
+    // Check if username exists, if not, show username modal
     const { data: nameRow } = await supabase
       .from("usernames")
       .select("username")
