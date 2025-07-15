@@ -31,7 +31,7 @@ function forceUsernameModal() {
   document.getElementById("forceUsernameBtn").onclick = async () => {
     const input = document.getElementById("forceUsernameInput");
     const errorText = document.getElementById("forceUsernameError");
-    const username = input.value.trim().toLowerCase();
+    const username = input.value.trim();
 
     if (!username.match(/^[a-z0-9_]{3,20}$/)) {
       errorText.textContent = "Only lowercase a-z, 0-9, _ (3–20 characters)";
@@ -224,12 +224,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = sessionData.session?.user;
   currentUser = user;
 
-  const meta = user?.user_metadata || {};
+if (user) {
+  const { data: usernameRow, error } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  // ❗ Force username for all OAuth sign-ins if missing
-  if (user && !meta.display_name) {
+  if (!usernameRow || !usernameRow.username) {
     forceUsernameModal();
   }
+}
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
