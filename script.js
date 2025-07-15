@@ -9,24 +9,54 @@ let currentUser = null;
 // ⬇️ New modal logic to force username after OAuth
 function forceUsernameModal() {
   const modal = document.createElement("div");
-  modal.style = `
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
-    align-items: center; justify-content: center; z-index: 9999; flex-direction: column;
-    font-family: 'Urbanist', sans-serif; color: white;
-  `;
+modal.style = `
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; flex-direction: column;
+  font-family: 'Urbanist', sans-serif; color: white;
+  overflow: hidden;
+`;
+	document.body.style.overflow = "hidden"; // ⛔ disable page scroll
 
-  modal.innerHTML = `
-    <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; max-width: 90%; width: 350px; text-align: center;">
-      <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
-      <input type="text" id="forceUsernameInput" placeholder="Unique username" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white;" />
-      <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
-      <button id="forceUsernameBtn" style="margin-top: 1rem; padding: 0.6rem 1.2rem; background: #ff3c3c; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer;">
-        Save Username
-      </button>
-    </div>
-  `;
+modal.innerHTML = `
+  <div style="
+    background: #1a1a1a;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 360px;
+    box-sizing: border-box;
+    text-align: center;
+  ">
+    <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
+    <input type="text" id="forceUsernameInput" placeholder="Unique username" style="
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: none;
+      background: #2a2a2a;
+      color: white;
+      box-sizing: border-box;
+    " />
+    <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
+    <button id="forceUsernameBtn" style="
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: #ff3c3c;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    ">
+      Save Username
+    </button>
+  </div>
+`;
 
   document.body.appendChild(modal);
+  document.body.style.overflow = "hidden";
+
 
   document.getElementById("forceUsernameBtn").onclick = async () => {
     const input = document.getElementById("forceUsernameInput");
@@ -73,6 +103,7 @@ function forceUsernameModal() {
     } else {
       modal.remove();
       location.reload();
+      document.body.style.overflow = ""; // ✅ re-enable scroll
     }
   };
 }
