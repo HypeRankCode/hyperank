@@ -7,6 +7,15 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 let currentUser = null;
 
 // Auth modal functions
+async function isUsernameTaken(username) {
+  const { data, error } = await supabase
+    .from('auth.users')
+    .select('user_metadata')
+    .ilike('user_metadata->>display_name', username);
+
+  return data && data.length > 0;
+}
+
 window.openAuth = () => {
   document.getElementById('authModal').style.display = 'flex';
   document.body.classList.add('modal-open'); // prevent scroll
@@ -163,6 +172,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   const submitNotice = document.getElementById('submitNotice');
   
   const params = new URLSearchParams(window.location.search);
+if (user) {
+  const meta = user.user_metadata || {};
+  let displayName = meta.display_name;
+
+  // If no username, force the user to pick one
+  if (!displayName) {
+    document.getElementById("usernameModal").style.display = "flex";
+
+    const saveBtn = document.getElementById("saveUsernameBtn");
+    const input = document.getElementById("usernameInput");
+    const msg = document.getElementById("usernameMsg");
+
+    saveBtn.onclick = async () => {
+      const desired = input.value.trim().toLowerCase();
+      if (!desired || desired.length < 3) {
+        msg.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Must be at least 3 characters.`;
+        return;
+      }
+
+      const taken = await isUsernameTaken(desired);
+      if (taken) {
+        msg.innerHTML = `<i class="fas fa-ban" style="color:red;"></i> That username is already taken.`;
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: desired }
+      });
+
+      if (error) {
+        msg.innerHTML = `<i class="fas fa-bug" style="color:red;"></i> Error: ${error.message}`;
+        return;
+      }
+
+      document.getElementById("usernameModal").style.display = "none";
+      location.reload(); // Refresh to load everything with new username
+    };
+  }
+}
+	
 if (params.get('login') === 'true') {
   const modal = document.getElementById('authModal');
   if (modal) modal.style.display = 'flex';
