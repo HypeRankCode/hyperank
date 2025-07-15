@@ -14,6 +14,8 @@ function showVerifyModal() {
     align-items: center; justify-content: center; z-index: 9998; flex-direction: column;
     font-family: 'Urbanist', sans-serif; color: white;
   `;
+	document.body.style.overflow = "hidden"; // ⛔ disable page scroll
+	
   modal.innerHTML = `
     <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
       <h2>Verify Your Email</h2>
@@ -22,6 +24,7 @@ function showVerifyModal() {
     </div>
   `;
   document.body.appendChild(modal);
+  document.body.style.overflow = "hidden";
 }
 
 // ⬇️ New modal logic to force username after OAuth
@@ -301,26 +304,46 @@ if (user) {
 
   if (!confirmed) {
     showVerifyEmailModal();
+    document.body.classList.add('modal-open');
 
     const interval = setInterval(async () => {
-  const { data: refreshed } = await supabase.auth.getUser();
-  const newUser = refreshed?.user;
+      const { data: refreshed } = await supabase.auth.getUser();
+      const newUser = refreshed?.user;
+      const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
 
-  const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
-  if (verified) {
-    document.getElementById("verifyEmailModal")?.remove();
-    clearInterval(interval);
+      if (verified) {
+        const modal = document.getElementById("verifyEmailModal");
+        if (modal) modal.remove();
+        document.body.classList.remove('modal-open');
+        clearInterval(interval);
 
-    // 👇 THEN check if they have a username
-    const { data: nameRow } = await supabase
-      .from("usernames")
-      .select("username")
-      .eq("id", newUser.id)
-      .maybeSingle();
+        // 👇 THEN check if they have a username
+        const { data: nameRow } = await supabase
+          .from("usernames")
+          .select("username")
+          .eq("id", newUser.id)
+          .maybeSingle();
 
-    if (!nameRow?.username) forceUsernameModal();
+        if (!nameRow?.username) {
+          forceUsernameModal();
+        }
+      }
+    }, 3000);
+    return; // ⛔ Don't continue further if not verified
   }
-}, 3000);
+
+  // ✅ Already verified, now check username
+  const { data: nameRow } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!nameRow?.username) {
+    forceUsernameModal();
+  }
+}
+
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
