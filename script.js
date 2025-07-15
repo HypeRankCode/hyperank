@@ -303,40 +303,24 @@ if (user) {
     showVerifyEmailModal();
 
     const interval = setInterval(async () => {
-      const { data: refreshed } = await supabase.auth.getUser();
-      const newUser = refreshed?.user;
+  const { data: refreshed } = await supabase.auth.getUser();
+  const newUser = refreshed?.user;
 
-      if (newUser?.email_confirmed_at || newUser?.confirmed_at) {
-        document.getElementById("verifyEmailModal")?.remove();
-        clearInterval(interval);
+  const verified = newUser?.email_confirmed_at || newUser?.confirmed_at;
+  if (verified) {
+    document.getElementById("verifyEmailModal")?.remove();
+    clearInterval(interval);
 
-        // ✅ Now check for username
-        const { data: nameRow } = await supabase
-          .from("usernames")
-          .select("username")
-          .eq("id", newUser.id)
-          .maybeSingle();
+    // 👇 THEN check if they have a username
+    const { data: nameRow } = await supabase
+      .from("usernames")
+      .select("username")
+      .eq("id", newUser.id)
+      .maybeSingle();
 
-        if (!nameRow || !nameRow.username) {
-          forceUsernameModal();
-        }
-      }
-    }, 3000);
-
-    return; // prevent checking username yet
+    if (!nameRow?.username) forceUsernameModal();
   }
-
-  // ✅ Already verified — check for username immediately
-  const { data: usernameRow, error } = await supabase
-    .from("usernames")
-    .select("username")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!usernameRow || !usernameRow.username) {
-    forceUsernameModal();
-  }
-}
+}, 3000);
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
