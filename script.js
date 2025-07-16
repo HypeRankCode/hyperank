@@ -8,7 +8,7 @@ let currentUser = null;
 let verificationInterval = null; // For email verified polling
 let sessionPollInterval = null;  // For session state polling
 
-// Show persistent verify email modal
+// ✅ Show verify email modal after signup
 function showVerifyModal() {
   if (document.getElementById("verifyEmailModal")) return; // avoid duplicates
 
@@ -25,15 +25,16 @@ function showVerifyModal() {
     <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
       <h2>Verify Your Email</h2>
       <p style="margin-top: 0.5rem; font-size: 0.95rem;">Please check your inbox and click the verification link to continue.</p>
-      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa;">Once verified, you can reload this page and log in</p>
+      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa;">Once verified, reload this page to log in.</p>
     </div>
   `;
+
   document.body.appendChild(modal);
 }
 
-// Username modal as you already have it
+// ✅ Force username modal if none exists
 function forceUsernameModal() {
-  if (document.querySelector("#forceUsernameInput")) return; // avoid duplicates
+  if (document.querySelector("#forceUsernameInput")) return;
 
   const modal = document.createElement("div");
   modal.style = `
@@ -46,38 +47,11 @@ function forceUsernameModal() {
   document.body.style.overflow = "hidden";
 
   modal.innerHTML = `
-    <div style="
-      background: #1a1a1a;
-      padding: 2rem;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 360px;
-      box-sizing: border-box;
-      text-align: center;
-    ">
+    <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 100%; max-width: 360px; box-sizing: border-box; text-align: center;">
       <h2 style="margin-bottom: 1rem;">Pick a Username</h2>
-      <input type="text" id="forceUsernameInput" placeholder="Unique username" style="
-        width: 100%;
-        padding: 0.8rem;
-        border-radius: 8px;
-        border: none;
-        background: #2a2a2a;
-        color: white;
-        box-sizing: border-box;
-      " />
+      <input type="text" id="forceUsernameInput" placeholder="Unique username" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: none; background: #2a2a2a; color: white; box-sizing: border-box;" />
       <p id="forceUsernameError" style="color: #f44; font-size: 0.9rem; margin-top: 0.5rem;"></p>
-      <button id="forceUsernameBtn" style="
-        margin-top: 1rem;
-        padding: 0.6rem 1.2rem;
-        background: #ff3c3c;
-        border: none;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-      ">
-        Save Username
-      </button>
+      <button id="forceUsernameBtn" style="margin-top: 1rem; padding: 0.6rem 1.2rem; background: #ff3c3c; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer;">Save Username</button>
     </div>
   `;
 
@@ -115,54 +89,42 @@ function forceUsernameModal() {
       return;
     }
 
-    const { error: insertError } = await supabase
-      .from("usernames")
-      .insert({
-        id: user.id,
-        username: username,
-        email: user.email
-      });
+    const { error: insertError } = await supabase.from("usernames").insert({
+      id: user.id,
+      username: username,
+      email: user.email
+    });
 
     if (insertError) {
       errorText.textContent = insertError.message;
     } else {
       modal.remove();
-      document.body.style.overflow = ""; // ✅ re-enable scroll
+      document.body.style.overflow = "";
       location.reload();
     }
   };
 }
 
-// Core check function, called repeatedly by polling
+// ✅ Check verification and username setup
 async function checkVerificationAndUsername() {
   const { data: sessionData } = await supabase.auth.getSession();
   const user = sessionData.session?.user;
   currentUser = user;
 
-  // Clear old interval to avoid duplicates
-  if (verificationInterval) {
-    clearInterval(verificationInterval);
-    verificationInterval = null;
-  }
-
   if (!user) {
-    // Not signed in, remove verify modal
-    const modal = document.getElementById("verifyEmailModal");
-    if (modal) modal.remove();
-    document.body.classList.remove('modal-open');
+    document.getElementById("verifyEmailModal")?.remove();
+    document.body.classList.remove("modal-open");
     return false;
   }
 
   const confirmed = user.email_confirmed_at || user.confirmed_at;
 
   if (!confirmed) {
-    // Show verify modal if not present
     if (!document.getElementById("verifyEmailModal")) {
       showVerifyModal();
-      document.body.classList.add('modal-open');
+      document.body.classList.add("modal-open");
     }
 
-    // Start polling email verification every 3s
     verificationInterval = setInterval(async () => {
       const { data: refreshed } = await supabase.auth.getUser();
       const newUser = refreshed?.user;
@@ -171,43 +133,27 @@ async function checkVerificationAndUsername() {
       if (verified) {
         clearInterval(verificationInterval);
         verificationInterval = null;
-
-        const modal = document.getElementById("verifyEmailModal");
-        if (modal) modal.remove();
-        document.body.classList.remove('modal-open');
-
-        location.reload(); // reload so user is recognized as verified
+        document.getElementById("verifyEmailModal")?.remove();
+        document.body.classList.remove("modal-open");
+        location.reload();
       }
     }, 3000);
 
     return false;
   } else {
-    // Verified: remove verify modal if present
-    const modal = document.getElementById("verifyEmailModal");
-    if (modal) {
-      modal.remove();
-      document.body.classList.remove('modal-open');
-    }
+    document.getElementById("verifyEmailModal")?.remove();
+    document.body.classList.remove("modal-open");
 
-    // Check username, show username modal if missing
-    const { data: nameRow } = await supabase
-      .from("usernames")
-      .select("username")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (!nameRow?.username) {
-      if (!document.querySelector("#forceUsernameInput")) {
-        forceUsernameModal();
-      }
+    const { data: nameRow } = await supabase.from("usernames").select("username").eq("id", user.id).maybeSingle();
+    if (!nameRow?.username && !document.querySelector("#forceUsernameInput")) {
+      forceUsernameModal();
     }
     return true;
   }
 }
 
-// Poll every 3s to check session + verification
+// ✅ Start polling
 function startVerificationAndSessionPolling() {
-  // Clear intervals
   if (sessionPollInterval) clearInterval(sessionPollInterval);
   if (verificationInterval) clearInterval(verificationInterval);
 
@@ -216,112 +162,16 @@ function startVerificationAndSessionPolling() {
     const user = sessionData.session?.user;
 
     if (user) {
-      // User signed in, check verification + username
       await checkVerificationAndUsername();
     } else {
-      // User not signed in
-      // Remove verify modal if any
-      const verifyModal = document.getElementById("verifyEmailModal");
-      if (verifyModal) {
-        verifyModal.remove();
-        document.body.classList.remove('modal-open');
-      }
-      
-      // If you have stored the sign-up email and want to check verified remotely,
-      // you can trigger showing login modal here.
-      // Example: if (window.signUpEmail) showLoginModal();
-
-      // Stop polling since user not signed in
+      document.getElementById("verifyEmailModal")?.remove();
+      document.body.classList.remove("modal-open");
       clearInterval(sessionPollInterval);
       sessionPollInterval = null;
     }
   }, 3000);
 }
 
-// Auth modal functions
-window.openAuth = () => {
-  document.getElementById('authModal').style.display = 'flex';
-  document.body.classList.add('modal-open'); // prevent scroll
-};
-
-window.closeAuth = () => {
-  document.getElementById('authModal').style.display = 'none';
-  document.body.classList.remove('modal-open'); // allow scroll
-};
-
-window.signIn = async () => {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-  const msgBox = document.getElementById('authMsg');
-
-  if (!email || !password) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please enter both email and password.`;
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    if (error.message.toLowerCase().includes("invalid login credentials")) {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Invalid email or password.<br>You may have signed up with Google or Discord.`;
-    } else {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
-    }
-    return;
-  }
-
-  msgBox.innerHTML = `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
-  setTimeout(() => location.reload(), 1000);
-};
-
-
-window.signUp = async () => {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value.trim();
-  const msgBox = document.getElementById('authMsg');
-
-  if (!email || !password) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.`;
-    return;
-  }
-
-  const { error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin
-    }
-  });
-
-if (signUpError) {
-  const message = signUpError.message.toLowerCase();
-
-  if (
-    message.includes("user already registered") ||
-    message.includes("duplicate key") ||
-    (message.includes("email") && message.includes("already"))
-  ) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
-  } else {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
-  }
-  return; // 🔴 early return if error
-}
-
-// ✅ No error — proceed with verify modal + polling
-msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
-
-window.signUpEmail = email;
-
-if (!document.getElementById("verifyEmailModal")) {
-  showVerifyModal();
-}
-
-window.closeAuth();
-
-// ✅ Let polling handle everything else (verification + username)
-startVerificationAndSessionPolling();
-};
 
 window.signInWithProvider = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
