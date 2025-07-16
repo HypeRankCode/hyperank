@@ -5,8 +5,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
-let verificationInterval = null; // For email verified polling
-let sessionPollInterval = null;  // For session state polling
 
 function showVerifyModal() {
   if (document.getElementById("verifyEmailModal")) return;
