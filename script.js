@@ -189,29 +189,28 @@ window.signUp = async () => {
     }
   });
 
-if (signUpError) {
-  const message = signUpError.message.toLowerCase();
+  if (signUpError) {
+    const message = signUpError.message.toLowerCase();
 
-  if (
-    message.includes("already registered") ||
-    message.includes("user exists") ||
-    message.includes("already in use") ||
-    message.includes("duplicate") ||
-    (message.includes("email") && message.includes("already"))
-  ) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
+    if (
+      message.includes("already registered") ||
+      message.includes("user exists") ||
+      message.includes("already in use") ||
+      message.includes("duplicate") ||
+      (message.includes("email") && message.includes("already"))
+    ) {
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
+    } else {
+      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
+    }
+    return;
   } else {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
+    // ✅ Success
+    msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
+    window.signUpEmail = email;
+    window.closeAuth();
+    showVerifyModal(); // Just show popup
   }
-  return;
-}
-
-
-  // ✅ Success
-  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
-  window.signUpEmail = email;
-  window.closeAuth();
-  showVerifyModal(); // Just show popup
 };
 
 
