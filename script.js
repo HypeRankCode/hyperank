@@ -181,29 +181,34 @@ window.signUp = async () => {
     return;
   }
 
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin
-    }
-  });
-
-if (signUpError) {
-  const message = signUpError.message.toLowerCase();
-
-  if (
-    signUpError.status === 400 &&
-    (message.includes("email") || message.includes("user")) &&
-    message.includes("already")
-  ) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
-  } else {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
+ const { data, error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: window.location.origin
   }
+});
 
+if (error) {
+  msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
   return;
 }
+
+if (data.user?.identities?.length === 0) {
+  // 🛑 Email already exists
+  msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already registered. Try signing in!`;
+  return;
+}
+
+// ✅ Brand-new signup
+msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
+window.signUpEmail = email;
+window.closeAuth();
+
+if (!data.user.email_confirmed_at && !data.user.confirmed_at) {
+  showVerifyModal(); // Only show if not already verified
+}
+
 
 
   if (!data || !data.user) {
