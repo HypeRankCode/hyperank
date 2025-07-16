@@ -189,6 +189,24 @@ window.signUp = async () => {
     }
   });
 
+window.signUp = async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
+  const msgBox = document.getElementById('authMsg');
+
+  if (!email || !password) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.`;
+    return;
+  }
+
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin
+    }
+  });
+
   if (signUpError) {
     const message = signUpError.message.toLowerCase();
 
@@ -204,14 +222,20 @@ window.signUp = async () => {
       msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
     }
     return;
-  } else {
-    // ✅ Success
-    msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
-    window.signUpEmail = email;
-    window.closeAuth();
-    showVerifyModal(); // Just show popup
   }
+
+  if (!data || !data.user) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Signup failed. Please try again.`;
+    return;
+  }
+
+  // ✅ Success
+  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
+  window.signUpEmail = email;
+  window.closeAuth();
+  showVerifyModal(); // Just show popup
 };
+
 
 
 
