@@ -189,22 +189,22 @@ window.signUp = async () => {
     }
   });
 
-  if (signUpError) {
-    const message = signUpError.message.toLowerCase();
+if (signUpError) {
+  const message = signUpError.message.toLowerCase();
 
-    if (
-      message.includes("already registered") ||
-      message.includes("user exists") ||
-      message.includes("already in use") ||
-      message.includes("duplicate") ||
-      (message.includes("email") && message.includes("already"))
-    ) {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
-    } else {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
-    }
-    return;
+  if (
+    signUpError.status === 400 &&
+    (message.includes("email") || message.includes("user")) &&
+    message.includes("already")
+  ) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
+  } else {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
   }
+
+  return;
+}
+
 
   if (!data || !data.user) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Signup failed. Please try again.`;
