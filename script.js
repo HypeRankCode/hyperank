@@ -25,7 +25,7 @@ function showVerifyModal() {
     <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
       <h2>Verify Your Email</h2>
       <p style="margin-top: 0.5rem; font-size: 0.95rem;">Please check your inbox and click the verification link to continue.</p>
-      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa;">This page will refresh once verified.</p>
+      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa;">Once verified, you can reload this page and log in</p>
     </div>
   `;
   document.body.appendChild(modal);
