@@ -303,9 +303,19 @@ function animateCount(el, endValue) {
 document.addEventListener("DOMContentLoaded", async () => {
 	
   renderVotePair(); // 🎯 Load first voting pair automatically
+
+  const emailSpan = document.getElementById('userEmailDisplay');
+  const authBtn = document.getElementById('authBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const submitNotice = document.getElementById('submitNotice');
   
+try {
   const { data: sessionData } = await supabase.auth.getSession();
-currentUser = sessionData?.session?.user;
+  currentUser = sessionData?.session?.user;
+} catch (err) {
+  console.error("Error getting Supabase session:", err);
+}
+
 
 if (currentUser) {
   const { data: usernameData, error: usernameError } = await supabase
@@ -316,13 +326,12 @@ if (currentUser) {
 
   const username = usernameData?.username;
 
-  if (username) {
-    e  emailSpan.textContent = username
-    ? `Welcome, ${username}`
-    : "Welcome!";
-  } else {
-    forceUsernameModal(); // 🧠 Trigger the modal if username is missing
-  }
+if (username) {
+  emailSpan.textContent = `Welcome, ${username}`;
+} else {
+  forceUsernameModal();
+}
+
 
   authBtn.style.display = 'none';
   logoutBtn.style.display = 'inline-block';
@@ -333,11 +342,6 @@ if (currentUser) {
   logoutBtn.style.display = 'none';
   if (submitNotice) submitNotice.style.display = 'block';
 }
-
-  const emailSpan = document.getElementById('userEmailDisplay');
-  const authBtn = document.getElementById('authBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const submitNotice = document.getElementById('submitNotice');
   
   const params = new URLSearchParams(window.location.search);
 	
