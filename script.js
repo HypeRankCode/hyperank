@@ -303,8 +303,36 @@ function animateCount(el, endValue) {
 document.addEventListener("DOMContentLoaded", async () => {
 	
   renderVotePair(); // 🎯 Load first voting pair automatically
+  
+  const { data: sessionData } = await supabase.auth.getSession();
+currentUser = sessionData?.session?.user;
 
+if (currentUser) {
+  const { data: usernameData, error: usernameError } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", currentUser.id)
+    .single();
 
+  const username = usernameData?.username;
+
+  if (username) {
+    e  emailSpan.textContent = username
+    ? `Welcome, ${username}`
+    : "Welcome!";
+  } else {
+    forceUsernameModal(); // 🧠 Trigger the modal if username is missing
+  }
+
+  authBtn.style.display = 'none';
+  logoutBtn.style.display = 'inline-block';
+  if (submitNotice) submitNotice.style.display = 'none';
+} else {
+  emailSpan.textContent = '';
+  authBtn.style.display = 'inline-block';
+  logoutBtn.style.display = 'none';
+  if (submitNotice) submitNotice.style.display = 'block';
+}
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
@@ -321,28 +349,6 @@ if (params.get('login') === 'true') {
   history.replaceState({}, document.title, window.location.pathname);
 }
 
-if (currentUser) {
-  const { data: usernameData, error: usernameError } = await supabase
-    .from("usernames")
-    .select("username")
-    .eq("id", currentUser.id)
-    .single();
-
-  const username = usernameData?.username;
-
-  emailSpan.textContent = username
-    ? `Welcome, ${username}`
-    : "Welcome!";
-
-  authBtn.style.display = 'none';
-  logoutBtn.style.display = 'inline-block';
-  if (submitNotice) submitNotice.style.display = 'none';
-} else {
-  emailSpan.textContent = '';
-  authBtn.style.display = 'inline-block';
-  logoutBtn.style.display = 'none';
-  if (submitNotice) submitNotice.style.display = 'block';
-}
 
 if (currentUser && document.querySelector('.submit-form')) {
   checkAuthForSubmitForm();
