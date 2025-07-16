@@ -215,7 +215,9 @@ if (signUpError) {
   msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
   window.signUpEmail = email;
   window.closeAuth();
-  showVerifyModal(); // Just show popup
+  if (!data.user.email_confirmed_at && !data.user.confirmed_at) {
+  showVerifyModal(); // Only show if not already verified
+}
 };
 
 
