@@ -101,15 +101,16 @@ function forceUsernameModal() {
       return;
     }
 
-    const { data: existing, error: checkError } = await supabase
-      .from("usernames")
-      .select("username")
-      .ilike("username", username);
+const { data: existing, error: checkError } = await supabase
+  .from("usernames")
+  .select("username")
+  .ilike("username", username)
+  .single();
 
-    if (checkError) {
-      errorText.textContent = checkError.message;
-      return;
-    }
+if (existing) {
+  errorText.textContent = "Username already taken.";
+  return;
+}
 
     if (existing && existing.length > 0) {
       errorText.textContent = "Username already taken.";
@@ -169,25 +170,6 @@ window.signIn = async () => {
   msgBox.innerHTML = `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
   setTimeout(() => location.reload(), 1000);
 };
-
-
-window.signUp = async () => {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value.trim();
-  const msgBox = document.getElementById('authMsg');
-
-  if (!email || !password) {
-    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Please fill in both email and password.`;
-    return;
-  }
-
-  const { error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin
-    }
-  });
 
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value.trim();
@@ -553,12 +535,12 @@ const { data: allTrends, error } = await supabase
       btn.onclick = async () => {
         const { error: moreError } = await supabase
           .from("trends")
-          .update({ more: trend.more + 1 })
+          .update({ more: (trend.more || 0) + 1 })
           .eq("id", trend.id);
 
         const { error: lessError } = await supabase
           .from("trends")
-          .update({ less: opponent.less + 1 })
+          .update({ less: (opponent.less || 0) + 1 })
           .eq("id", opponent.id);
 
         if (moreError || lessError) {
