@@ -187,19 +187,23 @@ window.signUp = async () => {
     }
   });
 
-  if (signUpError) {
-    const message = signUpError.message.toLowerCase();
-    if (
-      message.includes("user already registered") ||
-      message.includes("duplicate key") ||
-      (message.includes("email") && message.includes("already"))
-    ) {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
-    } else {
-      msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
-    }
-    return;
+if (signUpError) {
+  const message = signUpError.message.toLowerCase();
+
+  if (
+    message.includes("already registered") ||
+    message.includes("user exists") ||
+    message.includes("already in use") ||
+    message.includes("duplicate") ||
+    (message.includes("email") && message.includes("already"))
+  ) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already in use. Try signing in.`;
+  } else {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${signUpError.message}`;
   }
+  return;
+}
+
 
   // ✅ Success
   msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
