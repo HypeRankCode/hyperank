@@ -471,15 +471,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const includesLoaded = { footer: false };
   let dataReady = false;
   let tickerReady = false;
-  let pageRendered = false;
 
-  // Try to hide loader only after everything is ready & page is visually rendered
   function tryHideLoader() {
     if (includesLoaded.footer && dataReady && tickerReady) {
-      // Wait for next animation frames to ensure rendering is done
+      // ensure rendering is done
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          pageRendered = true;
           document.body.classList.add("loaded");
           setTimeout(() => {
             const loader = document.getElementById("loader");
@@ -490,6 +487,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   }
 
+  // Load footer include early
   document.addEventListener("DOMContentLoaded", () => {
     loadInclude("siteFooter", "/includes/footer.html", () => {
       includesLoaded.footer = true;
@@ -497,37 +495,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
   });
 
-  window.addEventListener("load", async () => {
+  // Fetch data and populate ticker ASAP (as early as DOM ready)
+  document.addEventListener("DOMContentLoaded", async () => {
     try {
       const { data, error } = await supabase.from('trends').select('*');
       if (error) {
         console.error("Supabase error:", error);
-      } else {
-        trends = data || [];
-        populateTicker(trends);
+        dataReady = true; // to prevent indefinite blocking
+        tickerReady = true;
+        tryHideLoader();
+        return;
       }
+      trends = data || [];
+      populateTicker(trends);
     } catch (err) {
       console.error("Fetch error:", err);
+      dataReady = true;
+      tickerReady = true;
+      tryHideLoader();
     }
-    dataReady = true;
-    tryHideLoader();
   });
 
   function populateTicker(trends) {
     const tickerEl = document.getElementById('ticker');
     if (!tickerEl) {
       console.warn('Ticker element not found');
-      tickerReady = true; // avoid blocking loader indefinitely
+      dataReady = true;
+      tickerReady = true;
       tryHideLoader();
       return;
     }
     tickerEl.innerHTML = trends
       .map(trend => `<span style="margin-right: 1rem;">${trend.name}</span>`)
       .join(' • ');
+
+    dataReady = true;
     tickerReady = true;
     tryHideLoader();
   }
 </script>
+
 
 <script>
   // Save scroll position before reload
