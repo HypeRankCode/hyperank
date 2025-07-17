@@ -542,33 +542,6 @@ if (!error) {
   setTimeout(() => popup.style.display = "none", 3000);
   form.reset();
 
-  // 🔁 Update both credit boxes in UI
-async function updateCreditsUI(userId, username) {
-  const { data, error } = await supabase
-    .from("credits")
-    .select("creds")
-    .eq("user_id", userId)
-    .single();
-
-  if (error || !data) {
-    console.error("Failed to update credits in UI:", error);
-    return;
-  }
-
-  const creds = data.creds ?? 0;
-  const updatedHTML = `
-    Welcome, ${username} &nbsp; – &nbsp;
-    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-    ${creds}
-  `;
-
-  ["creditDisplay", "userEmailDisplay"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = updatedHTML;
-  });
-}
-
-
 } else {
   console.error("Submission error:", error);
 }
@@ -845,4 +818,30 @@ observer.observe(votes);
 } catch (err) {
   console.error("Error fetching trends:", err);
 }
+
+async function updateCreditsUI(userId, username) {
+  const { data, error } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data) {
+    console.error("Failed to update credits in UI:", error);
+    return;
+  }
+
+  const creds = data.creds ?? 0;
+  const updatedHTML = `
+    Welcome, ${username} &nbsp; – &nbsp;
+    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+    ${creds}
+  `;
+
+  ["creditDisplay", "userEmailDisplay"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = updatedHTML;
+  });
+}
+
 });
