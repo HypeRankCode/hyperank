@@ -534,6 +534,15 @@ if (!error) {
     return;
   }
 
+  // Fetch username inside submit handler
+  const { data: usernameData, error: usernameError } = await supabase
+    .from("usernames")
+    .select("username")
+    .eq("id", user.id)
+    .single();
+
+  const username = usernameData?.username ?? "User";
+
   await updateCreditsUI(user.id, username);
 
   // ✅ Show popup
@@ -545,8 +554,8 @@ if (!error) {
 } else {
   console.error("Submission error:", error);
 }
-});
-}
+    });
+  }
 
 const { data, error } = await supabase
   .from('trends')
