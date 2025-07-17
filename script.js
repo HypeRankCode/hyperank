@@ -357,71 +357,70 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (currentUser) {
-    // --- Ensure credits row exists ---
-    try {
-      const { data: existingCredits, error: creditsError } = await supabase
-        .from("credits")
-        .select("user_id")
-        .eq("user_id", currentUser.id)
-        .single();
+  // --- Ensure creds row exists ---
+  try {
+    const { data: existingCredits, error: creditsError } = await supabase
+      .from("creds") // ✅ use correct table name
+      .select("user_id")
+      .eq("user_id", currentUser.id)
+      .single();
 
-      if (!existingCredits) {
-        const { error: insertError } = await supabase
-          .from("credits")
-          .insert([{ user_id: currentUser.id, creds: 20 }]);
+    if (!existingCredits) {
+      const { error: insertError } = await supabase
+        .from("creds")
+        .insert([{ user_id: currentUser.id, creds: 20 }]); // 🎁 default creds
 
-        if (insertError) {
-          console.error("Error inserting initial credits:", insertError);
-        }
+      if (insertError) {
+        console.error("Error inserting initial creds:", insertError);
       }
-    } catch (err) {
-      console.error("Credits check/insert error:", err);
     }
+  } catch (err) {
+    console.error("Creds check/insert error:", err);
+  }
 
-    try {
-      const { data: usernameData, error: usernameError } = await supabase
-        .from("usernames")
-        .select("username")
-        .eq("id", currentUser.id)
-        .single();
+  // --- Fetch username and display credits ---
+  try {
+    const { data: usernameData, error: usernameError } = await supabase
+      .from("usernames")
+      .select("username")
+      .eq("id", currentUser.id)
+      .single();
 
-      const username = usernameData?.username;
+    const username = usernameData?.username;
 
-      if (username) {
-        if (creditBox) {
-          try {
-            const { data: creditData, error: creditError } = await supabase
-              .from("credits")
-              .select("creds")
-              .eq("user_id", currentUser.id)
-              .single();
+    if (username) {
+      let creds = 0;
+      try {
+        const { data: creditData, error: creditError } = await supabase
+          .from("creds") // ✅ correct table again
+          .select("creds")
+          .eq("user_id", currentUser.id)
+          .single();
 
-            const creds = creditData?.creds ?? 0;
-
-            creditBox.innerHTML = `
-              Welcome, ${username} &nbsp; – &nbsp;
-              <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-              ${creds}
-            `;
-          } catch (err) {
-            console.error("Failed to fetch credits:", err);
-            creditBox.textContent = `Welcome, ${username} – <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> Credits: 0`;
-          }
-        }
-
-        if (emailSpan) emailSpan.textContent = `Welcome, ${username} – <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> Credits: 0`;
-
-        if (authBtn) authBtn.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'inline-block';
-        if (submitNotice) submitNotice.style.display = 'none';
-      } else {
-        forceUsernameModal();
+        creds = creditData?.creds ?? 0;
+      } catch (err) {
+        console.error("Failed to fetch creds:", err);
       }
-    } catch (err) {
-      console.error("Error fetching username:", err);
+
+      const welcomeHTML = `
+        Welcome, ${username} &nbsp; – &nbsp;
+        <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+        ${creds}
+      `;
+
+      if (creditBox) creditBox.innerHTML = welcomeHTML;
+      if (emailSpan) emailSpan.innerHTML = welcomeHTML;
+
+      if (authBtn) authBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+      if (submitNotice) submitNotice.style.display = 'none';
+    } else {
       forceUsernameModal();
     }
-
+  } catch (err) {
+    console.error("Error fetching username:", err);
+    forceUsernameModal();
+  }
 
   authBtn.style.display = 'none';
   logoutBtn.style.display = 'inline-block';
