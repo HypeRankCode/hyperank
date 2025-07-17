@@ -337,58 +337,66 @@ function animateCount(el, endValue) {
 // DOM loaded
 
 document.addEventListener("DOMContentLoaded", async () => {
-	
   renderVotePair(); // 🎯 Load first voting pair automatically
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const submitNotice = document.getElementById('submitNotice');
-  
-try {
-  const { data: sessionData } = await supabase.auth.getSession();
-  currentUser = sessionData?.session?.user;
-} catch (err) {
-  console.error("Error getting Supabase session:", err);
-}
-
-
-if (currentUser) {
-  const { data: usernameData, error: usernameError } = await supabase
-    .from("usernames")
-    .select("username")
-    .eq("id", currentUser.id)
-    .single();
-
-  const username = usernameData?.username;
-
-if (username) {
   const creditBox = document.getElementById("creditDisplay");
 
-  if (creditBox) {
+  let currentUser = null;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    currentUser = sessionData?.session?.user;
+  } catch (err) {
+    console.error("Error getting Supabase session:", err);
+  }
+
+  if (currentUser) {
     try {
-      const { data: creditData, error: creditError } = await supabase
-        .from("credits")
-        .select("creds")
-        .eq("user_id", currentUser.id)
+      const { data: usernameData, error: usernameError } = await supabase
+        .from("usernames")
+        .select("username")
+        .eq("id", currentUser.id)
         .single();
 
-      const creds = creditData?.creds ?? 0;
+      const username = usernameData?.username;
 
-      creditBox.innerHTML = `
-        Welcome, ${username} &nbsp; – &nbsp;
-        <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-        ${creds}
-      `;
+      if (username) {
+        if (creditBox) {
+          try {
+            const { data: creditData, error: creditError } = await supabase
+              .from("credits")
+              .select("creds")
+              .eq("user_id", currentUser.id)
+              .single();
+
+            const creds = creditData?.creds ?? 0;
+
+            creditBox.innerHTML = `
+              Welcome, ${username} &nbsp; – &nbsp;
+              <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+              ${creds}
+            `;
+          } catch (err) {
+            console.error("Failed to fetch credits:", err);
+            creditBox.textContent = `Welcome, ${username} – Credits: 0`;
+          }
+        }
+
+        if (emailSpan) emailSpan.textContent = `Welcome, ${username}`;
+
+        if (authBtn) authBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (submitNotice) submitNotice.style.display = 'none';
+      } else {
+        forceUsernameModal();
+      }
     } catch (err) {
-      console.error("Failed to fetch credits:", err);
-      creditBox.textContent = `Welcome, ${username} – Credits: 0`;
+      console.error("Error fetching username:", err);
+      forceUsernameModal();
     }
-  }
-} else {
-  forceUsernameModal();
-}
-
 
 
   authBtn.style.display = 'none';
