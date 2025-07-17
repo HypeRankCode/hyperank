@@ -154,7 +154,7 @@ window.signIn = async () => {
     return;
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     if (error.message.toLowerCase().includes("invalid login credentials")) {
@@ -166,6 +166,26 @@ window.signIn = async () => {
   }
 
   msgBox.innerHTML = `<i class="fas fa-circle-check" style="color:limegreen;"></i> Signed in!`;
+
+  // ✅ Fetch credits after login
+  const user = data.user;
+  if (user) {
+    const { data: creditsData, error: creditsError } = await supabase
+      .from('credits')
+      .select('creds')
+      .eq('user_id', user.id)
+      .single();
+
+    const creditDisplay = document.getElementById('creditDisplay');
+    if (creditDisplay) {
+      if (creditsError || !creditsData) {
+        creditDisplay.textContent = "Credits: 0";
+      } else {
+        creditDisplay.textContent = `Credits: ${creditsData.creds}`;
+      }
+    }
+  }
+
   setTimeout(() => location.reload(), 1000);
 };
 
@@ -343,10 +363,32 @@ if (currentUser) {
   const username = usernameData?.username;
 
 if (username) {
-  emailSpan.textContent = `Welcome, ${username}`;
+  const creditBox = document.getElementById("creditDisplay");
+
+  if (creditBox) {
+    try {
+      const { data: creditData, error: creditError } = await supabase
+        .from("credits")
+        .select("creds")
+        .eq("user_id", currentUser.id)
+        .single();
+
+      const creds = creditData?.creds ?? 0;
+
+      creditBox.innerHTML = `
+        Welcome, ${username} &nbsp; – &nbsp;
+        <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+        ${creds}
+      `;
+    } catch (err) {
+      console.error("Failed to fetch credits:", err);
+      creditBox.textContent = `Welcome, ${username} – Credits: 0`;
+    }
+  }
 } else {
   forceUsernameModal();
 }
+
 
 
   authBtn.style.display = 'none';
