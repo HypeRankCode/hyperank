@@ -11,53 +11,13 @@
   <nav class="nav-links" id="headerNav"></nav>
 </header>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/+esm';
-  const supabase = createClient(
-    'https://rrnucumzptbwdxtkccyx.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
-  );
-
-  const creditBox = document.getElementById("creditDisplay");
-
-  async function loadUserCredits() {
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    const user = sessionData?.session?.user;
-
-    if (!user || !creditBox) return;
-
-    const { data: usernameData } = await supabase
-      .from("usernames")
-      .select("username")
-      .eq("id", user.id)
-      .single();
-
-    const username = usernameData?.username ?? "User";
-
-    const { data: creditData } = await supabase
-      .from("credits")
-      .select("creds")
-      .eq("user_id", user.id)
-      .single();
-
-    const creds = creditData?.creds ?? 0;
-
-    creditBox.innerHTML = `
-      Welcome, ${username} &nbsp; – &nbsp;
-      <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-      ${creds}
-    `;
-  }
-
-  loadUserCredits();
-</script>
-
 <script>
-  // Scroll position logic
+  // Save scroll position before reload
   window.addEventListener('beforeunload', () => {
     localStorage.setItem('scrollY', window.scrollY);
   });
 
+  // Restore scroll position after reload
   window.addEventListener('load', () => {
     const scrollY = localStorage.getItem('scrollY');
     if (scrollY !== null) {
