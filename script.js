@@ -405,11 +405,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
           } catch (err) {
             console.error("Failed to fetch credits:", err);
-            creditBox.textContent = `Welcome, ${username} – Credits: 0`;
+            creditBox.textContent = `Welcome, ${username} – <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> Credits: 0`;
           }
         }
 
-        if (emailSpan) emailSpan.textContent = `Welcome, ${username} – Credits: 0`;
+        if (emailSpan) emailSpan.textContent = `Welcome, ${username} – <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> Credits: 0`;
 
         if (authBtn) authBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
