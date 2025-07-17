@@ -199,51 +199,54 @@ window.signUp = async () => {
     return;
   }
 
- const { data, error } = await supabase.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: window.location.origin
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin
+    }
+  });
+
+  if (error) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
+    return;
   }
-});
 
-if (error) {
-  msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
-  return;
-}
-
-if (data.user?.identities?.length === 0) {
-  // 🛑 Email already exists
-  msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already registered. Try signing in!`;
-  return;
-}
-
-// ✅ Brand-new signup
-msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
-window.signUpEmail = email;
-window.closeAuth();
-
-if (!data.user.email_confirmed_at && !data.user.confirmed_at) {
-  showVerifyModal(); // Only show if not already verified
-}
-
-
+  if (data.user?.identities?.length === 0) {
+    msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Email already registered. Try signing in!`;
+    return;
+  }
 
   if (!data || !data.user) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> Signup failed. Please try again.`;
     return;
   }
 
-  // ✅ Success
+  // Insert credits row if not exists
+  const userId = data.user.id;
+  const { data: existingCredits } = await supabase
+    .from('credits')
+    .select('user_id')
+    .eq('user_id', userId)
+    .single();
+
+  if (!existingCredits) {
+    const { error: insertError } = await supabase
+      .from('credits')
+      .insert([{ user_id: userId, creds: 20 }]);
+    if (insertError) {
+      console.error('Error inserting initial credits:', insertError);
+    }
+  }
+
   msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
   window.signUpEmail = email;
   window.closeAuth();
+
   if (!data.user.email_confirmed_at && !data.user.confirmed_at) {
-  showVerifyModal(); // Only show if not already verified
-}
+    showVerifyModal(); // Only show if not already verified
+  }
 };
-
-
 
 
 window.signInWithProvider = async (provider) => {
