@@ -5,11 +5,13 @@ html {
 body {
   margin: 0;
   font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
   background-color: #111;
   color: white;
+  font-size: 16px;
 }
 
-body, input, textarea, button {
+input, textarea, button {
   font-family: 'Urbanist', sans-serif;
   font-weight: 400;
 }
@@ -17,11 +19,6 @@ body, input, textarea, button {
 h1, h2, h3, .logo-text, .highlight {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
-}
-
-/* Responsive Typography */
-body {
-  font-size: 16px;
 }
 
 h1 {
@@ -45,6 +42,7 @@ h2 {
     font-size: 1.2rem;
   }
 
+  /* Make these cards full width on smaller screens */
   .trend-card, .vote-card {
     width: 100% !important;
   }
@@ -85,9 +83,38 @@ h2 {
     margin: 0.5rem 0;
     width: 100%;
   }
+
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1rem;
+  }
+
+  .logo-container {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .logo-icon {
+    height: 28px;
+    margin-right: 6px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  .nav-links a {
+    font-size: 0.95rem;
+    margin-left: 0;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #222;
+  }
 }
 
-/* Existing styles below (unchanged) */
+/* Site Header */
 .site-header {
   display: flex;
   justify-content: space-between;
@@ -102,6 +129,7 @@ h2 {
   align-items: center;
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 .logo-container:visited {
@@ -111,6 +139,7 @@ h2 {
 .logo-container:focus,
 .logo-container:active {
   outline: none;
+  background: none;
 }
 
 .logo-icon {
@@ -123,12 +152,14 @@ h2 {
   font-weight: bold;
 }
 
-.logo-container:active {
-  background: none;
-}
-
 .logo-text .highlight {
   color: #ff3c3c;
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
 }
 
 .nav-links a {
@@ -139,21 +170,21 @@ h2 {
 }
 
 .nav-links a:hover {
-  text-decoration: none;
   opacity: 0.7;
   color: #ff3c3c;
 }
 
-
+/* Trend Boxes */
 .trend-box {
-background: #1a1a1a;
-border-radius: 12px;
-padding: 1.5rem;
-max-width: 400px;
-margin: 1.5rem auto;
-box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 400px;
+  margin: 1.5rem auto;
+  box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
 }
 
+/* Hero and Trending Sections */
 .hero-section {
   text-align: center;
   margin-top: 5rem;
@@ -170,6 +201,7 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   color: #ff3c3c;
 }
 
+/* Trending grid and cards */
 .trending-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -182,6 +214,9 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(255, 60, 60, 0.1);
   transition: transform 0.2s ease;
+  width: 200px;
+  user-select: none;
+  cursor: default;
 }
 
 .trend-card:hover {
@@ -208,18 +243,11 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
 .falling { color: #ff1744; }
 .mid { color: #ff9100; }
 
+/* Vote Section & Cards */
 .vote-section, .submit-section, .about-section {
   padding: 2rem;
   text-align: center;
 }
-
-#voteNotice {
-  display: none;
-  text-align: center;
-  color: #f44;
-  margin-top: -7rem; /* or 0.25rem for even tighter spacing */
-}
-
 
 .vote-grid {
   display: flex;
@@ -227,12 +255,14 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   gap: 1rem;
   justify-content: center;
 }
+
 .vote-card {
   background: #1e1e1e;
   padding: 1rem;
   border-radius: 12px;
   width: 200px;
 }
+
 .vote-up, .vote-down {
   background: #333;
   border: none;
@@ -241,10 +271,21 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   cursor: pointer;
   border-radius: 8px;
   font-size: 1rem;
+  width: auto;
+  transition: background 0.2s ease;
 }
-.vote-up:hover { background: #ff3c3c; color: white; }
-.vote-down:hover { background: #555; color: white; }
 
+.vote-up:hover {
+  background: #ff3c3c;
+  color: white;
+}
+
+.vote-down:hover {
+  background: #555;
+  color: white;
+}
+
+/* Submit Form */
 .submit-form {
   display: flex;
   flex-direction: column;
@@ -253,7 +294,8 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   margin: auto;
 }
 
-.submit-form input {
+.submit-form input,
+.submit-form textarea {
   padding: 0.8rem;
   border-radius: 8px;
   border: none;
@@ -266,18 +308,8 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
 }
 
 .submit-form textarea {
-  padding: 0.8rem;
-  border-radius: 8px;
-  border: none;
-  font-size: 1rem;
-  font-family: 'Segoe UI', sans-serif; /* Match the input */
-  background: #1e1e1e;
-  color: white;
-  width: 100%;
-  box-sizing: border-box;
-  resize: none; /* disables resizing */
+  resize: none;
 }
-
 
 .submit-form button {
   background: #ff3c3c;
@@ -287,26 +319,32 @@ box-shadow: 0 0 10px rgba(255, 60, 60, 0.15);
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
+
 .submit-form button:hover {
   background: #ff1e1e;
 }
 
+/* About Section */
 .about-section {
   padding: 3rem 2rem;
   background: #121212;
   color: #eee;
 }
+
 .about-section h3 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
 }
+
 .about-section p {
   max-width: 600px;
   margin: auto;
   font-size: 1rem;
 }
 
+/* Sticky Header */
 header {
   position: sticky;
   top: 0;
@@ -319,15 +357,16 @@ header {
   border-bottom: 1px solid #333;
 }
 
+/* Spotlight */
 .spotlight-trend {
-  background-color: #1a1a1a; /* same as body background */
+  background-color: #1a1a1a;
   text-align: center;
-  padding: 1rem 2rem; /* Make top/bottom spacing even */
+  padding: 1rem 2rem;
 }
 
 .spotlight-card {
-  background: #ffd600;     /* bold, readable yellow */
-  color: #111;             /* dark text for contrast */
+  background: #ffd600;
+  color: #111;
   padding: 1rem;
   border-radius: 12px;
   max-width: 400px;
@@ -348,49 +387,43 @@ header {
   margin-top: 1rem;
 }
 
+/* Rising & Falling Sections */
 .rising-section, .falling-section {
   padding: 2rem;
   text-align: center;
 }
+
+/* Trending Grid Flex version */
 .trending-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
 }
-.trend-card {
-  background: #1e1e1e;
-  padding: 1rem;
-  border-radius: 12px;
-  width: 200px;
-}
 
-.trend-card, .trend-card * {
-  user-select: none;
-  cursor: default;
-}
-
-.trend-title {
-  font-weight: bold;
-}
-.rising { color: #00e676; }
-.falling { color: #ff1744; }
-
+/* Tooltip and Meta */
 .tooltip {
   cursor: help;
   font-size: 0.9em;
   color: #888;
 }
+
 .sparkline {
   font-size: 0.9em;
   color: #00e676;
   margin: 0.3rem 0;
 }
+
+.sparkline.green { color: #00e676; }
+.sparkline.red { color: #ff1744; }
+.sparkline.orange { color: #ff9100; }
+
 .meta-info {
   font-size: 0.8em;
   color: #aaa;
 }
 
+/* News Ticker */
 .news-ticker {
   background-color: #1a1a1a;
   color: #fff;
@@ -406,11 +439,9 @@ header {
   position: relative;
   white-space: nowrap;
   overflow: hidden;
-
   mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
 }
-
 
 .ticker-track {
   display: flex;
@@ -427,30 +458,18 @@ header {
   font-size: 0.85rem;
 }
 
-.sparkline.green { color: #00e676; }
-.sparkline.red { color: #ff1744; }
-.sparkline.orange { color: #ff9100; }
-
-.sparkline {
-  font-size: 0.9em;
-  color: #00e676;
-  margin: 0.3rem 0;
-}
-.meta-info {
-  font-size: 0.8em;
-  color: #aaa;
-}
-
+/* Compare UI */
 .compare-results {
-  min-height: 1.5rem; /* lock height so it doesn’t collapse and shift layout */
-  transition: opacity 0.3s ease;
+  min-height: 2rem; /* Reserve space so layout doesn't shift */
+  text-align: center;
+  color: #4f4;
   opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .compare-results.visible {
   opacity: 1;
 }
-
 
 .matchup-card {
   display: flex;
@@ -544,34 +563,35 @@ header {
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
-  min-height: 120px; /* adjust based on expected button height */
+  min-height: 120px;
   transition: opacity 0.3s ease;
   opacity: 1;
 }
 
-.compare-results {
-  min-height: 2rem;
-  text-align: center;
-  color: #4f4;
-  transition: opacity 0.3s ease;
+.comparison-box.fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: all 0.3s ease;
 }
 
-
-.nav-links {
-    display: flex;
-    gap: 1.5rem;
+.comparison-box.fade-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s ease;
 }
 
+/* Nav links (duplicate cleaned) */
 .nav-links a {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
 }
 
 .nav-links a:hover {
-    color: #ff3c3c;
+  color: #ff3c3c;
 }
 
+/* Vote option button style */
 .vote-option {
   transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
@@ -587,7 +607,7 @@ header {
   background: #444;
 }
 
-
+/* Suggest button */
 .suggest-btn {
   margin: 0.25rem;
   background: #333;
@@ -598,10 +618,12 @@ header {
   cursor: pointer;
   font-size: 0.9rem;
 }
+
 .suggest-btn:hover {
   background: #ff3c3c;
 }
 
+/* Back Home Button */
 .back-home-btn {
   color: white;
   text-decoration: none;
@@ -616,17 +638,13 @@ header {
   opacity: 0.7;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
+/* Logo Container hover effect */
 .logo-container:hover {
   opacity: 0.9;
   cursor: pointer;
 }
 
+/* Auth Modal */
 .auth-modal {
   display: none;
   position: fixed;
@@ -677,9 +695,10 @@ header {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  transition: background 0.3s ease;
 }
 
-.auth-buttons .close-btn {
+.auth-buttons button.close-btn {
   background: #444;
 }
 
@@ -689,85 +708,12 @@ header {
   color: #ccc;
 }
 
-.comparison-box.fade-out {
-  opacity: 0;
-  transform: scale(0.98);
-  transition: all 0.3s ease;
-}
-
-.comparison-box.fade-in {
-  opacity: 1;
-  transform: scale(1);
-  transition: all 0.3s ease;
-}
-
-.compare-results {
-  min-height: 2rem; /* Reserve space so layout doesn't shift */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.compare-results.visible {
-  opacity: 1;
-}
-
-footer {
-  padding: 1rem;
-  text-align: center;
-  font-size: 0.875rem;
-  color: #888;
-}
-
-
-footer a {
-  color: inherit;
-  text-decoration: underline;
-  margin: 0 0.5rem;
-}
-
-footer a:hover {
-  color: #ff1e40; /* your red highlight */
-}
-
-@media (max-width: 768px) {
-  .site-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem 1rem;
-  }
-
-  .logo-container {
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .logo-icon {
-    height: 28px;
-    margin-right: 6px;
-  }
-
-  .logo-text {
-    font-size: 1.2rem;
-  }
-
-  .nav-links {
-    flex-direction: column;
-    gap: 0.25rem;
-    width: 100%;
-  }
-
-  .nav-links a {
-    font-size: 0.95rem;
-    margin-left: 0;
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #222;
-  }
-}
-
+/* Prevent body scroll when modal open */
 body.modal-open {
   overflow: hidden;
 }
 
+/* OAuth Buttons */
 .oauth-divider {
   text-align: center;
   margin: 1rem 0;
@@ -793,6 +739,7 @@ body.modal-open {
   gap: 0.5rem;
   justify-content: center;
   font-weight: 600;
+  transition: background 0.3s ease;
 }
 
 .google-btn {
@@ -801,7 +748,34 @@ body.modal-open {
   border: 1px solid #ccc;
 }
 
+.google-btn:hover {
+  background-color: #f0f0f0;
+}
+
 .discord-btn {
   background-color: #5865F2;
   color: white;
+}
+
+.discord-btn:hover {
+  background-color: #4752c4;
+}
+
+/* Footer */
+footer {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+footer a {
+  color: inherit;
+  text-decoration: underline;
+  margin: 0 0.5rem;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #ff1e40;
 }
