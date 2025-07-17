@@ -360,14 +360,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- Ensure creds row exists ---
   try {
     const { data: existingCredits, error: creditsError } = await supabase
-      .from("creds") // ✅ use correct table name
+      .from("credits") // ✅ use correct table name
       .select("user_id")
       .eq("user_id", currentUser.id)
       .single();
 
     if (!existingCredits) {
       const { error: insertError } = await supabase
-        .from("creds")
+        .from("credits")
         .insert([{ user_id: currentUser.id, creds: 20 }]); // 🎁 default creds
 
       if (insertError) {
@@ -392,7 +392,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let creds = 0;
       try {
         const { data: creditData, error: creditError } = await supabase
-          .from("creds") // ✅ correct table again
+          .from("credits") // ✅ correct table again
           .select("creds")
           .eq("user_id", currentUser.id)
           .single();
