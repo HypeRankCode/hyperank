@@ -534,6 +534,8 @@ if (!error) {
     return;
   }
 
+  await updateCreditsUI(user.id, username);
+
   // ✅ Show popup
   const popup = document.getElementById("custom-popup");
   popup.style.display = "block";
@@ -541,15 +543,31 @@ if (!error) {
   form.reset();
 
   // 🔁 Update both credit boxes in UI
+async function updateCreditsUI(userId, username) {
+  const { data, error } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data) {
+    console.error("Failed to update credits in UI:", error);
+    return;
+  }
+
+  const creds = data.creds ?? 0;
   const updatedHTML = `
     Welcome, ${username} &nbsp; – &nbsp;
     <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-    ${newCredits}
+    ${creds}
   `;
+
   ["creditDisplay", "userEmailDisplay"].forEach(id => {
-    const box = document.getElementById(id);
-    if (box) box.innerHTML = updatedHTML;
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = updatedHTML;
   });
+}
+
 
 } else {
   console.error("Submission error:", error);
