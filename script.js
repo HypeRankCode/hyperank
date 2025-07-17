@@ -409,7 +409,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         }
 
-        if (emailSpan) emailSpan.textContent = `Welcome, ${username}`;
+        if (emailSpan) {
+  emailSpan.innerHTML = `
+    Welcome, ${username} &nbsp; – &nbsp;
+    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+    ${creds}
+  `;
+}
 
         if (authBtn) authBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
