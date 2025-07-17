@@ -507,27 +507,53 @@ if (currentUser && document.querySelector('.submit-form')) {
     status: "pending",
   });
 
-  if (!error) {
-    // 💸 Deduct 10 credits
-    await supabase
-      .from("credits")
-      .update({ creds: currentCredits - 10 })
-      .eq("user_id", user.id);
+if (!error) {
+  // 💸 Fetch current credits
+  const { data: creditData, error: creditFetchError } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", user.id)
+    .single();
 
-    // ✅ Show popup
-    const popup = document.getElementById("custom-popup");
-    popup.style.display = "block";
-    setTimeout(() => popup.style.display = "none", 3000);
-    form.reset();
-
-    // 🔁 Optional: Refresh credits display
-    const creditBox = document.getElementById("creditDisplay");
-    if (creditBox) {
-      creditBox.innerHTML = creditBox.innerHTML.replace(/\d+$/, currentCredits - 10);
-    }
-  } else {
-    console.error("Submission error:", error);
+  if (creditFetchError || !creditData) {
+    console.error("Failed to fetch credits before deduction:", creditFetchError);
+    return;
   }
+
+  const currentCredits = creditData.creds ?? 0;
+  const newCredits = Math.max(0, currentCredits - 10);
+
+  // 💸 Deduct 10 credits
+  const { error: updateError } = await supabase
+    .from("credits")
+    .update({ creds: newCredits })
+    .eq("user_id", user.id);
+
+  if (updateError) {
+    console.error("Error updating credits:", updateError);
+    return;
+  }
+
+  // ✅ Show popup
+  const popup = document.getElementById("custom-popup");
+  popup.style.display = "block";
+  setTimeout(() => popup.style.display = "none", 3000);
+  form.reset();
+
+  // 🔁 Update both credit boxes in UI
+  const updatedHTML = `
+    Welcome, ${username} &nbsp; – &nbsp;
+    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+    ${newCredits}
+  `;
+  ["creditDisplay", "userEmailDisplay"].forEach(id => {
+    const box = document.getElementById(id);
+    if (box) box.innerHTML = updatedHTML;
+  });
+
+} else {
+  console.error("Submission error:", error);
+}
 });
 }
 
