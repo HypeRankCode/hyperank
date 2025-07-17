@@ -474,28 +474,62 @@ if (currentUser && document.querySelector('.submit-form')) {
   const form = document.querySelector(".submit-form");
   if (form) {
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const inputs = form.querySelectorAll("input, textarea");
-      const name = inputs[0].value.trim().toLowerCase();
-      const label = inputs[0].value.trim();
-      const description = inputs[1].value.trim();
-      if (!name || !description) return;
-      const { error } = await supabase.from("suggestions").insert({
-        name,
-        label,
-        description,
-        status: "pending",
-      });
-      if (!error) {
-        const popup = document.getElementById("custom-popup");
-        popup.style.display = "block";
-        setTimeout(() => popup.style.display = "none", 3000);
-        form.reset();
-      } else {
-        console.error("Submission error:", error);
-      }
-    });
+  e.preventDefault();
+  const inputs = form.querySelectorAll("input, textarea");
+  const name = inputs[0].value.trim().toLowerCase();
+  const label = inputs[0].value.trim();
+  const description = inputs[1].value.trim();
+  if (!name || !description) return;
+
+  const session = await supabase.auth.getSession();
+  const user = session?.data?.session?.user;
+  if (!user) return;
+
+  // 🔍 Check credits
+  const { data: creditData, error: creditError } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", user.id)
+    .single();
+
+  const currentCredits = creditData?.creds ?? 0;
+
+  if (creditError || currentCredits < 10) {
+    alert("Not enough credits to suggest a trend. (10 credits required)");
+    return;
   }
+
+  // 💾 Insert suggestion
+  const { error } = await supabase.from("suggestions").insert({
+    name,
+    label,
+    description,
+    status: "pending",
+  });
+
+  if (!error) {
+    // 💸 Deduct 10 credits
+    await supabase
+      .from("credits")
+      .update({ creds: currentCredits - 10 })
+      .eq("user_id", user.id);
+
+    // ✅ Show popup
+    const popup = document.getElementById("custom-popup");
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 3000);
+    form.reset();
+
+    // 🔁 Optional: Refresh credits display
+    const creditBox = document.getElementById("creditDisplay");
+    if (creditBox) {
+      creditBox.innerHTML = creditBox.innerHTML.replace(/\d+$/, currentCredits - 10);
+    }
+  } else {
+    console.error("Submission error:", error);
+  }
+});
+}
 
 const { data, error } = await supabase
   .from('trends')
