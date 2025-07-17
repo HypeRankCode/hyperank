@@ -357,6 +357,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (currentUser) {
+    // --- Ensure credits row exists ---
+    try {
+      const { data: existingCredits, error: creditsError } = await supabase
+        .from("credits")
+        .select("user_id")
+        .eq("user_id", currentUser.id)
+        .single();
+
+      if (!existingCredits) {
+        const { error: insertError } = await supabase
+          .from("credits")
+          .insert([{ user_id: currentUser.id, creds: 20 }]);
+
+        if (insertError) {
+          console.error("Error inserting initial credits:", insertError);
+        }
+      }
+    } catch (err) {
+      console.error("Credits check/insert error:", err);
+    }
+
     try {
       const { data: usernameData, error: usernameError } = await supabase
         .from("usernames")
