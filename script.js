@@ -409,7 +409,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         }
 
-        if (emailSpan) emailSpan.textContent = `Welcome, ${username}`;
+        if (emailSpan) emailSpan.textContent = `Welcome, ${username} – Credits: 0`;
 
         if (authBtn) authBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
