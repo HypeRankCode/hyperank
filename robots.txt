@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /includes/
+
+Sitemap: https://hyperank.ca/sitemap.xml
