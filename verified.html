@@ -1,152 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-ZC93ESXDWX');
-  </script>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Verified | HypeRank</title>
-  <meta name="description" content="Your email has been verified successfully." />
-  <meta name="robots" content="noindex" />
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: white;
-      font-family: 'Urbanist', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1.2rem;
-      color: #ccc;
-    }
-
-    .note {
-      margin-top: 1rem;
-      font-style: italic;
-      color: #888;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    #loaderOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.4s ease;
-    }
-
-    #loaderOverlay.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .loader-icon {
-      animation: bounce 1.2s infinite;
-      width: 48px;
-      height: 48px;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Email Verification Status – HypeRank</title>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+<style>
+  body {
+    font-family: 'Urbanist', sans-serif;
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  .container {
+    background: #1a1a1a;
+    max-width: 600px;
+    margin: auto;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .logo {
+    max-width: 120px;
+    margin: 0 auto 1.5rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #ff3c3c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .message {
+    font-size: 1.1rem;
+    color: #ccc;
+  }
+  .message.error {
+    color: #ff5555;
+  }
+  .message.success {
+    color: #55ff88;
+  }
+  em {
+    display: block;
+    margin-top: 1.5rem;
+    font-style: italic;
+    color: #888;
+  }
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: #666;
+  }
+  .fa-icon {
+    font-size: 1.5rem;
+  }
+</style>
 </head>
-
 <body>
-  <!-- LOADER -->
-  <div id="loaderOverlay">
-    <img src="/assets/arrow-logo.png" alt="Loading..." class="loader-icon" />
+  <div class="container">
+    <img src="https://hyperank.ca/assets/logo.png" alt="HypeRank Logo" class="logo" />
+    <h1 id="statusTitle">
+      <i id="statusIcon" class="fa-icon fa-solid fa-check"></i>
+      Email Verified
+    </h1>
+    <p id="statusMessage" class="message success">
+      Thank you for confirming your email. You can now log in to HypeRank.
+    </p>
+    <em>You can close this page and go back to the login screen.</em>
   </div>
 
-  <div id="siteHeader"></div>
+  <footer>
+    &copy; 2025 HypeRank – What’s Hot, What’s Not<br />
+    <a href="https://hyperank.ca/privacy" style="color: #888;">Privacy Policy</a>
+  </footer>
 
-  <main>
-    <h1><i class="fas fa-check-circle" style="color:#4caf50;"></i> Email Verified</h1>
-    <p>Your email has been successfully verified.</p>
-    <p class="note">You can close this page and return to the login screen.</p>
-  </main>
-
-  <div id="siteFooter"></div>
-
-  <!-- Header/Footer Include Loader -->
-  <script>
-    function loadInclude(id, url, callback) {
-      fetch(url)
-        .then(res => {
-          if (!res.ok) throw new Error("Failed to fetch include: " + url);
-          return res.text();
-        })
-        .then(html => {
-          document.getElementById(id).innerHTML = html;
-          if (id === "siteHeader") {
-            const nav = document.getElementById("headerNav");
-            if (nav) {
-              nav.innerHTML = ""; // removes "← Back to Home"
-            }
-          }
-          if (callback) callback();
-        })
-        .catch(err => {
-          console.error(err);
-          if (callback) callback();
-        });
-    }
-
-    window.addEventListener("load", () => {
-      Promise.all([
-        new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
-        new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
-      ]).then(() => {
-        document.body.classList.add("loaded");
-        const loader = document.getElementById("loaderOverlay");
-        if (loader) loader.classList.add("fade-out");
+<script>
+  function getParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    if (queryString) {
+      queryString.split('&').forEach(pair => {
+        const [key, val] = pair.split('=');
+        if (key) params[key] = decodeURIComponent(val || '');
       });
-    });
-  </script>
+    }
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      hash.split('&').forEach(pair => {
+        const [key, val] = pair.split('=');
+        if (key) params[key] = decodeURIComponent(val || '');
+      });
+    }
+    return params;
+  }
+
+  const params = getParams();
+
+  const titleEl = document.getElementById('statusTitle');
+  const msgEl = document.getElementById('statusMessage');
+  const iconEl = document.getElementById('statusIcon');
+
+  if (params.error || params.error_description) {
+    titleEl.textContent = 'Verification Failed';
+    iconEl.className = 'fa-icon fa-solid fa-times';
+    msgEl.textContent = params.error_description
+      ? params.error_description.replace(/\+/g, ' ')
+      : 'There was a problem verifying your email. Please try again or request a new link.';
+    msgEl.classList.remove('success');
+    msgEl.classList.add('error');
+
+    // Re-append icon and text (since we overwrote textContent)
+    titleEl.prepend(iconEl);
+  } else {
+    titleEl.textContent = 'Email Verified';
+    iconEl.className = 'fa-icon fa-solid fa-check';
+    msgEl.textContent = 'Thank you for confirming your email. You can now log in to HypeRank.';
+    msgEl.classList.remove('error');
+    msgEl.classList.add('success');
+
+    titleEl.prepend(iconEl);
+  }
+</script>
 </body>
 </html>
