@@ -177,18 +177,6 @@ window.signUp = async () => {
     return;
   }
 
-console.log('Using redirect:', 'https://hyperank.ca/verified');
-const { data, error } = await supabase.auth.signUp(
-  {
-    email,
-    password,
-  },
-  {
-    emailRedirectTo: 'https://hyperank.ca/verified',
-  }
-);
-console.log('Response from signUp:', data, error);
-
   if (error) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
     return;
