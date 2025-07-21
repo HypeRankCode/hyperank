@@ -177,13 +177,11 @@ window.signUp = async () => {
     return;
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin
-    }
-  });
+  // Correct: pass options as second argument here
+  const { data, error } = await supabase.auth.signUp(
+    { email, password },
+    { emailRedirectTo: 'https://hyperank.ca/verified' }
+  );
 
   if (error) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
