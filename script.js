@@ -217,7 +217,7 @@ window.signUp = async () => {
     }
   }
 
-  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
+  msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#ffef44;"></i> Check your email to verify your account!`;
   window.signUpEmail = email;
 };
 
