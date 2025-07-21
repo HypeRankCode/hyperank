@@ -6,29 +6,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-function showVerifyModal() {
-  if (document.getElementById("verifyEmailModal")) return;
 
-  const modal = document.createElement("div");
-  modal.id = "verifyEmailModal";
-  modal.style = `
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
-    align-items: center; justify-content: center; z-index: 9998; flex-direction: column;
-    font-family: 'Urbanist', sans-serif; color: white;
-  `;
-  document.body.style.overflow = "hidden";
-
-  modal.innerHTML = `
-    <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; width: 350px; max-width: 90%; text-align: center;">
-      <h2>Verify Your Email</h2>
-      <p style="margin-top: 0.5rem; font-size: 0.95rem;">Check your inbox and click the verification link.</p>
-      <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #aaa; font-style: italic;">
-  Once done, reload this page to log in
-</p>
-    </div>
-  `;
-  document.body.appendChild(modal);
-}
 
 // Username modal as you already have it
 function forceUsernameModal() {
@@ -241,11 +219,6 @@ window.signUp = async () => {
 
   msgBox.innerHTML = `<i class="fas fa-envelope" style="color:#4f4;"></i> Check your email to verify your account!`;
   window.signUpEmail = email;
-  window.closeAuth();
-
-  if (!data.user.email_confirmed_at && !data.user.confirmed_at) {
-    showVerifyModal(); // Only show if not already verified
-  }
 };
 
 
