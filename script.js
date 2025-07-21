@@ -177,6 +177,12 @@ window.signUp = async () => {
     return;
   }
 
+  // Call Supabase signUp with emailRedirectTo option
+  const { data, error } = await supabase.auth.signUp(
+    { email, password },
+    { emailRedirectTo: 'https://hyperank.ca/verified' }
+  );
+
   if (error) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
     return;
