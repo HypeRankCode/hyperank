@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZC93ESXDWX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-ZC93ESXDWX');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Verified | HypeRank</title>
+  <meta name="description" content="Your email has been verified successfully." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: 'Urbanist', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    .note {
+      margin-top: 1rem;
+      font-style: italic;
+      color: #888;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #111;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    #loaderOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    #loaderOverlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-icon {
+      animation: bounce 1.2s infinite;
+      width: 48px;
+      height: 48px;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- LOADER -->
+  <div id="loaderOverlay">
+    <img src="/assets/arrow-logo.png" alt="Loading..." class="loader-icon" />
+  </div>
+
+  <div id="siteHeader"></div>
+
+  <main>
+    <h1><i class="fas fa-check-circle" style="color:#4caf50;"></i> Email Verified</h1>
+    <p>Your email has been successfully verified.</p>
+    <p class="note">You can close this page and return to the login screen.</p>
+  </main>
+
+  <div id="siteFooter"></div>
+
+  <!-- Header/Footer Include Loader -->
+  <script>
+    function loadInclude(id, url, callback) {
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch include: " + url);
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById(id).innerHTML = html;
+          if (id === "siteHeader") {
+            const nav = document.getElementById("headerNav");
+            if (nav) {
+              nav.innerHTML = ""; // removes "← Back to Home"
+            }
+          }
+          if (callback) callback();
+        })
+        .catch(err => {
+          console.error(err);
+          if (callback) callback();
+        });
+    }
+
+    window.addEventListener("load", () => {
+      Promise.all([
+        new Promise(resolve => loadInclude("siteHeader", "/includes/header.html", resolve)),
+        new Promise(resolve => loadInclude("siteFooter", "/includes/footer.html", resolve))
+      ]).then(() => {
+        document.body.classList.add("loaded");
+        const loader = document.getElementById("loaderOverlay");
+        if (loader) loader.classList.add("fade-out");
+      });
+    });
+  </script>
+</body>
+</html>
