@@ -39,21 +39,15 @@
   h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: #ff3c3c;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
+    color: #eee; /* default neutral color */
   }
   .message {
     font-size: 1.1rem;
-    color: #ccc;
-  }
-  .message.error {
-    color: #ff5555;
-  }
-  .message.success {
-    color: #55ff88;
+    color: #ccc; /* always gray/white */
   }
   em {
     display: block;
@@ -69,6 +63,19 @@
   }
   .fa-icon {
     font-size: 1.5rem;
+    color: #55ff88; /* default to green */
+  }
+  .error-icon {
+    color: #ff5555 !important; /* override to red on error */
+  }
+  .success-icon {
+    color: #55ff88 !important; /* override to green on success */
+  }
+  .error-text {
+    color: #ff5555 !important; /* red for error title */
+  }
+  .success-text {
+    color: #55ff88 !important; /* green for success title */
   }
 </style>
 </head>
@@ -76,10 +83,10 @@
   <div class="container">
     <img src="https://hyperank.ca/assets/logo.png" alt="HypeRank Logo" class="logo" />
     <h1 id="statusTitle">
-      <i id="statusIcon" class="fa-icon fa-solid fa-check"></i>
+      <i id="statusIcon" class="fa-icon fa-solid fa-check success-icon"></i>
       Email Verified
     </h1>
-    <p id="statusMessage" class="message success">
+    <p id="statusMessage" class="message">
       Thank you for confirming your email. You can now log in to HypeRank.
     </p>
     <em>You can close this page and go back to the login screen.</em>
@@ -118,24 +125,26 @@
 
   if (params.error || params.error_description) {
     titleEl.textContent = 'Verification Failed';
-    iconEl.className = 'fa-icon fa-solid fa-times';
+    titleEl.classList.remove('success-text');
+    titleEl.classList.add('error-text');
+
+    iconEl.className = 'fa-icon fa-solid fa-times error-icon';
+
     msgEl.textContent = params.error_description
       ? params.error_description.replace(/\+/g, ' ')
       : 'There was a problem verifying your email. Please try again or request a new link.';
-    msgEl.classList.remove('success');
-    msgEl.classList.add('error');
-
-    // Re-append icon and text (since we overwrote textContent)
-    titleEl.prepend(iconEl);
   } else {
     titleEl.textContent = 'Email Verified';
-    iconEl.className = 'fa-icon fa-solid fa-check';
-    msgEl.textContent = 'Thank you for confirming your email. You can now log in to HypeRank.';
-    msgEl.classList.remove('error');
-    msgEl.classList.add('success');
+    titleEl.classList.remove('error-text');
+    titleEl.classList.add('success-text');
 
-    titleEl.prepend(iconEl);
+    iconEl.className = 'fa-icon fa-solid fa-check success-icon';
+
+    msgEl.textContent = 'Thank you for confirming your email. You can now log in to HypeRank.';
   }
+
+  // prepend icon back to the h1 (since we replaced textContent)
+  titleEl.prepend(iconEl);
 </script>
 </body>
 </html>
