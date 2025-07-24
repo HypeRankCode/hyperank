@@ -26,6 +26,12 @@ body, input, textarea, select, button, a, label {
   cursor: none !important;
 }
 
+
+* {
+  cursor: none !important;
+}
+
+
 /* Your custom cursor */
 .custom-cursor {
   position: fixed;
