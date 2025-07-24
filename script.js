@@ -825,19 +825,18 @@ async function updateCreditsUI(userId, username) {
 }
 
 
-
 const cursor = document.querySelector('.custom-cursor');
+
+function setCursorImage(type) {
+  let url = 'assets/cursorRed.cur';
+  if (type === 'click') url = 'assets/cursor-click.cur';
+  else if (type === 'text') url = 'assets/cursor-textv2.cur';
+  cursor.style.backgroundImage = `url('${url}?v=${Date.now()}')`;
+}
 
 document.addEventListener('mousemove', e => {
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
 });
-
-function setCursorImage(type) {
-  let imgUrl = '/assets/cursor.cur';
-  if (type === 'text') imgUrl = '/assets/cursor-textv2.cur';
-  else if (type === 'pointer') imgUrl = '/assets/cursor-pointer.cur';
-  cursor.style.backgroundImage = `url('${imgUrl}?v=${Date.now()}')`;
-}
 
 document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('mouseenter', () => setCursorImage('text'));
@@ -845,11 +844,12 @@ document.querySelectorAll('input, textarea').forEach(el => {
 });
 
 document.querySelectorAll('a, button').forEach(el => {
-  el.addEventListener('mouseenter', () => setCursorImage('pointer'));
+  el.addEventListener('mouseenter', () => setCursorImage('click'));
   el.addEventListener('mouseleave', () => setCursorImage());
 });
 
-// Initialize default
+// Initialize default cursor
 setCursorImage();
+
 
 });
