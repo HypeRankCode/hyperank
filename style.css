@@ -46,7 +46,7 @@ body {
 }
 
 .custom-cursor.cursor-text {
-  background-image: url('assets/cursor-text.cur');
+  background-image: url('assets/cursorRedText.cur');
 }
 
 input, textarea, button {
