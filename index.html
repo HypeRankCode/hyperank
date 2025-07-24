@@ -304,15 +304,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   line-height: 1.5;
 
 html, body, * {
-  cursor: url('assets/cursorRed.cur'), auto;
+  cursor: url('/assets/cursorRed.cur'), auto !important;
 }
 
-a, button {
-  cursor: url('assets/cursor-clickv2.cur'), pointer;
+a, button, [role="button"], .btn {
+  cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
 }
 
-input, textarea {
-  cursor: url('assets/cursor-textv2.cur'), text;
+input, textarea, [contenteditable="true"] {
+  cursor: url('/assets/cursor-textv2.cur'), text !important;
+}
+
+#supabase-auth-ui *, .logo, .logo * {
+  cursor: url('/assets/cursorRed.cur'), auto !important;
+}
 }
 
 </style>
