@@ -265,6 +265,31 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     opacity: 0;
     pointer-events: none;
   }
+  
+  .main-hero-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.main-hero-title .hype {
+  color: var(--text-white);
+}
+
+.main-hero-title .gradient {
+  background: linear-gradient(135deg, var(--hot-red), #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
 </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
@@ -308,10 +333,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Center Content (trending, vote, submit) -->
   <main class="center-content" style="flex: 5; display: flex; flex-direction: column; gap: 2rem;">
 
-   <section class="hero-section">
-    <h2>Track what’s Hype these days!</h2>
-    <p>From memes to influencers — know what’s trending in real time</p>
-   </section>
+  <section class="hero-section">
+  <h2 class="main-hero-title">
+    <span class="hype">What’s</span> 
+    <span class="gradient">Hype</span> 
+    <span class="hype">Right Now?</span>
+  </h2>
+  <p>From memes to influencers — know what’s trending in real time</p>
+</section>
 
   <div class="search-bar" style="text-align:center; margin: 2rem;">
     <form id="trendSearchForm">
