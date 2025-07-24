@@ -216,18 +216,18 @@ h2 {
 }
 
 .trend-card {
-  background: #1a1a1a;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+  background-color: #1a1a1a;
   border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  transition: transform 0.2s, box-shadow 0.3s;
-  user-select: none;
-  cursor: default;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+  border: 1px solid #333;
+  transform: perspective(800px) rotateY(1deg);
 }
 
 .trend-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(255, 60, 60, 0.3);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 4px 24px rgba(255, 80, 80, 0.25);
 }
 
 .trend-title {
@@ -237,13 +237,24 @@ h2 {
   color: white;
 }
 
-.trend-meta,
 .sparkline,
 .trend-votes,
 .meta-info {
   margin-top: 0.4rem;
   color: #ccc;
   font-size: 0.9rem;
+}
+
+.trend-meta i {
+  animation: pulse 2.5s infinite ease-in-out;
+  margin-top: 0.4rem;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+@keyframes pulse {
+  0%, 100% { filter: drop-shadow(0 0 0px #f44); }
+  50% { filter: drop-shadow(0 0 6px #f44); }
 }
 
 .rising { color: #00e676; }
@@ -391,6 +402,29 @@ header {
   filter: blur(40px);
   pointer-events: none;
   z-index: 0;
+}
+
+#spotlight {
+  position: relative;
+  overflow: hidden;
+}
+#spotlight::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.1), transparent 60%);
+  animation: glowMove 8s infinite linear;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes glowMove {
+  0% { transform: translate(0%, 0%) }
+  50% { transform: translate(25%, 25%) }
+  100% { transform: translate(0%, 0%) }
 }
 
 .spotlight-card {
