@@ -827,29 +827,21 @@ async function updateCreditsUI(userId, username) {
 
 const cursor = document.querySelector('.custom-cursor');
 
-function setCursorImage(type) {
-  let url = 'assets/cursorRed.cur';
-  if (type === 'click') url = 'assets/cursor-click.cur';
-  else if (type === 'text') url = 'assets/cursor-text.cur';
-  cursor.style.backgroundImage = `url('${url}?v=${Date.now()}')`;
-}
-
-document.addEventListener('mousemove', e => {
+// Track mouse movement
+document.addEventListener('mousemove', (e) => {
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
 });
 
-document.querySelectorAll('input, textarea').forEach(el => {
-  el.addEventListener('mouseenter', () => setCursorImage('text'));
-  el.addEventListener('mouseleave', () => setCursorImage());
+// Handle hover for text inputs
+document.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-text'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-text'));
 });
 
-document.querySelectorAll('a, button').forEach(el => {
-  el.addEventListener('mouseenter', () => setCursorImage('click'));
-  el.addEventListener('mouseleave', () => setCursorImage());
+// Handle hover for clickable elements
+document.querySelectorAll('a, button, [role="button"], input[type="submit"], .clickable').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-click'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-click'));
 });
-
-// Initialize default cursor
-setCursorImage();
-
 
 });
