@@ -303,35 +303,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   margin: 0 auto;
   line-height: 1.5;
 
+/* Base override */
 html, body, * {
   cursor: url('/assets/cursorRed.cur'), auto !important;
 }
 
-/* Clickable elements — add all classes/selectors you use */
-a,
-button,
-[role="button"],
-.clickable,
-.vote-btn,
-.vote-up,
-.vote-down,
-.trend-box:hover,
-input[type="submit"],
-input[type="button"],
-input[type="image"],
-label[for],
-svg:hover,
-.g-btn,
-.icon-btn {
-  cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
-}
-
-input, textarea, [contenteditable="true"] {
+/* Text input override */
+input,
+textarea,
+[contenteditable="true"] {
   cursor: url('/assets/cursor-textv2.cur'), text !important;
 }
 
-#supabase-auth-ui *, .logo, .logo * {
-  cursor: url('/assets/cursorRed.cur'), auto !important;
+/* Catch all pointer-style elements */
+*:hover {
+  cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
 }
 }
 
