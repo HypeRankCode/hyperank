@@ -223,23 +223,11 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
   border: 1px solid #333;
-  transform: perspective(800px) rotateY(1deg);
 }
 
 .trend-card:hover {
   transform: translateY(-4px) scale(1.01);
   box-shadow: 0 4px 24px rgba(255, 80, 80, 0.25);
-}
-
-input[type="text"] {
-  background: rgba(30, 30, 30, 0.6);
-  border: 1px solid #444;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-}
-input[type="text"]:focus {
-  background: rgba(50, 50, 50, 0.8);
-  box-shadow: 0 0 6px 2px #ff3c3c;
 }
 
 .trend-title {
@@ -249,6 +237,7 @@ input[type="text"]:focus {
   color: white;
 }
 
+.trend-meta,
 .sparkline,
 .trend-votes,
 .meta-info {
@@ -259,14 +248,6 @@ input[type="text"]:focus {
 
 .trend-meta i {
   animation: pulse 2.5s infinite ease-in-out;
-  margin-top: 0.4rem;
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-@keyframes pulse {
-  0%, 100% { filter: drop-shadow(0 0 0px #f44); }
-  50% { filter: drop-shadow(0 0 6px #f44); }
 }
 
 .rising { color: #00e676; }
