@@ -833,7 +833,7 @@ document.addEventListener('mousemove', e => {
 });
 
 function setCursorImage(type) {
-  let imgUrl = '/assets/cursor-textv2.cur';
+  let imgUrl = '/assets/cursor.cur';
   if (type === 'text') imgUrl = '/assets/cursor-textv2.cur';
   else if (type === 'pointer') imgUrl = '/assets/cursor-pointer.cur';
   cursor.style.backgroundImage = `url('${imgUrl}?v=${Date.now()}')`;
