@@ -341,8 +341,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section id="submit" class="submit-section">
   <h2>Suggest a New Trend</h2>
 
-  <div style="position: relative; max-width: 600px; margin: 0 auto;">
-    <!-- The form container -->
+  <div class="submit-form-wrapper" style="position: relative; max-width: 480px; margin: 0 auto; padding: 1rem 1.5rem;">
     <form class="submit-form" style="opacity: 1; transition: opacity 0.3s; position: relative; z-index: 1;">
       <input type="text" placeholder="Enter trend name..." required />
       <textarea placeholder="Why is it trending?" rows="4"></textarea>
@@ -351,20 +350,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
     </form>
 
-    <!-- Overlay covering ONLY the form -->
     <div id="submitOverlay" style="
       display: none;
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(3px);
       z-index: 2;
       pointer-events: auto;
 
-      /* fade edges using mask */
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-      border-radius: 0.5rem;
+      /* Fade on all 4 edges */
+      -webkit-mask-image: 
+        radial-gradient(farthest-corner at top left, transparent, black 30%),
+        radial-gradient(farthest-corner at top right, transparent, black 30%),
+        radial-gradient(farthest-corner at bottom left, transparent, black 30%),
+        radial-gradient(farthest-corner at bottom right, transparent, black 30%);
+      -webkit-mask-composite: intersect;
+      mask-composite: intersect;
+      mask-image:
+        radial-gradient(farthest-corner at top left, transparent, black 30%),
+        radial-gradient(farthest-corner at top right, transparent, black 30%),
+        radial-gradient(farthest-corner at bottom left, transparent, black 30%),
+        radial-gradient(farthest-corner at bottom right, transparent, black 30%);
+      mask-composite: intersect;
+
+      border-radius: 0.6rem;
       display: flex;
       align-items: center;
       justify-content: center;
