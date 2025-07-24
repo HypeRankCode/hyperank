@@ -71,8 +71,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     min-height: 100vh;
     opacity: 0;
     transition: opacity 0.3s ease;
-	cursor: url('assets/cursor.cur') 0 0, auto;
   }
+  
+  body, input, textarea, select, button, a, label {
+  cursor: url('assets/cursor.cur'), auto !important;
+}
 
   body.loaded {
     opacity: 1;

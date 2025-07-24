@@ -19,9 +19,11 @@ body {
   color: var(--text-white);
   font-size: 16px;
   overflow-x: hidden;
-  cursor: url('assets/cursor.cur') 0 0, auto;
 }
 
+body, input, textarea, select, button, a, label {
+  cursor: url('assets/cursor.cur'), auto !important;
+}
 
 input, textarea, button {
   font-family: 'Urbanist', sans-serif;
