@@ -78,12 +78,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #1a1a1a;
-    border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(26, 26, 26, 0.8); /* semi-transparent glass effect */
+  backdrop-filter: blur(12px);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.3); /* subtle red glow */
   }
 
   .logo-container {
