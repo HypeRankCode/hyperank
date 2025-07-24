@@ -159,6 +159,14 @@ h2 {
 .logo-text {
   font-size: 1.5rem;
   font-weight: 900;
+  display: inline-block;
+}
+
+.logo-text .hype {
+  color: var(--text-white);
+}
+
+.logo-text .rank {
   background: linear-gradient(135deg, var(--hot-red) 0%, #ff6b6b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -166,10 +174,6 @@ h2 {
   color: transparent;
 }
 
-
-.logo-text .highlight {
-  color: #ff3c3c;
-}
 
 /* Navigation Links */
 .nav-links {
