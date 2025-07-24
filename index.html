@@ -353,11 +353,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <div class="search-bar" style="text-align:center; margin: 2rem;">
   <form id="trendSearchForm" style="display: flex; justify-content: center;">
-    <div style="
-      position: relative;
-      width: 60%;
-      max-width: 400px;
-    ">
+    <div style="position: relative; width: 60%; max-width: 400px;">
       <i class="fas fa-search" style="
         position: absolute;
         top: 50%;
@@ -365,25 +361,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         transform: translateY(-50%);
         color: #aaa;
         font-size: 1rem;
+        pointer-events: none;
       "></i>
       <input
-  id="trendSearchInput"
-  type="text"
-  placeholder="Search trends..."
-  style="
-    padding: 0.8rem 1rem 0.8rem 2.4rem;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 8px;
-    border: none;
-    background-color: #2a3a4a;
-    color: white;
-    font-size: 1rem;
-    transition: box-shadow 0.3s ease, background-color 0.3s ease;
-  "
-  onfocus="this.style.boxShadow='0 0 6px 2px #ff3c3c'; this.style.backgroundColor='#3a4a5c';"
-  onblur="this.style.boxShadow='none'; this.style.backgroundColor='#2a3a4a';"
-/>
+        id="trendSearchInput"
+        type="text"
+        placeholder="Search trends..."
+        style="
+          padding: 0.8rem 1rem 0.8rem 2.4rem;
+          width: 100%;
+          box-sizing: border-box;
+          border-radius: 8px;
+          border: none;
+          background-color: #2a3a4a;
+          color: white;
+          font-size: 1rem;
+          transition: box-shadow 0.3s ease, background-color 0.3s ease;
+        "
+        onfocus="this.style.boxShadow='0 0 6px 2px #ff3c3c'; this.style.backgroundColor='#3a4a5c';"
+        onblur="this.style.boxShadow='none'; this.style.backgroundColor='#2a3a4a';"
+      />
     </div>
   </form>
   <div style="margin-top: 1rem;">
