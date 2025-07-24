@@ -32,11 +32,11 @@ body, input, textarea, select, button, a, label {
   left: 0;
   width: 24px;
   height: 24px;
-  background: url('assets/cursorredd.cur') no-repeat center center;
+  background: url('assets/cursorRed.cur') no-repeat center center;
   background-size: cover;
   pointer-events: none;
   z-index: 9999;
-  transition: transform 0.1s ease;
+  transition: none;
 }
 
 /* Optional variants */
