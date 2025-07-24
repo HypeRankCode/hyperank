@@ -367,20 +367,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         font-size: 1rem;
       "></i>
       <input
-        id="trendSearchInput"
-        type="text"
-        placeholder="Search trends..."
-        style="
-          padding: 0.8rem 1rem 0.8rem 2.4rem;
-          width: 100%;
-          box-sizing: border-box;
-          border-radius: 8px;
-          border: none;
-          background-color: #182C3B;
-          color: white;
-          font-size: 1rem;
-        "
-      />
+  id="trendSearchInput"
+  type="text"
+  placeholder="Search trends..."
+  style="
+    padding: 0.8rem 1rem 0.8rem 2.4rem;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: none;
+    background-color: #182C3B;
+    color: white;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  "
+  onfocus="this.style.boxShadow='0 0 6px 2px #ff3c3c'; this.style.backgroundColor='#1e3a54';"
+  onblur="this.style.boxShadow='none'; this.style.backgroundColor='#182C3B';"
+/>
     </div>
   </form>
   <div style="margin-top: 1rem;">
