@@ -824,7 +824,6 @@ async function updateCreditsUI(userId, username) {
   });
 }
 
-cursor.style.backgroundImage = `url('/assets/cursor-textv2.cur?v=${Date.now()}')`;
 
 
 const cursor = document.querySelector('.custom-cursor');
@@ -834,7 +833,7 @@ document.addEventListener('mousemove', e => {
 });
 
 function setCursorImage(type) {
-  let imgUrl = '/assets/cursorRed.cur';
+  let imgUrl = '/assets/cursor-textv2.cur';
   if (type === 'text') imgUrl = '/assets/cursor-textv2.cur';
   else if (type === 'pointer') imgUrl = '/assets/cursor-pointer.cur';
   cursor.style.backgroundImage = `url('${imgUrl}?v=${Date.now()}')`;
