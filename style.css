@@ -22,7 +22,29 @@ body {
 }
 
 body, input, textarea, select, button, a, label {
-  cursor: url('assets/cursorRed.cur'), auto !important;
+  cursor: none;
+}
+
+/* Your custom cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: url('assets/cursor.cur') no-repeat center center;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+}
+
+/* Optional variants */
+.custom-cursor.text {
+  background-image: url('assets/cursor-text.cur');
+}
+.custom-cursor.pointer {
+  background-image: url('assets/cursor-pointer.cur');
 }
 
 input, textarea, button {

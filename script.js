@@ -824,4 +824,22 @@ async function updateCreditsUI(userId, username) {
   });
 }
 
+
+const cursor = document.querySelector('.custom-cursor');
+
+document.addEventListener('mousemove', (e) => {
+  cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+});
+
+document.querySelectorAll('input, textarea').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('text'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('text'));
+});
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('pointer'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('pointer'));
+});
+
+
 });
