@@ -824,6 +824,8 @@ async function updateCreditsUI(userId, username) {
   });
 }
 
+cursor.style.backgroundImage = `url('/assets/cursor-textv2.cur?v=${Date.now()}')`;
+
 
 const cursor = document.querySelector('.custom-cursor');
 
