@@ -338,34 +338,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="compare-results"></div>
 </section>
 
-<section id="submit" class="submit-section" style="position: relative;">
+<section id="submit" class="submit-section">
   <h2>Suggest a New Trend</h2>
 
-  <!-- Overlay when not logged in -->
-  <div id="submitOverlay" style="
-    display: none;
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f44;
-    font-size: 1.2rem;
-    text-align: center;
-    padding: 0;
-    border-radius: 0.5rem;
-    pointer-events: auto;
-  ">
-    <div style="padding: 1.5rem;">
-      <i class="fas fa-lock" style="font-size: 1.5rem;"></i><br />
-      Please sign in to suggest a trend.
+  <div style="position: relative; max-width: 600px; margin: 0 auto;">
+    <!-- The form container -->
+    <form class="submit-form" style="opacity: 1; transition: opacity 0.3s; position: relative; z-index: 1;">
+      <input type="text" placeholder="Enter trend name..." required />
+      <textarea placeholder="Why is it trending?" rows="4"></textarea>
+      <button type="submit">
+        Submit – <i class="fas fa-coins" style="color: gold; margin-right: 6px;"></i> 10 Creds
+      </button>
+    </form>
+
+    <!-- Overlay covering ONLY the form -->
+    <div id="submitOverlay" style="
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 2;
+      pointer-events: auto;
+
+      /* fade edges using mask */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f44;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 1rem;
+    ">
+      <div>
+        <i class="fas fa-lock" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i><br />
+        Please sign in to suggest a trend.
+      </div>
     </div>
-  </div>
 
   <form class="submit-form" style="opacity: 1; transition: opacity 0.3s;">
     <input type="text" placeholder="Enter trend name..." required />
