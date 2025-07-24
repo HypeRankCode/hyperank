@@ -844,16 +844,9 @@ footer a:hover {
   padding: 1rem;
   z-index: 2;
 
-  /* Smooth fade edges using mask */
-  -webkit-mask-image: radial-gradient(
-    circle at center,
-    rgba(0,0,0,1) 70%,
-    rgba(0,0,0,0) 100%
-  );
-  mask-image: radial-gradient(
-    circle at center,
-    rgba(0,0,0,1) 70%,
-    rgba(0,0,0,0) 100%
-  );
+  /* Smooth fade edges with no visible lines */
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
 }
+
 
