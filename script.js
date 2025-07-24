@@ -824,24 +824,4 @@ async function updateCreditsUI(userId, username) {
   });
 }
 
-
-const cursor = document.querySelector('.custom-cursor');
-
-// Track mouse movement
-document.addEventListener('mousemove', (e) => {
-  cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-});
-
-// Handle hover for text inputs
-document.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-text'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-text'));
-});
-
-// Handle hover for clickable elements
-document.querySelectorAll('a, button, [role="button"], input[type="submit"], .clickable').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-click'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-click'));
-});
-
 });

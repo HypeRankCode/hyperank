@@ -25,28 +25,16 @@ html, body, * {
   cursor: none !important;
 }
 
-
-/* Your custom cursor */
-.custom-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  background: url('assets/cursorRed.cur') no-repeat center center;
-  background-size: cover;
-  pointer-events: none;
-  z-index: 9999;
-  transition: none;
+html, body, * {
+  cursor: url('assets/cursor.cur'), auto;
 }
 
-/* Optional variants */
-.custom-cursor.cursor-click {
-  background-image: url('assets/cursor-click.cur');
+a, button {
+  cursor: url('assets/cursor-click.cur'), pointer;
 }
 
-.custom-cursor.cursor-text {
-  background-image: url('assets/cursor-textv2.cur');
+input, textarea {
+  cursor: url('assets/cursor-textv2.cur'), text;
 }
 
 

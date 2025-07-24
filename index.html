@@ -308,29 +308,6 @@ html, body, * {
   cursor: none !important;
 }
 
-/* Your custom cursor */
-.custom-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  background: url('assets/cursorRed.cur') no-repeat center center;
-  background-size: cover;
-  pointer-events: none;
-  z-index: 9999;
-  transition: none;
-}
-
-/* Optional variants */
-.custom-cursor.cursor-click {
-  background-image: url('assets/cursor-click.cur');
-}
-
-.custom-cursor.cursor-text {
-  background-image: url('assets/cursor-textv2.cur');
-}
-
 </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
@@ -345,8 +322,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div id="loader">
   <img src="/assets/arrow-logo.png" alt="Loading..." />
 </div>
-
-<div class="custom-cursor"></div>
 
   <header class="site-header">
     <a href="index.html" class="logo-container">
