@@ -844,3 +844,4 @@ document.querySelectorAll('a, button, [role="button"], input[type="submit"], .cl
   el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-click'));
 });
 
+});
