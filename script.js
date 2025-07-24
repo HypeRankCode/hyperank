@@ -827,21 +827,28 @@ async function updateCreditsUI(userId, username) {
 
 const cursor = document.querySelector('.custom-cursor');
 
-// Track mouse movement
-document.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', e => {
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
 });
 
-// Handle hover for text inputs
-document.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-textv2'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-textv2'));
+function setCursorImage(type) {
+  let imgUrl = '/assets/cursorRed.cur';
+  if (type === 'text') imgUrl = '/assets/cursor-textv2.cur';
+  else if (type === 'pointer') imgUrl = '/assets/cursor-pointer.cur';
+  cursor.style.backgroundImage = `url('${imgUrl}?v=${Date.now()}')`;
+}
+
+document.querySelectorAll('input, textarea').forEach(el => {
+  el.addEventListener('mouseenter', () => setCursorImage('text'));
+  el.addEventListener('mouseleave', () => setCursorImage());
 });
 
-// Handle hover for clickable elements
-document.querySelectorAll('a, button, [role="button"], input[type="submit"], .clickable').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-click'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-click'));
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => setCursorImage('pointer'));
+  el.addEventListener('mouseleave', () => setCursorImage());
 });
+
+// Initialize default
+setCursorImage();
 
 });
