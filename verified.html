@@ -82,6 +82,30 @@
   .success-text {
     color: #55ff88 !important; /* green for success title */
   }
+  
+  /* Your custom cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: url('assets/cursorRed.cur') no-repeat center center;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 9999;
+  transition: none;
+}
+
+/* Optional variants */
+.custom-cursor.cursor-click {
+  background-image: url('assets/cursor-clickv2.cur');
+}
+
+.custom-cursor.cursor-text {
+  background-image: url('assets/cursor-textv2.cur');
+}
+
 </style>
 </head>
 <body>
