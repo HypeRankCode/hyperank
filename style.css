@@ -366,20 +366,25 @@ header {
 
 /* Spotlight */
 .spotlight-trend {
-  background-color: #1a1a1a;
+  background-color: #111; /* darker black background */
   text-align: center;
-  padding: 1rem 2rem;
+  padding: 2rem 1.5rem;
+  max-width: 450px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.4); /* subtle red glow */
+  color: #eee;
 }
 
 .spotlight-card {
-  background: #ffd600;
-  color: #111;
-  padding: 1rem;
+  background: #1a1a1a; /* dark card bg */
+  color: #ddd;
+  padding: 1.5rem 2rem;
   border-radius: 12px;
   max-width: 400px;
   margin: auto;
-  box-shadow: 0 0 10px rgba(255, 214, 0, 0.4);
-  border: 1px solid #e6c200;
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.25);
+  border: 1px solid rgba(255, 68, 68, 0.3); /* subtle red border */
 }
 
 .rank-meta {
