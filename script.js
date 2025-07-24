@@ -830,7 +830,7 @@ const cursor = document.querySelector('.custom-cursor');
 function setCursorImage(type) {
   let url = 'assets/cursorRed.cur';
   if (type === 'click') url = 'assets/cursor-click.cur';
-  else if (type === 'text') url = 'assets/cursor-textv2.cur';
+  else if (type === 'text') url = 'assets/cursor-text.cur';
   cursor.style.backgroundImage = `url('${url}?v=${Date.now()}')`;
 }
 
