@@ -366,26 +366,45 @@ header {
 
 /* Spotlight */
 .spotlight-trend {
-  background-color: #111; /* darker black background */
+  position: relative;
+  background-color: #111;
   text-align: center;
-  padding: 2rem 1.5rem;
+  padding: 3rem 1.5rem 2rem;
   max-width: 450px;
   margin: 2rem auto;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255, 68, 68, 0.4); /* subtle red glow */
   color: #eee;
+  overflow: visible; /* allow shadow outside */
+}
+
+.spotlight-trend::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 68, 68, 0.4) 0%, transparent 80%);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .spotlight-card {
-  background: #1a1a1a; /* dark card bg */
+  position: relative;
+  background: #1a1a1a;
   color: #ddd;
   padding: 1.5rem 2rem;
   border-radius: 12px;
   max-width: 400px;
   margin: auto;
-  box-shadow: 0 0 12px rgba(255, 68, 68, 0.25);
-  border: 1px solid rgba(255, 68, 68, 0.3); /* subtle red border */
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.25);
+  z-index: 1;
 }
+
 
 .rank-meta {
   color: #ff3c3c;
