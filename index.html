@@ -307,6 +307,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   line-height: 1.5;
 }
 
+/* Your custom cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: url('assets/cursorredd.cur') no-repeat center center;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+}
+
+/* Optional variants */
+.custom-cursor.text {
+  background-image: url('assets/cursor-text.cur');
+}
+.custom-cursor.pointer {
+  background-image: url('assets/cursor-pointer.cur');
+}
 </style>
 </head>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Urbanist:wght@400;500&display=swap" rel="stylesheet">
