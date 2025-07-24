@@ -834,8 +834,8 @@ document.addEventListener('mousemove', (e) => {
 
 // Handle hover for text inputs
 document.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-text'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-text'));
+  el.addEventListener('mouseenter', () => cursor.classList.add('cursor-textv2'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-textv2'));
 });
 
 // Handle hover for clickable elements
