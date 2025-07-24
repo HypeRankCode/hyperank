@@ -822,12 +822,6 @@ footer a:hover {
   overflow-x: hidden; /* no horizontal scroll */
 }
 
-@media (max-width: 1024px) {
-  .main-wrapper {
-    grid-template-columns: 1fr;
-    padding: 5rem;
-  }
-}
 
 .main-content {
   width: 100%;
