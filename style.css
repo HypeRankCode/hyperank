@@ -26,7 +26,7 @@ html, body, * {
 }
 
 html, body, * {
-  cursor: url('assets/cursor.cur'), auto;
+  cursor: url('assets/cursorRed.cur'), auto;
 }
 
 a, button {
