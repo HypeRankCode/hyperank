@@ -30,8 +30,8 @@ body, input, textarea, select, button, a, label {
   position: fixed;
   top: 0;
   left: 0;
-  width: 24px;
-  height: 24px;
+  width: 60px;
+  height: 60px;
   background: url('assets/cursorRed.cur') no-repeat center center;
   background-size: cover;
   pointer-events: none;
