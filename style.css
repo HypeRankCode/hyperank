@@ -47,11 +47,12 @@ body, input, textarea, select, button, a, label {
 }
 
 /* Optional variants */
-.custom-cursor.text {
-  background-image: url('assets/cursor-text.cur');
+.custom-cursor.cursor-click {
+  background-image: url('assets/cursor-click.cur');
 }
-.custom-cursor.pointer {
-  background-image: url('assets/cursor-pointer.cur');
+
+.custom-cursor.cursor-text {
+  background-image: url('assets/cursor-text.cur');
 }
 
 input, textarea, button {
