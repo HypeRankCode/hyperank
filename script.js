@@ -818,7 +818,7 @@ async function renderVotePair() {
               }
             }
           } else if (!hasShownCreditMsg) {
-            showVoteMessage("Earn credits by using an account!");
+            showVoteMessage("Earn credits by using an account!", btn);
             hasShownCreditMsg = true;
           }
 
