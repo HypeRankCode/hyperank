@@ -379,15 +379,16 @@ async function refreshUserCredits() {
   `;
 }
 
-function showVoteMessage(msg) {
-  const msgBox = document.getElementById("voteMsg");
-  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${msg}`;
+function showVoteMessage(message) {
+  const msgBox = document.getElementById("voteMessage"); // Make sure your HTML uses id="voteMessage"
+  if (!msgBox) return; // safety check
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
   msgBox.classList.add("visible");
-  clearTimeout(window.voteMsgTimeout); // reset if already running
+  clearTimeout(window.voteMsgTimeout); // reset timeout if already running
   window.voteMsgTimeout = setTimeout(() => {
     msgBox.classList.remove("visible");
     msgBox.innerHTML = "";
-  }, 2500); // stays visible longer
+  }, 2500); // visible for 2.5 seconds
 }
 
 
@@ -790,7 +791,7 @@ async function renderVotePair() {
               }
             }
           } else if (!hasShownCreditMsg) {
-            showVoteMessage("Earn credits by creating an account!");
+            showVoteMessage("Earn credits by using an account!");
             hasShownCreditMsg = true;
           }
 
