@@ -6,6 +6,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    currentUser = session.user;
+    console.log("Logged in via OAuth:", currentUser);
+    // maybe redirect or update UI
+  }
 
 
 // Username modal as you already have it
