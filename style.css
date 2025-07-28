@@ -304,16 +304,15 @@ h2 {
 
 /* Vote Buttons Container */
 .comparison-box {
-  display: flex;          /* Use flex, not inline-flex */
-  gap: 1rem;              /* Add breathing room between buttons */
+  display: flex;
+  gap: 1rem;
   border-radius: 8px;
-  /* Remove overflow hidden so buttons don't get clipped */
-  max-width: none;        /* Allow container to grow */
-  width: 100%;            /* Fill parent width */
+  /* No fixed width or max-width here */
   margin: 1rem auto;
   border: none !important;
   outline: none !important;
   box-shadow: 0 0 6px #ff4444;
+  justify-content: center; /* Center them horizontally */
 }
 
 /* Vote Buttons */
@@ -702,17 +701,18 @@ header {
 
 /* Vote option button style */
 .vote-option {
-  white-space: nowrap;
-  flex: 1 1 auto;        /* Buttons flexibly grow and shrink */
-  min-width: 140px;      /* Minimum button width */
+  white-space: nowrap;       /* Keep text on one line */
   padding: 1rem 2rem;
   font-size: 1.2rem;
-  border-radius: 8px;    /* Rounded corners for each button */
+  border-radius: 8px;
   border: none;
   background: #222;
   color: white;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+  /* Remove flex-grow and min-width */
+  flex: 0 0 auto;            /* Button width based on content */
+  max-width: 100%;           /* Just in case, don’t overflow container */
 }
 
 .vote-option:hover {
