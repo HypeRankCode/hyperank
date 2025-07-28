@@ -14,6 +14,15 @@ supabase.auth.getSession().then(({ data: { session } }) => {
   }
 });
 
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    console.log("User is logged in:", session.user);
+  } else {
+    console.log("User not logged in");
+  }
+});
+
+
 
 // Username modal as you already have it
 function forceUsernameModal() {
