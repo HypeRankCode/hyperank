@@ -442,16 +442,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="trending-grid"></div>
   </section>
 
-<section id="vote" class="vote-section">
-  <h2>Which do you use more?</h2>
-  <div class="comparison-box" style="position: relative;">
-    <button id="voteMoreBtn" class="vote-btn">Use More</button>
-    <button id="voteLessBtn" class="vote-btn">Use Less</button>
-  </div>
-  <!-- Moved outside so it won't be cleared -->
-  <div id="voteMessage" class="vote-message"></div>
-  <div class="compare-results"></div>
+<section class="vote-wrapper">
+  <video autoplay muted loop playsinline class="vote-bg-video">
+    <source src="background.mp4" type="video/mp4" />
+  </video>
+  <div class="vote-fade-top"></div>
+  <div class="vote-fade-bottom"></div>
+
+  <!-- 🌟 Mouse Glow Element -->
+  <div class="mouse-glow"></div>
+
+  <section id="vote" class="vote-section">
+    <h2>Which do you use more?</h2>
+    <div class="comparison-box" style="position: relative;">
+      <button id="voteMoreBtn" class="vote-btn">Use More</button>
+      <button id="voteLessBtn" class="vote-btn">Use Less</button>
+    </div>
+    <div id="voteMessage" class="vote-message"></div>
+    <div class="compare-results"></div>
+  </section>
 </section>
+
 
 
 
