@@ -26,8 +26,20 @@ html, body, * {
   cursor: url('assets/cursorRed.cur'), auto;
 }
 
-a, button {
-  cursor: url('assets/cursor-clickv2.cur'), pointer;
+/* Force custom pointer cursor on all clickable elements */
+a,
+button,
+.logo-container,
+#authBtn,
+#logoutBtn,
+.vote-option,
+button[type="submit"],
+.close-btn,
+.oauth-btn,
+.forgot-password-link,
+[onclick],
+[role="button"] {
+  cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
 }
 
 input, textarea {
