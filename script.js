@@ -5,6 +5,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
+let hasShownCreditMsg = false;
 
 supabase.auth.getSession().then(({ data: { session } }) => {
   if (session) {
@@ -361,34 +362,35 @@ if (isOAuthLogin) {
   }
 }
 
-function showVoteMessage(message) {
-  let msg = document.getElementById('voteMsg');
-  if (!msg) {
-    msg = document.createElement('div');
-    msg.id = 'voteMsg';
-    msg.style = `
+function showVoteMessage(msg) {
+  let msgBox = document.getElementById("voteMsg");
+  if (!msgBox) {
+    msgBox = document.createElement("div");
+    msgBox.id = "voteMsg";
+    msgBox.style = `
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #333;
+      background: #111;
       color: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
       font-size: 1rem;
       opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 1000;
     `;
-    document.body.appendChild(msg);
+    document.body.appendChild(msgBox);
   }
 
-  msg.textContent = message;
-  msg.style.opacity = '1';
+  msgBox.textContent = msg;
+  msgBox.style.opacity = "1";
 
   setTimeout(() => {
-    msg.style.opacity = '0';
-  }, 3000);
+    msgBox.style.opacity = "0";
+  }, 2500);
 }
 
   // --- Normal page load logic below ---
@@ -687,13 +689,14 @@ fetch("news.json")
 
 
 
+
 // Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  // Fade out only (but preserve layout)
+  // Fade out only
   box.style.opacity = "0";
   box.style.transition = "opacity 0.3s ease";
 
@@ -710,35 +713,30 @@ async function renderVotePair() {
     }
 
     const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
-
-    box.innerHTML = ""; // Clear after fade out
+    box.innerHTML = ""; // Clear
 
     const createVoteBtn = (trend, opponent) => {
       const btn = document.createElement("button");
       btn.className = "vote-option";
       btn.textContent = trend.label;
       btn.style =
-        "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+        "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem; position: relative;";
 
       btn.onclick = async () => {
+        // Disable both buttons during vote
+        document.querySelectorAll(".vote-option").forEach(b => b.disabled = true);
+
         try {
-          // Update votes (always allowed)
-          await supabase
-            .from("trends")
-            .update({ more: (trend.more || 0) + 1 })
-            .eq("id", trend.id);
+          // Update trend votes
+          await supabase.from("trends").update({ more: (trend.more || 0) + 1 }).eq("id", trend.id);
+          await supabase.from("trends").update({ less: (opponent.less || 0) + 1 }).eq("id", opponent.id);
 
-          await supabase
-            .from("trends")
-            .update({ less: (opponent.less || 0) + 1 })
-            .eq("id", opponent.id);
-
-          // Try get current user
+          // Get current user
           const { data: sessionData } = await supabase.auth.getSession();
           const user = sessionData?.session?.user;
 
           if (user) {
-            // Increment user credits by 1
+            // Get current credits
             const { data: creditData, error: fetchErr } = await supabase
               .from("credits")
               .select("creds")
@@ -746,13 +744,14 @@ async function renderVotePair() {
               .single();
 
             if (!fetchErr && creditData) {
+              // Increment credits
               const { error: creditError } = await supabase
                 .from("credits")
                 .update({ creds: creditData.creds + 1 })
                 .eq("user_id", user.id);
 
               if (!creditError) {
-                // Update credits UI if available
+                // Update credits display
                 const creditBox = document.getElementById("creditDisplay");
                 if (creditBox) {
                   creditBox.innerHTML = `
@@ -761,22 +760,46 @@ async function renderVotePair() {
                     ${creditData.creds + 1}
                   `;
                 }
+
+                // Show "+1 credit!" animation
+                const plusOne = document.createElement("div");
+                plusOne.textContent = "+1 credit!";
+                plusOne.style = `
+                  position: absolute;
+                  top: -1.5rem;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  color: gold;
+                  font-weight: bold;
+                  opacity: 1;
+                  transition: opacity 0.8s ease, transform 0.8s ease;
+                  pointer-events: none;
+                `;
+                btn.appendChild(plusOne);
+
+                // Animate and remove
+                setTimeout(() => {
+                  plusOne.style.opacity = "0";
+                  plusOne.style.transform = "translateX(-50%) translateY(-10px)";
+                }, 100);
+                setTimeout(() => plusOne.remove(), 1000);
               }
             }
-          } else {
-            // Show message for logged-out users
+          } else if (!hasShownCreditMsg) {
             showVoteMessage("Earn credits by creating an account!");
+            hasShownCreditMsg = true;
           }
 
-          renderVotePair(); // Load next pair
+          renderVotePair(); // Load next
         } catch (err) {
-          console.error("Error during voting or credit update:", err);
+          console.error("Error during voting:", err);
         }
       };
 
       return btn;
     };
 
+    // Build UI
     box.appendChild(createVoteBtn(a, b));
 
     const vsText = document.createElement("span");
@@ -787,7 +810,7 @@ async function renderVotePair() {
 
     box.appendChild(createVoteBtn(b, a));
 
-    // Fade back in smoothly
+    // Fade in
     requestAnimationFrame(() => {
       box.style.opacity = "1";
     });
