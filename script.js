@@ -363,35 +363,16 @@ if (isOAuthLogin) {
 }
 
 function showVoteMessage(msg) {
-  let msgBox = document.getElementById("voteMsg");
-  if (!msgBox) {
-    msgBox = document.createElement("div");
-    msgBox.id = "voteMsg";
-    msgBox.style = `
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #111;
-      color: #fff;
-      padding: 0.75rem 1.25rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-      z-index: 1000;
-    `;
-    document.body.appendChild(msgBox);
-  }
-
-  msgBox.textContent = msg;
-  msgBox.style.opacity = "1";
-
-  setTimeout(() => {
-    msgBox.style.opacity = "0";
-  }, 2500);
+  const msgBox = document.getElementById("voteMsg");
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${msg}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout); // reset if already running
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 2500); // stays visible longer
 }
+
 
   // --- Normal page load logic below ---
 
@@ -723,11 +704,10 @@ async function renderVotePair() {
         "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem; position: relative;";
 
       btn.onclick = async () => {
-        // Disable both buttons during vote
         document.querySelectorAll(".vote-option").forEach(b => b.disabled = true);
 
         try {
-          // Update trend votes
+          // Update vote counts
           await supabase.from("trends").update({ more: (trend.more || 0) + 1 }).eq("id", trend.id);
           await supabase.from("trends").update({ less: (opponent.less || 0) + 1 }).eq("id", opponent.id);
 
@@ -736,7 +716,7 @@ async function renderVotePair() {
           const user = sessionData?.session?.user;
 
           if (user) {
-            // Get current credits
+            // Increment credits by +1
             const { data: creditData, error: fetchErr } = await supabase
               .from("credits")
               .select("creds")
@@ -744,53 +724,21 @@ async function renderVotePair() {
               .single();
 
             if (!fetchErr && creditData) {
-              // Increment credits
-              const { error: creditError } = await supabase
+              await supabase
                 .from("credits")
                 .update({ creds: creditData.creds + 1 })
                 .eq("user_id", user.id);
 
-              if (!creditError) {
-                // Update credits display
-                const creditBox = document.getElementById("creditDisplay");
-                if (creditBox) {
-                  creditBox.innerHTML = `
-                    Welcome, ${user.email} &nbsp; – &nbsp;
-                    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-                    ${creditData.creds + 1}
-                  `;
-                }
-
-                // Show "+1 credit!" animation
-                const plusOne = document.createElement("div");
-                plusOne.textContent = "+1 credit!";
-                plusOne.style = `
-                  position: absolute;
-                  top: -1.5rem;
-                  left: 50%;
-                  transform: translateX(-50%);
-                  color: gold;
-                  font-weight: bold;
-                  opacity: 1;
-                  transition: opacity 0.8s ease, transform 0.8s ease;
-                  pointer-events: none;
-                `;
-                btn.appendChild(plusOne);
-
-                // Animate and remove
-                setTimeout(() => {
-                  plusOne.style.opacity = "0";
-                  plusOne.style.transform = "translateX(-50%) translateY(-10px)";
-                }, 100);
-                setTimeout(() => plusOne.remove(), 1000);
-              }
+              // Show message and refresh header
+              showVoteMessage("+1 credit!");
+              await refreshUserCredits();
             }
           } else if (!hasShownCreditMsg) {
             showVoteMessage("Earn credits by creating an account!");
             hasShownCreditMsg = true;
           }
 
-          renderVotePair(); // Load next
+          renderVotePair(); // Next round
         } catch (err) {
           console.error("Error during voting:", err);
         }
@@ -799,7 +747,7 @@ async function renderVotePair() {
       return btn;
     };
 
-    // Build UI
+    // UI
     box.appendChild(createVoteBtn(a, b));
 
     const vsText = document.createElement("span");
@@ -817,7 +765,22 @@ async function renderVotePair() {
   }, 300);
 }
 
+async function refreshUserCredits() {
+  const creditBox = document.getElementById("creditDisplay");
+  if (!creditBox || !currentUser) return;
 
+  const { data: creditData } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", currentUser.id)
+    .single();
+
+  creditBox.innerHTML = `
+    Welcome, ${currentUser.email} &nbsp; – &nbsp;
+    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+    ${creditData?.creds ?? 0}
+  `;
+}
 
 try {
   const { data: trends, error } = await supabase
