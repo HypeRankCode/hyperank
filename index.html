@@ -597,21 +597,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <script>
-  window.addEventListener("load", () => {
-    // Ensure everything's painted first
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.body.classList.add("loaded");
-        setTimeout(() => {
-          const loader = document.getElementById("loader");
-          if (loader) loader.style.display = "none";
-        }, 500); // slightly faster
-      });
-    });
-  });
-</script>
-
-<script>
   fetch('spotlight.html')
     .then(response => response.text())
     .then(html => {
