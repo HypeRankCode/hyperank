@@ -766,10 +766,17 @@ try {
 
   const topTrends = rankedTrends.slice(0, 5);
 
-
   topTrends.forEach(trend => {
     const card = document.createElement("div");
     card.className = "trend-card";
+
+    // Make card clickable
+    card.style.cursor = "pointer";
+    card.onclick = () => {
+      const base = window.location.origin;
+      const term = encodeURIComponent(trend.label.toLowerCase());
+      window.location.href = `${base}/trend.html?term=${term}`;
+    };
 
     const title = document.createElement("div");
     title.className = "trend-title";
@@ -810,17 +817,16 @@ try {
     votes.className = "trend-votes";
     votes.textContent = "0 votes"; // placeholder
 
-const observer = new IntersectionObserver((entries, observer) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      animateCount(votes, trend.votes);
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCount(votes, trend.votes);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
 
-observer.observe(votes);
-
+    observer.observe(votes);
 
     const hypeScore = document.createElement("div");
     hypeScore.className = "meta-info";
@@ -853,6 +859,7 @@ observer.observe(votes);
 } catch (err) {
   console.error("Error fetching trends:", err);
 }
+
 
 async function updateCreditsUI(userId, username) {
   const { data, error } = await supabase
