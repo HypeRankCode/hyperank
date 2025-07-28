@@ -326,14 +326,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
   
 
-  document.addEventListener('mousemove', (e) => {
-    const glow = document.querySelector('.mouse-glow');
-    if (glow) {
-      glow.style.transform = `translate(${e.clientX - 40}px, ${e.clientY - 40}px)`;
-    }
-  });
-
-
 // --- OAuth redirect handling ---
 if (isOAuthLogin) {
   try {
