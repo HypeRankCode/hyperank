@@ -735,7 +735,6 @@ const { data: allTrends, error } = await supabase
 }
 
 
-//spacing
 try {
   const { data: trends, error } = await supabase
     .from("trends")
@@ -751,26 +750,17 @@ try {
 
   grid.innerHTML = "";
 
-  const maxVotes = Math.max(...trends.map(t => t.votes || 0));
-  const rankedTrends = trends
-    .filter(t => (t.hype + t.dead + t.votes) > 0) // include only active trends
-    .map(t => {
-      const hypeRatio = t.hype / Math.max(1, (t.hype + t.dead));
-      const voteScore = t.votes / Math.max(1, maxVotes);
-      const moreRatio = t.more / Math.max(1, (t.more + t.less));
-
-      const compositeScore = (hypeRatio * 0.6) + (voteScore * 0.35) + (moreRatio * 0.05);
-      return { ...t, compositeScore };
-    })
-    .sort((a, b) => b.compositeScore - a.compositeScore);
-
-  const topTrends = rankedTrends.slice(0, 5);
+  // Filter active trends (votes > 0) and sort by votes descending
+  const topTrends = trends
+    .filter(t => (t.votes || 0) > 0)
+    .sort((a, b) => (b.votes || 0) - (a.votes || 0))
+    .slice(0, 5);
 
   topTrends.forEach(trend => {
     const card = document.createElement("div");
     card.className = "trend-card";
 
-    // Make card clickable
+    // Make card clickable, linking to the trend search page
     card.style.cursor = "pointer";
     card.onclick = () => {
       const base = window.location.origin;
