@@ -310,12 +310,48 @@ function animateCount(el, endValue) {
 }
 
 
-// DOM loaded
-
 document.addEventListener("DOMContentLoaded", async () => {
   renderVotePair(); // 🎯 Load first voting pair automatically
-   const hash = window.location.hash;
+
+  const hash = window.location.hash;
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
+
+  // --- OAuth redirect handling ---
+  if (isOAuthLogin) {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
+
+      if (user && user.app_metadata?.provider !== 'email') {
+        console.log('✅ OAuth login via:', user.app_metadata.provider);
+
+        // Fetch credits for user
+        const { data: creditsData, error: creditsError } = await supabase
+          .from('credits')
+          .select('creds')
+          .eq('user_id', user.id)
+          .single();
+
+        const creditDisplay = document.getElementById('creditDisplay');
+        if (creditDisplay) {
+          creditDisplay.textContent = creditsError || !creditsData
+            ? "Credits: 0"
+            : `Credits: ${creditsData.creds}`;
+        }
+
+        // Clean URL to remove token hash params
+        window.history.replaceState(null, null, window.location.pathname);
+
+        // Optional: reload page so all normal logic runs fresh
+        setTimeout(() => location.reload(), 1000);
+        return; // Prevent further execution on OAuth redirect load
+      }
+    } catch (err) {
+      console.error("OAuth redirect session error:", err);
+    }
+  }
+
+  // --- Normal page load logic below ---
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
@@ -332,99 +368,96 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (currentUser) {
-  // --- Ensure creds row exists ---
-  try {
-    const { data: existingCredits, error: creditsError } = await supabase
-      .from("credits") // ✅ use correct table name
-      .select("user_id")
-      .eq("user_id", currentUser.id)
-      .single();
-
-    if (!existingCredits) {
-      const { error: insertError } = await supabase
+    // --- Ensure creds row exists ---
+    try {
+      const { data: existingCredits, error: creditsError } = await supabase
         .from("credits")
-        .insert([{ user_id: currentUser.id, creds: 20 }]); // 🎁 default creds
+        .select("user_id")
+        .eq("user_id", currentUser.id)
+        .single();
 
-      if (insertError) {
-        console.error("Error inserting initial creds:", insertError);
+      if (!existingCredits) {
+        const { error: insertError } = await supabase
+          .from("credits")
+          .insert([{ user_id: currentUser.id, creds: 20 }]); // default creds
+
+        if (insertError) {
+          console.error("Error inserting initial creds:", insertError);
+        }
       }
+    } catch (err) {
+      console.error("Creds check/insert error:", err);
     }
-  } catch (err) {
-    console.error("Creds check/insert error:", err);
-  }
 
-  // --- Fetch username and display credits ---
-  try {
-    const { data: usernameData, error: usernameError } = await supabase
-      .from("usernames")
-      .select("username")
-      .eq("id", currentUser.id)
-      .single();
+    // --- Fetch username and display credits ---
+    try {
+      const { data: usernameData, error: usernameError } = await supabase
+        .from("usernames")
+        .select("username")
+        .eq("id", currentUser.id)
+        .single();
 
-    const username = usernameData?.username;
+      const username = usernameData?.username;
 
-    if (username) {
-      let creds = 0;
-      try {
-        const { data: creditData, error: creditError } = await supabase
-          .from("credits") // ✅ correct table again
-          .select("creds")
-          .eq("user_id", currentUser.id)
-          .single();
+      if (username) {
+        let creds = 0;
+        try {
+          const { data: creditData, error: creditError } = await supabase
+            .from("credits")
+            .select("creds")
+            .eq("user_id", currentUser.id)
+            .single();
 
-        creds = creditData?.creds ?? 0;
-      } catch (err) {
-        console.error("Failed to fetch creds:", err);
+          creds = creditData?.creds ?? 0;
+        } catch (err) {
+          console.error("Failed to fetch creds:", err);
+        }
+
+        const welcomeHTML = `
+          Welcome, ${username} &nbsp; – &nbsp;
+          <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+          ${creds}
+        `;
+
+        if (creditBox) creditBox.innerHTML = welcomeHTML;
+        if (emailSpan) emailSpan.innerHTML = welcomeHTML;
+
+        if (authBtn) authBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (submitNotice) submitNotice.style.display = 'none';
+      } else {
+        forceUsernameModal();
       }
-
-      const welcomeHTML = `
-        Welcome, ${username} &nbsp; – &nbsp;
-        <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-        ${creds}
-      `;
-
-      if (creditBox) creditBox.innerHTML = welcomeHTML;
-      if (emailSpan) emailSpan.innerHTML = welcomeHTML;
-
-      if (authBtn) authBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'inline-block';
-      if (submitNotice) submitNotice.style.display = 'none';
-    } else {
+    } catch (err) {
+      console.error("Error fetching username:", err);
       forceUsernameModal();
     }
-  } catch (err) {
-    console.error("Error fetching username:", err);
-    forceUsernameModal();
+
+    if (authBtn) authBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (submitNotice) submitNotice.style.display = 'none';
+
+  } else {
+    if (emailSpan) emailSpan.textContent = '';
+    if (authBtn) authBtn.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (submitNotice) submitNotice.style.display = 'block';
   }
 
-  authBtn.style.display = 'none';
-  logoutBtn.style.display = 'inline-block';
-  if (submitNotice) submitNotice.style.display = 'none';
-} else {
-  emailSpan.textContent = '';
-  authBtn.style.display = 'inline-block';
-  logoutBtn.style.display = 'none';
-  if (submitNotice) submitNotice.style.display = 'block';
-}
-  
+  // Handle URL param ?login=true to show modal
   const params = new URLSearchParams(window.location.search);
-	
-if (params.get('login') === 'true') {
-  const modal = document.getElementById('authModal');
-  if (modal) modal.style.display = 'flex';
+  if (params.get('login') === 'true') {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'flex';
 
-  // Optional: Clear ?login=true from URL
-  history.replaceState({}, document.title, window.location.pathname);
-}
+    // Optional: Clear ?login=true from URL
+    history.replaceState({}, document.title, window.location.pathname);
+  }
 
+  if (currentUser && document.querySelector('.submit-form')) {
+    checkAuthForSubmitForm();
+  }
 
-if (currentUser && document.querySelector('.submit-form')) {
-  checkAuthForSubmitForm();
-}
-
-
-
-//cutoff
   async function checkAuthForSubmitForm() {
     const { data: { user } } = await supabase.auth.getUser();
 
