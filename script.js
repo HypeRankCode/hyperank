@@ -12,6 +12,7 @@ supabase.auth.getSession().then(({ data: { session } }) => {
     console.log("Logged in via OAuth:", currentUser);
     // maybe redirect or update UI
   }
+});
 
 
 // Username modal as you already have it
