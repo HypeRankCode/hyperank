@@ -104,12 +104,13 @@
   padding: 0.8rem 1rem 0.8rem 2.6rem;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 8px 0 0 8px; /* rounded left corners only */
+  border-radius: 8px 0 0 8px;  /* rounded left corners */
   background-color: #3a3a3a;
   border: none;
   color: white;
   font-size: 1rem;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  margin: 0;  /* remove margin */
 }
 
     #dictSearchBtn {
@@ -207,16 +208,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 700px;
+  max-width: 550px;  /* make bar smaller */
   margin: 0 auto 1rem auto;
-  gap: 0; /* no space between input and button */
-  flex-wrap: nowrap; /* keep on same line */
+  gap: 0;  /* no gap */
+  flex-wrap: nowrap;
 }
 
 .dict-input-wrapper {
   position: relative;
   flex: 1;
-  min-width: 250px;
+  min-width: 150px; /* allow shrinking smaller */
 }
 
 .dict-input-wrapper i {
@@ -232,14 +233,18 @@
 #dictSearchBtn {
   padding: 0.8rem 1.5rem;
   border: none;
-  border-radius: 0 8px 8px 0; /* rounded right corners only */
-  background: linear-gradient(135deg, #ff4444, #ff6b6b); /* red gradient for futuristic look */
+  border-radius: 0 8px 8px 0;  /* rounded right corners */
+  background: linear-gradient(135deg, #ff4444, #ff6b6b);
   color: white;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  box-shadow: 0 0 6px #ff4444; /* subtle red glow */
+  box-shadow: 0 0 6px #ff4444;
+  margin: 0;  /* remove margin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #dictSearchBtn:hover {
