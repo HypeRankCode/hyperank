@@ -361,6 +361,35 @@ if (isOAuthLogin) {
   }
 }
 
+function showVoteMessage(message) {
+  let msg = document.getElementById('voteMsg');
+  if (!msg) {
+    msg = document.createElement('div');
+    msg.id = 'voteMsg';
+    msg.style = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+    `;
+    document.body.appendChild(msg);
+  }
+
+  msg.textContent = message;
+  msg.style.opacity = '1';
+
+  setTimeout(() => {
+    msg.style.opacity = '0';
+  }, 3000);
+}
 
   // --- Normal page load logic below ---
 
