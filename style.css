@@ -316,6 +316,18 @@ h2 {
   box-shadow: none !important;
 }
 
+
+.vote-option:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.vote-option:active {
+  transform: scale(0.96);
+  background: #444;
+}
+
 /* Vote Buttons */
 .vote-up, .vote-down {
   flex: 1;
@@ -703,6 +715,11 @@ header {
 /* Vote option button style */
 .vote-option {
   transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;      /* Prevent text from wrapping to next line */
+  min-width: 180px;         /* Minimum width to give enough room */
+  max-width: 100%;          /* So it doesn't overflow container */
+  padding: 1rem 2rem;       /* Keep your existing padding */
+  box-sizing: border-box;   /* So padding is included in width */
 }
 
 .vote-option:hover {
