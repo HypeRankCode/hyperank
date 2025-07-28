@@ -721,51 +721,51 @@ async function renderVotePair() {
         "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
 
       btn.onclick = async () => {
-        if (!currentUser) {
-          showVoteMessage('Earn credits by creating an account!');
-          return;
-        }
-
         try {
-          // Update votes
-          const { error: moreError } = await supabase
+          // Update votes (always allowed)
+          await supabase
             .from("trends")
             .update({ more: (trend.more || 0) + 1 })
             .eq("id", trend.id);
 
-          const { error: lessError } = await supabase
+          await supabase
             .from("trends")
             .update({ less: (opponent.less || 0) + 1 })
             .eq("id", opponent.id);
 
-          if (moreError || lessError) {
-            console.error("Voting error:", moreError || lessError);
-            return;
-          }
+          // Try get current user
+          const { data: sessionData } = await supabase.auth.getSession();
+          const user = sessionData?.session?.user;
 
-          // Increment user credits by 1
-          const { error: creditError } = await supabase
-            .from("credits")
-            .update({ creds: supabase.raw('creds + 1') })
-            .eq("user_id", currentUser.id);
+          if (user) {
+            // Increment user credits by 1
+            const { data: creditData, error: fetchErr } = await supabase
+              .from("credits")
+              .select("creds")
+              .eq("user_id", user.id)
+              .single();
 
-          if (creditError) {
-            console.error("Error incrementing credits:", creditError);
-          } else {
-            // Optionally update credits UI live here, e.g.
-            const creditBox = document.getElementById("creditDisplay");
-            if (creditBox) {
-              const { data: creditData } = await supabase
+            if (!fetchErr && creditData) {
+              const { error: creditError } = await supabase
                 .from("credits")
-                .select("creds")
-                .eq("user_id", currentUser.id)
-                .single();
-              creditBox.innerHTML = `
-                Welcome, ${currentUser.email} &nbsp; – &nbsp;
-                <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-                ${creditData?.creds ?? 0}
-              `;
+                .update({ creds: creditData.creds + 1 })
+                .eq("user_id", user.id);
+
+              if (!creditError) {
+                // Update credits UI if available
+                const creditBox = document.getElementById("creditDisplay");
+                if (creditBox) {
+                  creditBox.innerHTML = `
+                    Welcome, ${user.email} &nbsp; – &nbsp;
+                    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+                    ${creditData.creds + 1}
+                  `;
+                }
+              }
             }
+          } else {
+            // Show message for logged-out users
+            showVoteMessage("Earn credits by creating an account!");
           }
 
           renderVotePair(); // Load next pair
