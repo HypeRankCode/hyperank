@@ -22,8 +22,16 @@ body {
 }
 
 
+/* Base override */
 html, body, * {
-  cursor: url('assets/cursorRed.cur'), auto;
+  cursor: url('/assets/cursorRed.cur'), auto !important;
+}
+
+/* Text input override */
+input,
+textarea,
+[contenteditable="true"] {
+  cursor: url('/assets/cursor-textv2.cur'), text !important;
 }
 
 /* Force custom pointer cursor on all clickable elements */
@@ -36,14 +44,11 @@ button,
 button[type="submit"],
 .close-btn,
 .oauth-btn,
+.trend-card,
 .forgot-password-link,
 [onclick],
 [role="button"] {
   cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
-}
-
-input, textarea {
-  cursor: url('assets/cursor-textv2.cur'), text;
 }
 
 
@@ -160,7 +165,6 @@ h2 {
   align-items: center;
   text-decoration: none;
   color: inherit;
-  cursor: pointer;
 }
 
 .logo-container:visited {
@@ -299,7 +303,6 @@ h2 {
   border: none;
   padding: 0.5rem 1rem;
   margin: 0.3rem;
-  cursor: pointer;
   border-radius: 8px;
   font-size: 1rem;
   width: auto;
@@ -349,7 +352,6 @@ h2 {
   padding: 0.8rem;
   border-radius: 8px;
   font-size: 1rem;
-  cursor: pointer;
   transition: background 0.3s ease;
 }
 
@@ -536,7 +538,6 @@ header {
   background: #222;
   padding: 1rem 2rem;
   border-radius: 10px;
-  cursor: pointer;
   font-size: 1.2rem;
   transition: background 0.2s;
   flex: 1;
@@ -592,7 +593,6 @@ header {
   border-radius: 10px;
   color: white;
   font-size: 1rem;
-  cursor: pointer;
   margin: 0 1rem;
   transition: background 0.3s;
 }
@@ -668,7 +668,6 @@ header {
   border: none;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
-  cursor: pointer;
   font-size: 0.9rem;
 }
 
@@ -694,7 +693,6 @@ header {
 /* Logo Container hover effect */
 .logo-container:hover {
   opacity: 0.9;
-  cursor: pointer;
 }
 
 /* Auth Modal */
@@ -746,7 +744,6 @@ header {
   background: #ff3c3c;
   color: white;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: bold;
   transition: background 0.3s ease;
 }
@@ -786,7 +783,6 @@ body.modal-open {
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -868,7 +864,6 @@ footer a:hover {
   background: #222;
   color: #fff;
   transition: all 0.2s ease;
-  cursor: pointer;
 }
 
 .section-heading {
