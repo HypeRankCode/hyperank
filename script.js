@@ -14,18 +14,6 @@ supabase.auth.getSession().then(({ data: { session } }) => {
   }
 });
 
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) {
-    console.log("User is logged in:", session.user);
-  } else {
-    console.log("User not logged in");
-  }
-});
-
-function isUserLoggedIn() {
-  const user = supabase.auth.getUser();  // or your method to get user
-  return user !== null && user.data.user !== null;
-}
 
 
 // Username modal as you already have it
