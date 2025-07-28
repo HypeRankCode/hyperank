@@ -688,9 +688,9 @@ fetch("news.json")
   
 // Show vote message overlay once
 window.showVoteMessage = function(message) {
-	console.log("worked");
+	console.log("worked1");
   const msgBox = document.getElementById("voteMessage");
-  console.log("worked");
+  console.log("worked2");
   if (!msgBox) return;
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
   msgBox.classList.add("visible");
