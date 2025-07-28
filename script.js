@@ -380,11 +380,11 @@ async function refreshUserCredits() {
 }
 
 function showVoteMessage(message) {
-  const msgBox = document.getElementById("voteMessage"); // Make sure your HTML uses id="voteMessage"
-  if (!msgBox) return; // safety check
-  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> `;
+  const msgBox = document.getElementById("voteMessage");
+  if (!msgBox) return;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
   msgBox.classList.add("visible");
-  clearTimeout(window.voteMsgTimeout); // reset timeout if already running
+  clearTimeout(window.voteMsgTimeout);
   window.voteMsgTimeout = setTimeout(() => {
     msgBox.classList.remove("visible");
     msgBox.innerHTML = "";
