@@ -742,8 +742,9 @@ async function renderVotePair() {
                 .update({ creds: newCredits })
                 .eq("user_id", user.id);
 
-              if (!creditError) {
-                refreshUserCredits(); // <-- update header
+              if (currentUser) {
+				 refreshUserCredits();
+			  }				
 
                 const plusOne = document.createElement("div");
                 plusOne.innerHTML = `
