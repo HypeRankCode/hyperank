@@ -960,11 +960,9 @@ footer a:hover {
     rgba(0,0,0,0) 100%
   );
   
-  .vote-wrapper {
+.vote-wrapper {
   position: relative;
   overflow: hidden;
-  width: 100%;
-  height: auto;
   z-index: 0;
 }
 
