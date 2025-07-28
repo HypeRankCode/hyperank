@@ -679,10 +679,12 @@ let hasShownCreditMsg = false; // global flag to show message only once
 
 // Show vote message overlay once
 window.showVoteMessage = function(message) {
-	console.log("worked1");
+  console.log("showVoteMessage triggered:", message);
   const msgBox = document.getElementById("voteMessage");
-  console.log("worked2");
-  if (!msgBox) return;
+  if (!msgBox) {
+    console.log("voteMessage element not found");
+    return;
+  }
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
   msgBox.classList.add("visible");
   clearTimeout(window.voteMsgTimeout);
@@ -691,6 +693,7 @@ window.showVoteMessage = function(message) {
     msgBox.innerHTML = "";
   }, 3000);
 };
+
 
 
 // Voting system
