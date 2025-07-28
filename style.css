@@ -302,26 +302,65 @@ h2 {
   width: 200px;
 }
 
-.vote-up, .vote-down {
-  background: #333;
-  border: none;
-  padding: 0.5rem 1rem;
-  margin: 0.3rem;
+/* Vote Buttons Container */
+.comparison-box {
+  display: inline-flex;
+  gap: 0;
   border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 6px #ff4444;
+  max-width: 350px;
+  margin: 1rem auto;
+}
+
+/* Vote Buttons */
+.vote-up, .vote-down {
+  flex: 1;
+  padding: 0.8rem 1.5rem;
+  border: none;
   font-size: 1rem;
-  width: auto;
-  transition: background 0.2s ease;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.vote-up {
+  background: #ff4444;
+  color: white;
+  border-radius: 8px 0 0 8px; /* Rounded left corners */
 }
 
 .vote-up:hover {
-  background: #ff3c3c;
+  background-color: #ff6666;
+}
+
+.vote-down {
+  background: #ff6666;
   color: white;
+  border-radius: 0 8px 8px 0; /* Rounded right corners */
+  border-left: 1px solid #ff5a5a;
 }
 
 .vote-down:hover {
-  background: #555;
-  color: white;
+  background-color: #ff7a7a;
 }
+
+/* Popup message below buttons */
+.vote-msg {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #f88;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  user-select: none;
+  height: 1.2rem;
+}
+
+.vote-msg.visible {
+  opacity: 1;
+}
+
 
 /* Submit Form */
 .submit-form {
