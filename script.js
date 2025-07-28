@@ -749,7 +749,16 @@ async function renderVotePair() {
                 .eq("user_id", user.id);
 
               if (!creditError) {
-                refreshUserCredits(); // update credits in header
+                // Fetch username
+                const { data: usernameData, error: usernameError } = await supabase
+                  .from("usernames")
+                  .select("username")
+                  .eq("id", user.id)
+                  .single();
+
+                const username = usernameData?.username ?? "User";
+
+                await updateCreditsUI(user.id, username); // Live update credits in UI
 
                 // Create floating +1 credit animation
                 const plusOne = document.createElement("div");
