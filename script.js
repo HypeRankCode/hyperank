@@ -167,6 +167,21 @@ window.signIn = async () => {
   setTimeout(() => location.reload(), 1000);
 };
 
+
+  if (isOAuthLogin) {
+    // ✅ User came from OAuth redirect
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
+
+    if (user && user.app_metadata?.provider !== 'email') {
+      console.log('Logged in via OAuth:', user.app_metadata.provider);
+      // Optionally clean URL
+      window.history.replaceState(null, null, window.location.pathname);
+      // Show normal logged-in state
+      return;
+    }
+  }
+
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value.trim();
@@ -178,10 +193,10 @@ window.signUp = async () => {
   }
 
   // Call Supabase signUp with emailRedirectTo option
-  const { data, error } = await supabase.auth.signUp(
-    { email, password },
-    { emailRedirectTo: 'https://hyperank.ca/verified' }
-  );
+const { data, error } = await supabase.auth.signUp(
+  { email, password },
+  { emailRedirectTo: 'https://hyperank.ca/verified?signup=email' }
+);
 
   if (error) {
     msgBox.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:goldenrod;"></i> ${error.message}`;
@@ -312,6 +327,8 @@ function animateCount(el, endValue) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   renderVotePair(); // 🎯 Load first voting pair automatically
+   const hash = window.location.hash;
+  const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
 
   const emailSpan = document.getElementById('userEmailDisplay');
   const authBtn = document.getElementById('authBtn');
