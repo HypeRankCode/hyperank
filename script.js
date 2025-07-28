@@ -382,13 +382,13 @@ async function refreshUserCredits() {
 function showVoteMessage(message) {
   const msgBox = document.getElementById("voteMessage"); // Make sure your HTML uses id="voteMessage"
   if (!msgBox) return; // safety check
-  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> `;
   msgBox.classList.add("visible");
   clearTimeout(window.voteMsgTimeout); // reset timeout if already running
   window.voteMsgTimeout = setTimeout(() => {
     msgBox.classList.remove("visible");
     msgBox.innerHTML = "";
-  }, 3000); // visible for 2.5 seconds
+  }, 3000);
 }
 
 
@@ -687,6 +687,8 @@ fetch("news.json")
   });
 
 
+let hasShownCreditMsg = false; // global flag to show message only once
+
 // Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
@@ -728,7 +730,6 @@ async function renderVotePair() {
       `;
 
       btn.onclick = async () => {
-        // Disable all vote buttons during submission
         document.querySelectorAll(".vote-option").forEach(b => b.disabled = true);
 
         try {
@@ -736,12 +737,12 @@ async function renderVotePair() {
           await supabase.from("trends").update({ more: (trend.more || 0) + 1 }).eq("id", trend.id);
           await supabase.from("trends").update({ less: (opponent.less || 0) + 1 }).eq("id", opponent.id);
 
-          // Get current user session
+          // Get user session
           const { data: sessionData } = await supabase.auth.getSession();
           const user = sessionData?.session?.user;
 
           if (user) {
-            // Get current credits
+            // Fetch current credits
             const { data: creditData, error: fetchErr } = await supabase
               .from("credits")
               .select("creds")
@@ -751,16 +752,16 @@ async function renderVotePair() {
             if (!fetchErr && creditData) {
               const newCredits = creditData.creds + 1;
 
-              // Update credits in DB
+              // Update credits
               const { error: creditError } = await supabase
                 .from("credits")
                 .update({ creds: newCredits })
                 .eq("user_id", user.id);
 
               if (!creditError) {
-                refreshUserCredits(); // Update header display immediately
+                refreshUserCredits(); // update credits in header
 
-                // Create floating +1 credit animation in document body
+                // Create floating +1 credit animation
                 const plusOne = document.createElement("div");
                 plusOne.innerHTML = `<i class="fas fa-coins" style="color: gold; margin-right: 4px;"></i>+1 credit!`;
                 plusOne.style.position = "fixed";
@@ -772,21 +773,18 @@ async function renderVotePair() {
                 plusOne.style.transition = "transform 1s ease-out, opacity 1s ease-out";
                 plusOne.style.opacity = "1";
 
-                // Position above button center top
                 const rect = btn.getBoundingClientRect();
                 plusOne.style.left = rect.left + rect.width / 2 + "px";
-                plusOne.style.top = rect.top - 10 + "px"; // 10px above the button
+                plusOne.style.top = rect.top - 10 + "px"; // above button
                 plusOne.style.transform = "translateX(-50%) translateY(0) scale(1)";
 
                 document.body.appendChild(plusOne);
 
-                // Animate upward fade and scale
                 requestAnimationFrame(() => {
                   plusOne.style.opacity = "0";
                   plusOne.style.transform = "translateX(-50%) translateY(-30px) scale(1.2)";
                 });
 
-                // Remove after animation completes
                 setTimeout(() => plusOne.remove(), 1000);
               }
             }
@@ -818,6 +816,20 @@ async function renderVotePair() {
     });
   }, 300);
 }
+
+// Show vote message overlay once
+function showVoteMessage(message) {
+  const msgBox = document.getElementById("voteMessage");
+  if (!msgBox) return;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout);
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 3000);
+}
+
 
 
 try {
