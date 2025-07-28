@@ -182,7 +182,7 @@ window.signUp = async () => {
   // Call Supabase signUp with emailRedirectTo option
 const { data, error } = await supabase.auth.signUp(
   { email, password },
-  { emailRedirectTo: '' }
+  { emailRedirectTo: 'https://hyperank.ca/verified?signup=email' }
 );
 
   if (error) {
@@ -227,6 +227,7 @@ window.signInWithProvider = async (provider) => {
     provider,
     options: {
       redirectTo: 'https://rrnucumzptbwdxtkccyx.supabase.co/auth/v1/callback',
+      flow: 'popup',
     },
   });
 
