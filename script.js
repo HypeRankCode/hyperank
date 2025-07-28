@@ -414,7 +414,7 @@ function showVoteMessage(message, targetButton) {
   setTimeout(() => {
     popup.style.opacity = '0';
     setTimeout(() => popup.remove(), 500);
-  }, 2500);
+  }, 3000);
 }
 
 
