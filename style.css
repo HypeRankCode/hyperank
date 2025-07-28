@@ -349,7 +349,7 @@ h2 {
 /* Popup message below buttons */
 .vote-message {
   position: absolute;
-  top: 120px;  /* pushed down */
+  top: 190px;  /* pushed down */
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.4); /* dark translucent black */
