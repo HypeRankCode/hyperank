@@ -677,7 +677,6 @@ async function renderVotePair() {
   const resultDiv = document.querySelector(".compare-results");
   if (!box || !resultDiv) return;
 
-  // Fade out only
   box.style.opacity = "0";
   box.style.transition = "opacity 0.3s ease";
 
@@ -694,29 +693,36 @@ async function renderVotePair() {
     }
 
     const [a, b] = allTrends.sort(() => 0.5 - Math.random()).slice(0, 2);
-    box.innerHTML = ""; // Clear
+    box.innerHTML = "";
 
     const createVoteBtn = (trend, opponent) => {
       const btn = document.createElement("button");
       btn.className = "vote-option";
       btn.textContent = trend.label;
-      btn.style =
-        "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem; position: relative;";
+      btn.style = `
+        padding: 1rem;
+        border-radius: 12px;
+        background: #222;
+        color: white;
+        font-size: 1.2rem;
+        border: 2px solid #444;
+        cursor: pointer;
+        margin: 0 1rem;
+        position: relative;
+        overflow: hidden;
+      `;
 
       btn.onclick = async () => {
         document.querySelectorAll(".vote-option").forEach(b => b.disabled = true);
 
         try {
-          // Update vote counts
           await supabase.from("trends").update({ more: (trend.more || 0) + 1 }).eq("id", trend.id);
           await supabase.from("trends").update({ less: (opponent.less || 0) + 1 }).eq("id", opponent.id);
 
-          // Get current user
           const { data: sessionData } = await supabase.auth.getSession();
           const user = sessionData?.session?.user;
 
           if (user) {
-            // Increment credits by +1
             const { data: creditData, error: fetchErr } = await supabase
               .from("credits")
               .select("creds")
@@ -724,21 +730,48 @@ async function renderVotePair() {
               .single();
 
             if (!fetchErr && creditData) {
-              await supabase
+              const newCredits = creditData.creds + 1;
+              const { error: creditError } = await supabase
                 .from("credits")
-                .update({ creds: creditData.creds + 1 })
+                .update({ creds: newCredits })
                 .eq("user_id", user.id);
 
-              // Show message and refresh header
-              showVoteMessage("+1 credit!");
-              await refreshUserCredits();
+              if (!creditError) {
+                refreshUserCredits(); // <-- update header
+
+                const plusOne = document.createElement("div");
+                plusOne.innerHTML = `
+                  <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> +1 credit!
+                `;
+                plusOne.style = `
+                  position: absolute;
+                  top: -10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  color: gold;
+                  font-weight: bold;
+                  font-size: 1rem;
+                  opacity: 1;
+                  transition: opacity 1s ease, transform 1s ease;
+                  pointer-events: none;
+                  z-index: 10;
+                `;
+
+                btn.appendChild(plusOne);
+
+                setTimeout(() => {
+                  plusOne.style.opacity = "0";
+                  plusOne.style.transform = "translateX(-50%) translateY(-20px)";
+                }, 100);
+                setTimeout(() => plusOne.remove(), 1300);
+              }
             }
           } else if (!hasShownCreditMsg) {
             showVoteMessage("Earn credits by creating an account!");
             hasShownCreditMsg = true;
           }
 
-          renderVotePair(); // Next round
+          renderVotePair();
         } catch (err) {
           console.error("Error during voting:", err);
         }
@@ -747,18 +780,15 @@ async function renderVotePair() {
       return btn;
     };
 
-    // UI
     box.appendChild(createVoteBtn(a, b));
 
     const vsText = document.createElement("span");
     vsText.textContent = "vs";
-    vsText.style =
-      "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
+    vsText.style = "margin: 0 1rem; color: #888; font-weight: bold; font-size: 1.1rem;";
     box.appendChild(vsText);
 
     box.appendChild(createVoteBtn(b, a));
 
-    // Fade in
     requestAnimationFrame(() => {
       box.style.opacity = "1";
     });
