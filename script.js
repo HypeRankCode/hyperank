@@ -804,6 +804,7 @@ async function renderVotePair() {
               }
             }
           } else if (!hasShownCreditMsg) {
+			  console.log("worked");
             showVoteMessage("Earn credits by using an account!");
             hasShownCreditMsg = true;
           }
