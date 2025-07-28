@@ -22,6 +22,10 @@ supabase.auth.getSession().then(({ data: { session } }) => {
   }
 });
 
+function isUserLoggedIn() {
+  const user = supabase.auth.getUser();  // or your method to get user
+  return user !== null && user.data.user !== null;
+}
 
 
 // Username modal as you already have it
@@ -326,6 +330,7 @@ function animateCount(el, endValue) {
 }
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
   renderVotePair(); // 🎯 Load first voting pair automatically
 
@@ -495,6 +500,7 @@ if (isOAuthLogin) {
 
   // Run the check once page loads
   checkAuthForSubmitForm();
+  
 
 
   const form = document.querySelector(".submit-form");
@@ -661,40 +667,6 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
-  
-  
-  function isUserLoggedIn() {
-  const user = supabase.auth.getUser(); // or your auth method
-  return user != null;
-}
-
-// Assume you have a function isUserLoggedIn() that returns true/false
-
-function showVoteMessage(message) {
-  const msg = document.getElementById('voteMsg');
-  msg.textContent = message;
-  msg.classList.add('visible');
-
-  // Hide after 3 seconds
-  setTimeout(() => {
-    msg.classList.remove('visible');
-    msg.textContent = '';
-  }, 3000);
-}
-
-// Example vote button click handler:
-document.querySelectorAll('.vote-up, .vote-down').forEach(button => {
-  button.addEventListener('click', () => {
-    if (!isUserLoggedIn()) {
-      showVoteMessage('Earn credits by creating an account!');
-      return;
-    }
-
-    // If logged in, proceed with voting logic and credit increment
-    incrementUserCredits();
-    // Your existing vote logic here...
-  });
-});
 
 
 
@@ -709,10 +681,10 @@ async function renderVotePair() {
   box.style.transition = "opacity 0.3s ease";
 
   setTimeout(async () => {
-const { data: allTrends, error } = await supabase
-  .from("trends")
-  .select("*")
-  .or("tags.ilike.%slang%,tags.ilike.%genz%,tags.ilike.%dating%");
+    const { data: allTrends, error } = await supabase
+      .from("trends")
+      .select("*")
+      .or("tags.ilike.%slang%,tags.ilike.%genz%,tags.ilike.%dating%");
 
     if (error || !allTrends || allTrends.length < 2) {
       box.innerHTML = "<p style='text-align:center;'>Not enough trends to vote yet.</p>";
@@ -730,24 +702,61 @@ const { data: allTrends, error } = await supabase
       btn.textContent = trend.label;
       btn.style =
         "padding: 1rem; border-radius: 12px; background: #222; color: white; font-size: 1.2rem; border: 2px solid #444; cursor: pointer; margin: 0 1rem;";
+
       btn.onclick = async () => {
-        const { error: moreError } = await supabase
-          .from("trends")
-          .update({ more: (trend.more || 0) + 1 })
-          .eq("id", trend.id);
-
-        const { error: lessError } = await supabase
-          .from("trends")
-          .update({ less: (opponent.less || 0) + 1 })
-          .eq("id", opponent.id);
-
-        if (moreError || lessError) {
-          console.error("Voting error:", moreError || lessError);
+        if (!currentUser) {
+          showVoteMessage('Earn credits by creating an account!');
           return;
         }
 
-        renderVotePair(); // Load next pair
+        try {
+          // Update votes
+          const { error: moreError } = await supabase
+            .from("trends")
+            .update({ more: (trend.more || 0) + 1 })
+            .eq("id", trend.id);
+
+          const { error: lessError } = await supabase
+            .from("trends")
+            .update({ less: (opponent.less || 0) + 1 })
+            .eq("id", opponent.id);
+
+          if (moreError || lessError) {
+            console.error("Voting error:", moreError || lessError);
+            return;
+          }
+
+          // Increment user credits by 1
+          const { error: creditError } = await supabase
+            .from("credits")
+            .update({ creds: supabase.raw('creds + 1') })
+            .eq("user_id", currentUser.id);
+
+          if (creditError) {
+            console.error("Error incrementing credits:", creditError);
+          } else {
+            // Optionally update credits UI live here, e.g.
+            const creditBox = document.getElementById("creditDisplay");
+            if (creditBox) {
+              const { data: creditData } = await supabase
+                .from("credits")
+                .select("creds")
+                .eq("user_id", currentUser.id)
+                .single();
+              creditBox.innerHTML = `
+                Welcome, ${currentUser.email} &nbsp; – &nbsp;
+                <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+                ${creditData?.creds ?? 0}
+              `;
+            }
+          }
+
+          renderVotePair(); // Load next pair
+        } catch (err) {
+          console.error("Error during voting or credit update:", err);
+        }
       };
+
       return btn;
     };
 
@@ -767,6 +776,7 @@ const { data: allTrends, error } = await supabase
     });
   }, 300);
 }
+
 
 
 try {
@@ -883,6 +893,7 @@ try {
 } catch (err) {
   console.error("Error fetching trends:", err);
 }
+
 
 
 async function updateCreditsUI(userId, username) {
