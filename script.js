@@ -331,6 +331,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (currentUser) {
     refreshUserCredits(); // ✅ update credits right away
   }
+  });
 
 // --- OAuth redirect handling ---
 if (isOAuthLogin) {
