@@ -686,8 +686,6 @@ fetch("news.json")
   });
 
 
-
-
 // Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
@@ -726,20 +724,23 @@ async function renderVotePair() {
         cursor: pointer;
         margin: 0 1rem;
         position: relative;
-        overflow: hidden;
       `;
 
       btn.onclick = async () => {
+        // Disable all vote buttons during submission
         document.querySelectorAll(".vote-option").forEach(b => b.disabled = true);
 
         try {
+          // Update votes
           await supabase.from("trends").update({ more: (trend.more || 0) + 1 }).eq("id", trend.id);
           await supabase.from("trends").update({ less: (opponent.less || 0) + 1 }).eq("id", opponent.id);
 
+          // Get current user session
           const { data: sessionData } = await supabase.auth.getSession();
           const user = sessionData?.session?.user;
 
           if (user) {
+            // Get current credits
             const { data: creditData, error: fetchErr } = await supabase
               .from("credits")
               .select("creds")
@@ -748,39 +749,44 @@ async function renderVotePair() {
 
             if (!fetchErr && creditData) {
               const newCredits = creditData.creds + 1;
+
+              // Update credits in DB
               const { error: creditError } = await supabase
                 .from("credits")
                 .update({ creds: newCredits })
                 .eq("user_id", user.id);
 
               if (!creditError) {
-                refreshUserCredits(); // <-- update header
+                refreshUserCredits(); // Update header display immediately
 
+                // Create floating +1 credit animation in document body
                 const plusOne = document.createElement("div");
-                plusOne.innerHTML = `
-                  <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i> +1 credit!
-                `;
-                plusOne.style = `
-                  position: absolute;
-                  top: -10px;
-                  left: 50%;
-                  transform: translateX(-50%);
-                  color: gold;
-                  font-weight: bold;
-                  font-size: 1rem;
-                  opacity: 1;
-                  transition: opacity 1s ease, transform 1s ease;
-                  pointer-events: none;
-                  z-index: 10;
-                `;
+                plusOne.innerHTML = `<i class="fas fa-coins" style="color: gold; margin-right: 4px;"></i>+1 credit!`;
+                plusOne.style.position = "fixed";
+                plusOne.style.pointerEvents = "none";
+                plusOne.style.fontWeight = "bold";
+                plusOne.style.color = "gold";
+                plusOne.style.fontSize = "1rem";
+                plusOne.style.zIndex = 9999;
+                plusOne.style.transition = "transform 1s ease-out, opacity 1s ease-out";
+                plusOne.style.opacity = "1";
 
-                btn.appendChild(plusOne);
+                // Position above button center top
+                const rect = btn.getBoundingClientRect();
+                plusOne.style.left = rect.left + rect.width / 2 + "px";
+                plusOne.style.top = rect.top - 10 + "px"; // 10px above the button
+                plusOne.style.transform = "translateX(-50%) translateY(0) scale(1)";
 
-                setTimeout(() => {
+                document.body.appendChild(plusOne);
+
+                // Animate upward fade and scale
+                requestAnimationFrame(() => {
                   plusOne.style.opacity = "0";
-                  plusOne.style.transform = "translateX(-50%) translateY(-20px)";
-                }, 100);
-                setTimeout(() => plusOne.remove(), 1300);
+                  plusOne.style.transform = "translateX(-50%) translateY(-30px) scale(1.2)";
+                });
+
+                // Remove after animation completes
+                setTimeout(() => plusOne.remove(), 1000);
               }
             }
           } else if (!hasShownCreditMsg) {
