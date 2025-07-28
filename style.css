@@ -710,6 +710,14 @@ header {
   transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
+.vote-option:focus,
+.compare-btn:focus,
+.vote-btn:focus {
+  outline: none;  /* removes the default focus outline */
+  box-shadow: 0 0 6px 2px rgba(255, 60, 60, 0.6); /* optional: a subtle red glow instead */
+}
+
+
 .vote-option:hover {
   background: #333;
   transform: translateY(-2px);
