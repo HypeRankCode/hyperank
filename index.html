@@ -315,8 +315,19 @@ textarea,
   cursor: url('/assets/cursor-textv2.cur'), text !important;
 }
 
-/* Catch all pointer-style elements */
-*:hover {
+/* Force custom pointer cursor on all clickable elements */
+a,
+button,
+.logo-container,
+#authBtn,
+#logoutBtn,
+.vote-option,
+button[type="submit"],
+.close-btn,
+.oauth-btn,
+.forgot-password-link,
+[onclick],
+[role="button"] {
   cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
 }
 }
