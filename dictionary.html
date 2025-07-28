@@ -104,7 +104,7 @@
   padding: 0.8rem 1rem 0.8rem 2.6rem;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 8px 0 0 8px; /* rounded left corners only */
+  border-radius: 8px 0 0 8px; /* rounded only on left side */
   background-color: #3a3a3a;
   border: 1px solid #ff3c3c;  /* subtle border */
   border-right: none; /* remove right border so it merges */
@@ -114,16 +114,21 @@
   margin: 0;
 }
 
-    #dictSearchBtn {
-      padding: 0.8rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      background: #ff3c3c;
-      color: white;
-      margin-left: 0.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-    }
+#dictSearchBtn {
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 0 8px 8px 0; /* rounded only on right side */
+  background: #ff3c3c;
+  color: white;
+  margin-left: 0; /* no gap */
+  cursor: pointer;
+  font-size: 1rem;
+  height: 40px; /* match input height */
+  box-sizing: border-box;
+  border: 1px solid #ff3c3c; /* match input border */
+  border-left: none; /* remove left border so it merges with input */
+}
+
 
     #dictResult {
       margin-top: 2rem;
@@ -259,7 +264,7 @@
 .dict-description {
   color: #e3e3e3;
   font-size: 0.95rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 
