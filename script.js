@@ -227,7 +227,6 @@ window.signInWithProvider = async (provider) => {
     provider,
     options: {
       redirectTo: 'https://rrnucumzptbwdxtkccyx.supabase.co/auth/v1/callback',
-      flow: 'popup',
     },
   });
 
