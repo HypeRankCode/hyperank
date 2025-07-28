@@ -364,24 +364,6 @@ if (isOAuthLogin) {
   }
 }
 
-async function refreshUserCredits() {
-  const creditBox = document.getElementById("creditDisplay");
-  if (!creditBox || !currentUser) return;
-
-  const { data: creditData } = await supabase
-    .from("credits")
-    .select("creds")
-    .eq("user_id", currentUser.id)
-    .single();
-
-  creditBox.innerHTML = `
-    Welcome, ${currentUser.email} &nbsp; – &nbsp;
-    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-    ${creditData?.creds ?? 0}
-  `;
-}
-
-
   // --- Normal page load logic below ---
 
   const emailSpan = document.getElementById('userEmailDisplay');
