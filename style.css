@@ -304,28 +304,16 @@ h2 {
 
 /* Vote Buttons Container */
 .comparison-box {
-  display: inline-flex;
-  gap: 0;
+  display: flex;          /* Use flex, not inline-flex */
+  gap: 1rem;              /* Add breathing room between buttons */
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 0 6px #ff4444;
-  max-width: 350px;
+  /* Remove overflow hidden so buttons don't get clipped */
+  max-width: none;        /* Allow container to grow */
+  width: 100%;            /* Fill parent width */
   margin: 1rem auto;
   border: none !important;
   outline: none !important;
-  box-shadow: none !important;
-}
-
-
-.vote-option:hover {
-  background: #333;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.vote-option:active {
-  transform: scale(0.96);
-  background: #444;
+  box-shadow: 0 0 6px #ff4444;
 }
 
 /* Vote Buttons */
@@ -714,23 +702,27 @@ header {
 
 /* Vote option button style */
 .vote-option {
-  transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
-  white-space: nowrap;      /* Prevent text from wrapping to next line */
-  min-width: 180px;         /* Minimum width to give enough room */
-  max-width: 100%;          /* So it doesn't overflow container */
-  padding: 1rem 2rem;       /* Keep your existing padding */
-  box-sizing: border-box;   /* So padding is included in width */
+  white-space: nowrap;
+  flex: 1 1 auto;        /* Buttons flexibly grow and shrink */
+  min-width: 140px;      /* Minimum button width */
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 8px;    /* Rounded corners for each button */
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .vote-option:hover {
   background: #333;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .vote-option:active {
-  transform: scale(0.96);
   background: #444;
+  transform: scale(0.96);
 }
 
 /* Suggest button */
