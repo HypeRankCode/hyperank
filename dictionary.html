@@ -192,7 +192,7 @@
   color: white;
   font-size: 1rem;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
-  padding-left: 1rem; /* increased for better spacing from icon */
+  padding-left: 2.5rem;
 }
 
 #dictSearchInput:focus {
@@ -201,22 +201,45 @@
   outline: none;
 }
 
+.dict-input-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 700px;
+  margin: 0 auto 1rem auto;
+  flex-wrap: wrap;
+}
+
 .dict-input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 500px;
-  width: 100%;
-  margin: 0 auto 1rem auto; /* centers the wrapper */
+  flex: 1;
+  min-width: 250px;
 }
 
 .dict-input-wrapper i {
   position: absolute;
   left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #bbb;
   font-size: 1rem;
   pointer-events: none;
+}
+
+#dictSearchBtn {
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff3c3c;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#dictSearchBtn:hover {
+  background-color: #ff5a5a;
 }
 
 .dict-description {
