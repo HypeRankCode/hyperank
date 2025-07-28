@@ -334,10 +334,6 @@ h2 {
   border-radius: 8px 0 0 8px; /* Rounded left corners */
 }
 
-.vote-up:hover {
-  background-color: #ff6666;
-}
-
 .vote-down {
   background: #ff6666;
   color: white;
