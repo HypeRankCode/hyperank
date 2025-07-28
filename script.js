@@ -7,6 +7,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 let currentUser = null;
 let hasShownCreditMsg = false;
 
+console.log('voteMessage element at script start:', document.getElementById("voteMessage"));
+
 supabase.auth.getSession().then(({ data: { session } }) => {
   if (session) {
     currentUser = session.user;
