@@ -818,7 +818,7 @@ async function renderVotePair() {
 }
 
 // Show vote message overlay once
-function showVoteMessage(message) {
+window.showVoteMessage = function(message) {
   const msgBox = document.getElementById("voteMessage");
   if (!msgBox) return;
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
@@ -828,7 +828,8 @@ function showVoteMessage(message) {
     msgBox.classList.remove("visible");
     msgBox.innerHTML = "";
   }, 3000);
-}
+};
+
 
 
 
