@@ -688,7 +688,9 @@ fetch("news.json")
   
 // Show vote message overlay once
 window.showVoteMessage = function(message) {
+	console.log("worked");
   const msgBox = document.getElementById("voteMessage");
+  console.log("worked");
   if (!msgBox) return;
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
   msgBox.classList.add("visible");
@@ -701,7 +703,6 @@ window.showVoteMessage = function(message) {
 
 
 let hasShownCreditMsg = false; // global flag to show message only once
-console.log("worked");
 
 // Voting system
 async function renderVotePair() {
