@@ -348,26 +348,32 @@ h2 {
 
 /* Popup message below buttons */
 .vote-message {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #222;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.85);
   color: gold;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
   font-weight: bold;
-  font-size: 1rem;
-  opacity: 0;
+  font-size: 1.2rem;
+  text-align: center;
   pointer-events: none;
+  opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 9999;
+  border-radius: 12px;
+  z-index: 10;
 }
+
 
 .vote-message.visible {
   opacity: 1;
+  pointer-events: auto;
 }
 
+.vote-section {
+  position: relative;
+}
 
 
 /* Submit Form */
@@ -670,6 +676,7 @@ header {
   min-height: 120px;
   transition: opacity 0.3s ease;
   opacity: 1;
+  position: relative; /* make this container the reference for absolute positioning */
 }
 
 .comparison-box.fade-out {

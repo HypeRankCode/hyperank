@@ -379,44 +379,17 @@ async function refreshUserCredits() {
   `;
 }
 
-function showVoteMessage(message, targetButton) {
-  // Remove any existing popup first
-  const existingPopup = document.getElementById('voteMessagePopup');
-  if (existingPopup) existingPopup.remove();
-
-  // Create the popup div
-  const popup = document.createElement('div');
-  popup.id = 'voteMessagePopup';
-  popup.innerHTML = `<i class="fas fa-coins" style="color:gold; margin-right:6px;"></i> ${message}`;
-  popup.style.position = 'absolute';
-  popup.style.background = 'rgba(0,0,0,0.85)';
-  popup.style.color = 'gold';
-  popup.style.padding = '8px 12px';
-  popup.style.borderRadius = '8px';
-  popup.style.fontWeight = 'bold';
-  popup.style.fontSize = '1rem';
-  popup.style.pointerEvents = 'none';
-  popup.style.whiteSpace = 'nowrap';
-  popup.style.zIndex = '1000';
-  popup.style.opacity = '1';
-  popup.style.transition = 'opacity 0.5s ease';
-
-  document.body.appendChild(popup);
-
-  // Position the popup centered above the target button
-  const btnRect = targetButton.getBoundingClientRect();
-  const popupRect = popup.getBoundingClientRect();
-
-  popup.style.left = `${btnRect.left + btnRect.width / 2 - popupRect.width / 2}px`;
-  popup.style.top = `${btnRect.top - popupRect.height - 10}px`; // 10px above button
-
-  // Fade out and remove after 2.5 seconds
-  setTimeout(() => {
-    popup.style.opacity = '0';
-    setTimeout(() => popup.remove(), 500);
-  }, 3000);
+function showVoteMessage(message) {
+  const msgBox = document.getElementById("voteMessage"); // Make sure your HTML uses id="voteMessage"
+  if (!msgBox) return; // safety check
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout); // reset timeout if already running
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 3000); // visible for 2.5 seconds
 }
-
 
 
   // --- Normal page load logic below ---
@@ -818,7 +791,7 @@ async function renderVotePair() {
               }
             }
           } else if (!hasShownCreditMsg) {
-            showVoteMessage("Earn credits by using an account!", btn);
+            showVoteMessage("Earn credits by using an account!");
             hasShownCreditMsg = true;
           }
 
