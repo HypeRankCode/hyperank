@@ -349,12 +349,12 @@ h2 {
 /* Popup message below buttons */
 .vote-message {
   position: absolute;
-  top: 60px;  /* adjust as needed */
+  top: 80px;  /* pushed down */
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.15); /* light translucent white */
-  backdrop-filter: blur(8px); /* blur effect */
-  -webkit-backdrop-filter: blur(8px); /* Safari support */
+  background: rgba(0, 0, 0, 0.4); /* dark translucent black */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: gold;
   font-weight: bold;
   font-size: 1.2rem;
@@ -365,8 +365,9 @@ h2 {
   transition: opacity 0.3s ease;
   z-index: 100;
   white-space: nowrap;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); /* subtle golden glow */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
+
 
 
 
