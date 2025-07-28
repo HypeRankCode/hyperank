@@ -104,10 +104,10 @@
   padding: 0.8rem 1rem 0.8rem 2.6rem;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 8px 0 0 8px; /* rounded only on left side */
-  border-right: none;
+  border-radius: 8px 0 0 8px; /* rounded only on left */
+  border: 1px solid #ff3c3c;
+  border-right: none; /* remove right border for flush connection */
   background-color: #3a3a3a;
-  border: 1px solid #ff3c3c;  /* subtle border */
   color: white;
   font-size: 1rem;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
@@ -194,17 +194,6 @@
   background-image: url('assets/cursor-textv2.cur');
 }
 
-#dictSearchInput {
-  padding: 0.8rem 1rem 0.8rem 2.6rem; /* leave room for icon inside */
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 8px;
-  background-color: #3a3a3a;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-}
 
 #dictSearchInput:focus {
   box-shadow: 0 0 6px 2px #ff3c3c;
