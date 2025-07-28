@@ -342,42 +342,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-// --- OAuth redirect handling ---
-if (isOAuthLogin) {
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData?.session?.user;
+  // --- OAuth redirect handling ---
+  if (isOAuthLogin) {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
 
-    if (user && user.app_metadata?.provider !== 'email') {
-      console.log('✅ OAuth login via:', user.app_metadata.provider);
+      if (user && user.app_metadata?.provider !== 'email') {
+        console.log('✅ OAuth login via:', user.app_metadata.provider);
 
-      // Fetch credits for user
-      const { data: creditsData, error: creditsError } = await supabase
-        .from('credits')
-        .select('creds')
-        .eq('user_id', user.id)
-        .single();
+        // Fetch credits for user
+        const { data: creditsData, error: creditsError } = await supabase
+          .from('credits')
+          .select('creds')
+          .eq('user_id', user.id)
+          .single();
 
-      const creditDisplay = document.getElementById('creditDisplay');
-      if (creditDisplay) {
-        creditDisplay.textContent = creditsError || !creditsData
-          ? "Credits: 0"
-          : `Credits: ${creditsData.creds}`;
-      }
+        const creditDisplay = document.getElementById('creditDisplay');
+        if (creditDisplay) {
+          creditDisplay.textContent = creditsError || !creditsData
+            ? "Credits: 0"
+            : `Credits: ${creditsData.creds}`;
+        }
 
-      // ✅ Clean URL ONLY after ensuring session is complete
-      setTimeout(() => {
+        // Clean URL to remove token hash params
         window.history.replaceState(null, null, window.location.pathname);
-        location.reload(); // Optional refresh
-      }, 1000);
 
-      return; // Prevent further execution on OAuth redirect load
+        // Optional: reload page so all normal logic runs fresh
+        setTimeout(() => location.reload(), 1000);
+        return; // Prevent further execution on OAuth redirect load
+      }
+    } catch (err) {
+      console.error("OAuth redirect session error:", err);
     }
-  } catch (err) {
-    console.error("OAuth redirect session error:", err);
   }
-}
-
 
   // --- Normal page load logic below ---
 
