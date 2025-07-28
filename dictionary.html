@@ -192,7 +192,7 @@
   color: white;
   font-size: 1rem;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
-  padding-left: 2.2rem; /* adjusted for icon space */
+  padding-left: 5rem; /* increased for better spacing from icon */
 }
 
 #dictSearchInput:focus {
@@ -205,14 +205,15 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   max-width: 500px;
   width: 100%;
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem auto; /* centers the wrapper */
 }
 
 .dict-input-wrapper i {
   position: absolute;
-  left: 14px;
+  left: 12px;
   color: #bbb;
   font-size: 1rem;
   pointer-events: none;
