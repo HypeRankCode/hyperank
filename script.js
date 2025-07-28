@@ -701,6 +701,7 @@ window.showVoteMessage = function(message) {
 
 
 let hasShownCreditMsg = false; // global flag to show message only once
+console.log("worked");
 
 // Voting system
 async function renderVotePair() {
