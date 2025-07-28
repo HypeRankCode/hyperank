@@ -681,7 +681,6 @@ let hasShownCreditMsg = false; // global flag to show message only once
 
 // Show vote message overlay once
 window.showVoteMessage = function(message) {
-  console.log("showVoteMessage triggered:", message);
   const msgBox = document.getElementById("voteMessage");
   if (!msgBox) {
     console.log("voteMessage element not found");
@@ -798,7 +797,6 @@ async function renderVotePair() {
               }
             }
           } else if (!hasShownCreditMsg) {
-			  console.log("showVoteMessageSucces");
             showVoteMessage("Earn credits by using an account!");
             hasShownCreditMsg = true;
           }
