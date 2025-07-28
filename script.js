@@ -7,12 +7,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 let currentUser = null;
 let hasShownCreditMsg = false;
 
-console.log('voteMessage element at script start:', document.getElementById("voteMessage"));
-
 supabase.auth.getSession().then(({ data: { session } }) => {
   if (session) {
     currentUser = session.user;
-    console.log("Logged in via OAuth:", currentUser);
     // maybe redirect or update UI
   }
 });
@@ -665,7 +662,6 @@ let hasShownCreditMsg = false; // global flag to show message only once
 window.showVoteMessage = function(message) {
   const msgBox = document.getElementById("voteMessage");
   if (!msgBox) {
-    console.log("voteMessage element not found");
     return;
   }
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
