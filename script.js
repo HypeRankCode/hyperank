@@ -325,13 +325,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const hash = window.location.hash;
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
-  const { data: sessionData } = await supabase.auth.getSession();
-  currentUser = sessionData?.session?.user || null;
-  
-    if (currentUser) {
-    refreshUserCredits(); // ✅ update credits right away
-  }
-});
 
 // --- OAuth redirect handling ---
 if (isOAuthLogin) {
@@ -801,6 +794,7 @@ async function renderVotePair() {
     });
   }, 300);
 }
+
 
 async function refreshUserCredits() {
   const creditBox = document.getElementById("creditDisplay");
