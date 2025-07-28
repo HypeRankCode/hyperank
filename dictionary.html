@@ -181,24 +181,6 @@
   background-image: url('assets/cursor-textv2.cur');
 }
 
-#dictSearchInput {
-  padding: 0.8rem 1rem 0.8rem 2.4rem;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 8px;
-  background-color: #3a3a3a;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-}
-
-#dictSearchInput:focus {
-  box-shadow: 0 0 6px 2px #ff3c3c;
-  background-color: #4a4a4a;
-  outline: none; /* optional */
-}
-
 
   </style>
 </head>
@@ -210,12 +192,62 @@
 
   <div id="siteHeader"></div>
 
-  <main>
-    <h2 style="margin-bottom: 1rem;">Dictionary</h2>
+<main>
+  <h2 style="margin-bottom: 1rem;">Dictionary</h2>
+  <div class="dict-search-wrapper">
+    <i class="fas fa-language"></i>
     <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." />
     <button id="dictSearchBtn">Search</button>
-    <div id="dictResult"></div>
-  </main>
+  </div>
+  <div id="dictResult"></div>
+</main>
+
+<style>
+  .dict-search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 400px;
+  }
+
+  .dict-search-wrapper i {
+    color: #ff3c3c;
+    font-size: 1.25rem;
+  }
+
+  #dictSearchInput {
+    flex: 1;
+    padding: 0.8rem 1rem 0.8rem 0.5rem;
+    border-radius: 8px;
+    background-color: #3a3a3a;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  }
+
+  #dictSearchInput:focus {
+    box-shadow: 0 0 6px 2px #ff3c3c;
+    background-color: #4a4a4a;
+    outline: none;
+  }
+
+  #dictSearchBtn {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff3c3c;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #dictSearchBtn:hover {
+    background-color: #ff1a1a;
+  }
+</style>
+
 
 
   <div id="siteFooter"></div>
