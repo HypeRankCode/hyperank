@@ -304,15 +304,15 @@ h2 {
 
 /* Vote Buttons Container */
 .comparison-box {
-  display: flex;
+  display: inline-flex;        /* shrink-wrap to content */
   gap: 1rem;
   border-radius: 8px;
-  /* No fixed width or max-width here */
   margin: 1rem auto;
   border: none !important;
   outline: none !important;
-  box-shadow: 0 0 6px #ff4444;
-  justify-content: center; /* Center them horizontally */
+  box-shadow: 0 0 6px #ff4444; /* your red glow */
+  justify-content: center;
+  padding: 0.2rem 0.6rem;      /* optional padding around buttons */
 }
 
 /* Vote Buttons */
