@@ -51,6 +51,10 @@ button[type="submit"],
   cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
 }
 
+.trend-card, 
+.trend-card * {
+  cursor: url('/assets/cursor-clickv2.cur'), pointer !important;
+}
 
 input, textarea, button {
   font-family: 'Urbanist', sans-serif;
