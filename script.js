@@ -168,19 +168,6 @@ window.signIn = async () => {
 };
 
 
-  if (isOAuthLogin) {
-    // ✅ User came from OAuth redirect
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData?.session?.user;
-
-    if (user && user.app_metadata?.provider !== 'email') {
-      console.log('Logged in via OAuth:', user.app_metadata.provider);
-      // Optionally clean URL
-      window.history.replaceState(null, null, window.location.pathname);
-      // Show normal logged-in state
-      return;
-    }
-  }
 
 window.signUp = async () => {
   const email = document.getElementById('authEmail').value.trim();
