@@ -348,19 +348,26 @@ h2 {
 
 /* Popup message below buttons */
 .vote-message {
-  position: relative;  /* no more absolute */
-  margin: 0.5rem 0 1rem 0;
-  background: rgba(0, 0, 0, 0.85);
+  position: absolute;
+  top: 60px;  /* adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.15); /* light translucent white */
+  backdrop-filter: blur(8px); /* blur effect */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
   color: gold;
   font-weight: bold;
   font-size: 1.2rem;
-  text-align: center;
+  padding: 1rem 2rem;
   border-radius: 12px;
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 10;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); /* subtle golden glow */
 }
+
 
 
 .vote-message.visible {
