@@ -379,18 +379,6 @@ async function refreshUserCredits() {
   `;
 }
 
-function showVoteMessage(message) {
-  const msgBox = document.getElementById("voteMessage");
-  if (!msgBox) return;
-  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
-  msgBox.classList.add("visible");
-  clearTimeout(window.voteMsgTimeout);
-  window.voteMsgTimeout = setTimeout(() => {
-    msgBox.classList.remove("visible");
-    msgBox.innerHTML = "";
-  }, 3000);
-}
-
 
   // --- Normal page load logic below ---
 
@@ -704,6 +692,22 @@ window.showVoteMessage = function(message) {
 
 let hasShownCreditMsg = false; // global flag to show message only once
 
+// Show vote message overlay once
+window.showVoteMessage = function(message) {
+	console.log("worked1");
+  const msgBox = document.getElementById("voteMessage");
+  console.log("worked2");
+  if (!msgBox) return;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout);
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 3000);
+};
+
+
 // Voting system
 async function renderVotePair() {
   const box = document.querySelector(".comparison-box");
@@ -832,6 +836,22 @@ async function renderVotePair() {
     });
   }, 300);
 }
+
+// Show vote message overlay once
+window.showVoteMessage = function(message) {
+	console.log("worked1");
+  const msgBox = document.getElementById("voteMessage");
+  console.log("worked2");
+  if (!msgBox) return;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout);
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 3000);
+};
+
 
 
 try {
