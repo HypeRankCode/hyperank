@@ -298,6 +298,7 @@ function formatTimeAgo(date) {
   if (seconds < 60) return `${seconds} seconds ago`;
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes} minutes ago`;
+  if (minutes < 60) return `${minutes} minutes ago`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours} hours ago`;
   const days = Math.floor(hours / 24);
@@ -331,41 +332,52 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const hash = window.location.hash;
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
-
-  // --- OAuth redirect handling ---
-  if (isOAuthLogin) {
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user;
-
-      if (user && user.app_metadata?.provider !== 'email') {
-        console.log('✅ OAuth login via:', user.app_metadata.provider);
-
-        // Fetch credits for user
-        const { data: creditsData, error: creditsError } = await supabase
-          .from('credits')
-          .select('creds')
-          .eq('user_id', user.id)
-          .single();
-
-        const creditDisplay = document.getElementById('creditDisplay');
-        if (creditDisplay) {
-          creditDisplay.textContent = creditsError || !creditsData
-            ? "Credits: 0"
-            : `Credits: ${creditsData.creds}`;
-        }
-
-        // Clean URL to remove token hash params
-        window.history.replaceState(null, null, window.location.pathname);
-
-        // Optional: reload page so all normal logic runs fresh
-        setTimeout(() => location.reload(), 1000);
-        return; // Prevent further execution on OAuth redirect load
-      }
-    } catch (err) {
-      console.error("OAuth redirect session error:", err);
-    }
+  
+    const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    console.log('Logged in:', session.user);
+  } else {
+    console.log('User not logged in');
   }
+});
+
+
+// --- OAuth redirect handling ---
+if (isOAuthLogin) {
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
+
+    if (user && user.app_metadata?.provider !== 'email') {
+      console.log('✅ OAuth login via:', user.app_metadata.provider);
+
+      // Fetch credits for user
+      const { data: creditsData, error: creditsError } = await supabase
+        .from('credits')
+        .select('creds')
+        .eq('user_id', user.id)
+        .single();
+
+      const creditDisplay = document.getElementById('creditDisplay');
+      if (creditDisplay) {
+        creditDisplay.textContent = creditsError || !creditsData
+          ? "Credits: 0"
+          : `Credits: ${creditsData.creds}`;
+      }
+
+      // ✅ Clean URL ONLY after ensuring session is complete
+      setTimeout(() => {
+        window.history.replaceState(null, null, window.location.pathname);
+        location.reload(); // Optional refresh
+      }, 1000);
+
+      return; // Prevent further execution on OAuth redirect load
+    }
+  } catch (err) {
+    console.error("OAuth redirect session error:", err);
+  }
+}
+
 
   // --- Normal page load logic below ---
 
