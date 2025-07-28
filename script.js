@@ -332,40 +332,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   const hash = window.location.hash;
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
 
-  // --- OAuth redirect handling ---
-  if (isOAuthLogin) {
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user;
+// --- OAuth redirect handling ---
+if (isOAuthLogin) {
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
 
-      if (user && user.app_metadata?.provider !== 'email') {
-        console.log('✅ OAuth login via:', user.app_metadata.provider);
+    if (user && user.app_metadata?.provider !== 'email') {
+      console.log('✅ OAuth login via:', user.app_metadata.provider);
 
-        // Fetch credits for user
-        const { data: creditsData, error: creditsError } = await supabase
-          .from('credits')
-          .select('creds')
-          .eq('user_id', user.id)
-          .single();
+      // Fetch credits for user
+      const { data: creditsData, error: creditsError } = await supabase
+        .from('credits')
+        .select('creds')
+        .eq('user_id', user.id)
+        .single();
 
-        const creditDisplay = document.getElementById('creditDisplay');
-        if (creditDisplay) {
-          creditDisplay.textContent = creditsError || !creditsData
-            ? "Credits: 0"
-            : `Credits: ${creditsData.creds}`;
-        }
-
-        // Clean URL to remove token hash params
-        window.history.replaceState(null, null, window.location.pathname);
-
-        // Optional: reload page so all normal logic runs fresh
-        setTimeout(() => location.reload(), 1000);
-        return; // Prevent further execution on OAuth redirect load
+      const creditDisplay = document.getElementById('creditDisplay');
+      if (creditDisplay) {
+        creditDisplay.textContent = creditsError || !creditsData
+          ? "Credits: 0"
+          : `Credits: ${creditsData.creds}`;
       }
-    } catch (err) {
-      console.error("OAuth redirect session error:", err);
+
+      // ✅ Clean URL ONLY after ensuring session is complete
+      setTimeout(() => {
+        window.history.replaceState(null, null, window.location.pathname);
+        location.reload(); // Optional refresh
+      }, 1000);
+
+      return; // Prevent further execution on OAuth redirect load
     }
+  } catch (err) {
+    console.error("OAuth redirect session error:", err);
   }
+}
+
 
   // --- Normal page load logic below ---
 
