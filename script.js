@@ -298,7 +298,6 @@ function formatTimeAgo(date) {
   if (seconds < 60) return `${seconds} seconds ago`;
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes} minutes ago`;
-  if (minutes < 60) return `${minutes} minutes ago`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours} hours ago`;
   const days = Math.floor(hours / 24);
@@ -332,15 +331,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const hash = window.location.hash;
   const isOAuthLogin = hash.includes('access_token') && (hash.includes('type=signup') || hash.includes('type=signin'));
-  
-    const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    console.log('Logged in:', session.user);
-  } else {
-    console.log('User not logged in');
-  }
-});
-
 
   // --- OAuth redirect handling ---
   if (isOAuthLogin) {
