@@ -362,6 +362,23 @@ if (isOAuthLogin) {
   }
 }
 
+async function refreshUserCredits() {
+  const creditBox = document.getElementById("creditDisplay");
+  if (!creditBox || !currentUser) return;
+
+  const { data: creditData } = await supabase
+    .from("credits")
+    .select("creds")
+    .eq("user_id", currentUser.id)
+    .single();
+
+  creditBox.innerHTML = `
+    Welcome, ${currentUser.email} &nbsp; – &nbsp;
+    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
+    ${creditData?.creds ?? 0}
+  `;
+}
+
 function showVoteMessage(msg) {
   const msgBox = document.getElementById("voteMsg");
   msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${msg}`;
@@ -795,23 +812,6 @@ async function renderVotePair() {
   }, 300);
 }
 
-
-async function refreshUserCredits() {
-  const creditBox = document.getElementById("creditDisplay");
-  if (!creditBox || !currentUser) return;
-
-  const { data: creditData } = await supabase
-    .from("credits")
-    .select("creds")
-    .eq("user_id", currentUser.id)
-    .single();
-
-  creditBox.innerHTML = `
-    Welcome, ${currentUser.email} &nbsp; – &nbsp;
-    <i class="fas fa-coins" style="color:gold; margin-right:4px;"></i>
-    ${creditData?.creds ?? 0}
-  `;
-}
 
 try {
   const { data: trends, error } = await supabase
