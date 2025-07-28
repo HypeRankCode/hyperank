@@ -54,6 +54,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 
+<script>
+  // Only redirect to /verified if the hash contains "type=signup"
+  if (
+    window.location.pathname === '/' &&
+    window.location.hash.includes('type=signup')
+  ) {
+    window.location.replace('/verified' + window.location.hash);
+  }
+</script>
 
   
 <style>
