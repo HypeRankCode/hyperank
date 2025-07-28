@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (currentUser) {
     refreshUserCredits(); // ✅ update credits right away
   }
-  });
+});
 
 // --- OAuth redirect handling ---
 if (isOAuthLogin) {
@@ -743,9 +743,8 @@ async function renderVotePair() {
                 .update({ creds: newCredits })
                 .eq("user_id", user.id);
 
-              if (currentUser) {
-				 refreshUserCredits();
-			  }				
+              if (!creditError) {
+                refreshUserCredits(); // <-- update header
 
                 const plusOne = document.createElement("div");
                 plusOne.innerHTML = `
