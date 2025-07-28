@@ -348,21 +348,18 @@ h2 {
 
 /* Popup message below buttons */
 .vote-message {
-  position: absolute;
-  top: 10px;  /* a little padding from top */
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;  /* no more absolute */
+  margin: 0.5rem 0 1rem 0;
   background: rgba(0, 0, 0, 0.85);
   color: gold;
   font-weight: bold;
   font-size: 1.2rem;
-  padding: 1rem 2rem;
+  text-align: center;
   border-radius: 12px;
-  pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 100;
-  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
 }
 
 
