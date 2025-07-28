@@ -661,6 +661,40 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+  
+  
+  function isUserLoggedIn() {
+  const user = supabase.auth.getUser(); // or your auth method
+  return user != null;
+}
+
+// Assume you have a function isUserLoggedIn() that returns true/false
+
+function showVoteMessage(message) {
+  const msg = document.getElementById('voteMsg');
+  msg.textContent = message;
+  msg.classList.add('visible');
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    msg.classList.remove('visible');
+    msg.textContent = '';
+  }, 3000);
+}
+
+// Example vote button click handler:
+document.querySelectorAll('.vote-up, .vote-down').forEach(button => {
+  button.addEventListener('click', () => {
+    if (!isUserLoggedIn()) {
+      showVoteMessage('Earn credits by creating an account!');
+      return;
+    }
+
+    // If logged in, proceed with voting logic and credit increment
+    incrementUserCredits();
+    // Your existing vote logic here...
+  });
+});
 
 
 
