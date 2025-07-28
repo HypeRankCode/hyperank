@@ -685,6 +685,19 @@ fetch("news.json")
 
     requestAnimationFrame(animateTicker);
   });
+  
+// Show vote message overlay once
+window.showVoteMessage = function(message) {
+  const msgBox = document.getElementById("voteMessage");
+  if (!msgBox) return;
+  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
+  msgBox.classList.add("visible");
+  clearTimeout(window.voteMsgTimeout);
+  window.voteMsgTimeout = setTimeout(() => {
+    msgBox.classList.remove("visible");
+    msgBox.innerHTML = "";
+  }, 3000);
+};
 
 
 let hasShownCreditMsg = false; // global flag to show message only once
@@ -816,21 +829,6 @@ async function renderVotePair() {
     });
   }, 300);
 }
-
-// Show vote message overlay once
-window.showVoteMessage = function(message) {
-  const msgBox = document.getElementById("voteMessage");
-  if (!msgBox) return;
-  msgBox.innerHTML = `<i class="fas fa-coins" style="color:gold;margin-right:6px;"></i> ${message}`;
-  msgBox.classList.add("visible");
-  clearTimeout(window.voteMsgTimeout);
-  window.voteMsgTimeout = setTimeout(() => {
-    msgBox.classList.remove("visible");
-    msgBox.innerHTML = "";
-  }, 3000);
-};
-
-
 
 
 try {
