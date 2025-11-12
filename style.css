@@ -533,6 +533,7 @@ header {
   justify-content: center;
   gap: 0.4rem;
   min-width: 110px;
+  text-align: center;
 }
 
 
