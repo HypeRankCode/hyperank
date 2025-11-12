@@ -284,6 +284,12 @@
   text-transform: uppercase;
 }
 
+.dict-letter-count {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-left: 0.35rem;
+}
+
 .dict-term-list {
   display: flex;
   flex-wrap: wrap;
@@ -311,6 +317,113 @@
 
 .dict-term-pill:active {
   transform: translateY(0);
+}
+
+.dict-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 820px;
+  margin: 0 auto 2rem auto;
+}
+
+.dict-alphabet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.dict-alpha-button {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8f8f8;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dict-alpha-button:hover,
+.dict-alpha-button:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(255, 107, 107, 0.18);
+  border-color: rgba(255, 107, 107, 0.6);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.35);
+  outline: none;
+}
+
+.dict-alpha-button.active {
+  background: linear-gradient(135deg, #ff4444, #ff6b6b);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.45);
+}
+
+.dict-alpha-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+  transform: none;
+}
+
+.dict-filter {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dict-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: #f0f0f0;
+  opacity: 0.75;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#dictFilterInput {
+  width: min(360px, 100%);
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+#dictFilterInput:focus {
+  border-color: rgba(255, 68, 68, 0.8);
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.35);
+  background-color: rgba(255, 68, 68, 0.12);
+  outline: none;
+}
+
+.dict-empty-state {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.95rem;
+  padding: 1.5rem 0;
+}
+
+@media (max-width: 640px) {
+  .dict-controls {
+    gap: 1rem;
+  }
+
+  .dict-filter-label {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 
@@ -341,6 +454,18 @@
   <section id="dictAllTermsSection" style="margin-top: 3rem; text-align: left;">
     <h2 style="text-align:center; margin-bottom: 1rem;">All Terms</h2>
     <p class="dict-description" style="text-align:center; margin-top: -0.5rem;">Browse every entry in alphabetical order.</p>
+
+    <div class="dict-controls">
+      <div class="dict-alphabet" id="dictAlphabetNav" aria-label="Alphabetical navigation"></div>
+      <div class="dict-filter">
+        <label for="dictFilterInput" class="dict-filter-label">
+          <i class="fas fa-filter"></i>
+          Filter
+        </label>
+        <input id="dictFilterInput" type="text" placeholder="Filter by keyword, tag, or vibe..." autocomplete="off" />
+      </div>
+    </div>
+
     <div id="dictAllTerms" class="dict-all-terms"></div>
   </section>
 </main>
@@ -362,9 +487,14 @@
     const button = document.getElementById('dictSearchBtn');
     const result = document.getElementById('dictResult');
     const allTermsContainer = document.getElementById('dictAllTerms');
+    const alphabetNav = document.getElementById('dictAlphabetNav');
+    const filterInput = document.getElementById('dictFilterInput');
+
+    const LETTER_ORDER = ['0-9', ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), '#'];
 
     let trends = [];
-    let hasRenderedAllTerms = false;
+    let filterValue = '';
+    let activeLetter = null;
 
     window.__supabase = supabase;
 
@@ -383,45 +513,131 @@
 
     await fetchTrends();
 
+function normalizeText(value) {
+  return (value || '')
+    .toString()
+    .normalize('NFKD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
+}
+
+function getGroupKey(label) {
+  if (!label) return '#';
+  const firstChar = label.trim().charAt(0) || '#';
+  if (/[0-9]/.test(firstChar)) return '0-9';
+  if (/[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
+  return '#';
+}
+
+function renderAlphabetNav(activeLetters) {
+  if (!alphabetNav) return;
+  const activeSet = new Set(activeLetters);
+
+  alphabetNav.innerHTML = LETTER_ORDER.map(letter => {
+    const disabled = !activeSet.has(letter);
+    const classes = ['dict-alpha-button'];
+    if (disabled) classes.push('disabled');
+    if (!disabled && activeLetter === letter) classes.push('active');
+    return `<button type="button" class="${classes.join(' ')}" data-letter="${letter}" ${disabled ? 'disabled' : ''}>${letter}</button>`;
+  }).join('');
+}
+
+function updateAlphabetActiveState() {
+  if (!alphabetNav) return;
+  alphabetNav.querySelectorAll('.dict-alpha-button').forEach(btn => {
+    btn.classList.toggle('active', !btn.classList.contains('disabled') && btn.dataset.letter === activeLetter);
+  });
+}
+
 function renderAllTerms() {
-  if (!allTermsContainer || !Array.isArray(trends) || trends.length === 0) {
-    if (allTermsContainer && !hasRenderedAllTerms) {
-      allTermsContainer.innerHTML = `<p style="text-align:center; color:#aaa;">No dictionary terms yet.</p>`;
-      hasRenderedAllTerms = true;
-    }
+  if (!allTermsContainer) return;
+
+  if (!Array.isArray(trends) || trends.length === 0) {
+    allTermsContainer.innerHTML = `<p class="dict-empty-state">No dictionary terms yet.</p>`;
+    renderAlphabetNav([]);
     return;
   }
 
-  const sorted = [...trends]
+  const normalizedFilter = normalizeText(filterValue);
+
+  const filtered = [...trends]
     .filter(entry => entry?.label)
+    .filter(entry => {
+      if (!normalizedFilter) return true;
+      const parts = [
+        entry.label,
+        entry.name,
+        entry.description,
+        entry.origin,
+        entry.example,
+        Array.isArray(entry.tags) ? entry.tags.join(' ') : entry.tags
+      ];
+      return parts.some(part => normalizeText(part).includes(normalizedFilter));
+    })
     .sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
 
-  const grouped = sorted.reduce((acc, entry) => {
-    const initial = entry.label[0]?.toUpperCase() || '#';
-    if (!acc[initial]) acc[initial] = [];
-    acc[initial].push(entry);
+  if (filtered.length === 0) {
+    allTermsContainer.innerHTML = `<p class="dict-empty-state">No terms match “${filterValue}”. Try another keyword.</p>`;
+    renderAlphabetNav([]);
+    return;
+  }
+
+  const grouped = filtered.reduce((acc, entry) => {
+    const key = getGroupKey(entry.label);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(entry);
     return acc;
   }, {});
 
-  const letters = Object.keys(grouped).sort((a, b) => {
-    if (a === '#') return 1;
-    if (b === '#') return -1;
-    return a.localeCompare(b);
-  });
+  const letters = LETTER_ORDER.filter(letter => grouped[letter]?.length);
+  renderAlphabetNav(letters);
+
+  if (activeLetter && !letters.includes(activeLetter)) {
+    activeLetter = null;
+  }
+  if (!activeLetter && letters.length > 0) {
+    activeLetter = letters[0];
+  }
 
   allTermsContainer.innerHTML = letters.map(letter => {
     const items = grouped[letter]
       .map(entry => `<button class="dict-term-pill" data-term="${entry.label}">${entry.label}</button>`)
       .join('');
     return `
-      <div class="dict-term-group">
-        <h3 class="dict-term-letter">${letter}</h3>
+      <div class="dict-term-group" data-letter="${letter}">
+        <h3 class="dict-term-letter">${letter} <span class="dict-letter-count">${grouped[letter].length}</span></h3>
         <div class="dict-term-list">${items}</div>
       </div>
     `;
   }).join('');
 
-  hasRenderedAllTerms = true;
+  updateAlphabetActiveState();
+}
+
+function scrollToLetter(letter) {
+  if (!letter) return;
+  const target = allTermsContainer?.querySelector(`[data-letter="${letter}"]`);
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+if (alphabetNav) {
+  alphabetNav.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const letter = target.dataset.letter;
+    if (!letter || target.classList.contains('disabled')) return;
+    activeLetter = letter;
+    updateAlphabetActiveState();
+    scrollToLetter(letter);
+  });
+}
+
+if (filterInput) {
+  filterInput.addEventListener('input', (event) => {
+    filterValue = event.target.value;
+    renderAllTerms();
+  });
 }
 
 function getSuggestions(term) {
@@ -444,6 +660,12 @@ function runSearch(term) {
   const match = trends.find(entry => entry.label.toLowerCase() === lowered);
 
   if (match) {
+    if (filterValue) {
+      filterValue = '';
+      if (filterInput) filterInput.value = '';
+      renderAllTerms();
+    }
+
     result.innerHTML = `
       <div class="dict-entry">
         <strong>${match.label}</strong>
@@ -453,6 +675,10 @@ function runSearch(term) {
         ${match.example ? `<div class="dict-example">"${match.example}"</div>` : ''}
         ${match.tags ? `<div class="dict-tags">Tags: ${Array.isArray(match.tags) ? match.tags.join(", ") : match.tags}</div>` : ''}
       </div>`;
+
+    activeLetter = getGroupKey(match.label);
+    updateAlphabetActiveState();
+    scrollToLetter(activeLetter);
   } else {
     const suggestions = getSuggestions(lowered);
     if (suggestions.length > 0) {
