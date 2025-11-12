@@ -522,18 +522,19 @@ header {
 }
 
 .spotlight-stats span {
-  background: rgba(255, 68, 68, 0.1);
+  background: rgba(255, 68, 68, 0.08);
   border: 1px solid rgba(255, 68, 68, 0.3);
   border-radius: 999px;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 1.1rem;
   color: #ffe5e5;
   letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  min-width: 110px;
+  gap: 0.5rem;
+  min-width: 120px;
   text-align: center;
+  font-weight: 600;
 }
 
 
