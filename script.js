@@ -327,6 +327,33 @@ function buildTickerInsights(trends) {
   const seen = new Set();
   const now = new Date();
   const sorted = [...trends].sort((a, b) => trendScore(b) - trendScore(a));
+  const iconPools = {
+    surge: ['⚡', '🔥', '🚀'],
+    hype: ['🔥', '✨', '⚡'],
+    cooling: ['📉', '🥶', '🧊'],
+    general: ['✨', '🌟', '💫', '🔔'],
+    new: ['🆕', '🌱', '🎯', '🛰️']
+  };
+  const iconIndex = { surge: 0, hype: 0, cooling: 0, general: 0, new: 0 };
+
+  const getIcon = (type) => {
+    const pool = iconPools[type] || iconPools.general;
+    const index = iconIndex[type] % pool.length;
+    iconIndex[type] += 1;
+    return pool[index];
+  };
+
+  let lastCategory = null;
+
+  const pushInsight = (category, message) => {
+    if (!message || seen.has(message)) return;
+    if (lastCategory === category) {
+      return;
+    }
+    insights.push(message);
+    seen.add(message);
+    lastCategory = category;
+  };
 
   sorted.forEach((trend) => {
     if (!trend?.label) return;
@@ -341,32 +368,26 @@ function buildTickerInsights(trends) {
     const hoursSinceCreate = createdAt ? (now - createdAt) / 36e5 : Infinity;
     const growthDelta = more - less;
 
-    let message = '';
-    if (hypeRatio !== null && hypeRatio >= 70) {
-      message = `🔥 ${label} is riding a ${hypeRatio}% hype wave`;
-    } else if (growthDelta > 4) {
-      message = `⚡ ${label} is surging with +${growthDelta} more votes today`;
+    if (growthDelta > 4) {
+      const emoji = getIcon('surge');
+      pushInsight('surge', `${emoji} ${label} is surging with +${growthDelta} more votes today`);
+    } else if (hypeRatio !== null && hypeRatio >= 70) {
+      const emoji = getIcon('hype');
+      pushInsight('hype', `${emoji} ${label} is riding a ${hypeRatio}% hype wave`);
     } else if (dead > hype && dead > 0) {
-      message = `📉 ${label} is cooling off (${dead} dead votes)`;
+      const emoji = getIcon('cooling');
+      pushInsight('cooling', `${emoji} ${label} is cooling off (${dead} dead votes)`);
     } else if (totalVotes > 0) {
-      message = `📈 ${label} climbing with ${totalVotes} votes`;
-    }
-
-    if (!message) {
-      message = `✨ ${label} is trending now`;
-    }
-
-    if (!seen.has(message)) {
-      insights.push(message);
-      seen.add(message);
+      const emoji = getIcon('general');
+      pushInsight('general', `${emoji} ${label} climbing with ${totalVotes} votes`);
+    } else {
+      const emoji = getIcon('general');
+      pushInsight('general', `${emoji} ${label} is trending now`);
     }
 
     if (hoursSinceCreate <= 72) {
-      const newMsg = `🆕 ${label} just dropped ${Math.round(hoursSinceCreate)}h ago`;
-      if (!seen.has(newMsg)) {
-        insights.push(newMsg);
-        seen.add(newMsg);
-      }
+      const emoji = getIcon('new');
+      pushInsight('new', `${emoji} ${label} just dropped ${Math.round(hoursSinceCreate)}h ago`);
     }
   });
 
