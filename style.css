@@ -1024,7 +1024,7 @@ footer a:hover {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   isolation: isolate;
-  background: radial-gradient(circle at center, rgba(255, 68, 68, 0.08), rgba(17, 17, 17, 0.95) 70%);
+  background: radial-gradient(circle at center, rgba(255, 68, 68, 0.05), rgba(17, 17, 17, 0.95) 70%);
   width: 100%;
   min-width: 100%;
 }
@@ -1035,6 +1035,7 @@ footer a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1.15);
   filter: saturate(1.1) brightness(0.45);
   pointer-events: none;
   z-index: -2;
@@ -1049,8 +1050,8 @@ footer a:hover {
   --glow-y: 40%;
   --glow-opacity: 0;
   background:
-    radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 68, 68, var(--glow-opacity)) 0%, rgba(255, 68, 68, 0) 45%),
-    linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.85) 75%);
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 68, 68, var(--glow-opacity)) 0%, rgba(255, 68, 68, 0) 18%),
+    linear-gradient(180deg, rgba(17, 17, 17, 0.05) 0%, rgba(17, 17, 17, 0.85) 75%);
   transition: background 0.2s ease;
 }
 
