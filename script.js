@@ -266,8 +266,11 @@ window.resetPassword = async () => {
 
 // Add last updated fetch for update-time
 async function updateLastUpdatedTime() {
-  const updateText = document.querySelector(".update-time p");
-  if (!updateText) return;
+  const refreshedEl = document.querySelector('.spotlight-refreshed');
+  if (refreshedEl && window.__spotlightMeta?.updated) {
+    refreshedEl.textContent = `Spotlight refreshed ${formatTimeAgo(window.__spotlightMeta.updated)}`;
+    return;
+  }
 
   const { data, error } = await supabase
     .from('trends')
@@ -276,13 +279,17 @@ async function updateLastUpdatedTime() {
     .limit(1);
 
   if (error || !data || !data[0] || !data[0].updated_at) {
-    updateText.textContent = "Last updated: unknown";
+    if (refreshedEl) {
+      refreshedEl.textContent = 'Spotlight refreshed recently';
+    }
     console.error(error || "No valid data returned from Supabase.");
     return;
   }
 
   const updatedAt = new Date(data[0].updated_at);
-  updateText.textContent = `Last updated: ${formatTimeAgo(updatedAt)}`;
+  if (refreshedEl) {
+    refreshedEl.textContent = `Spotlight refreshed ${formatTimeAgo(updatedAt)}`;
+  }
 }
 
 function formatTimeAgo(date) {
@@ -443,8 +450,9 @@ function renderSpotlight(trends) {
     headline = `Backed by ${totalVotes} votes this week`;
   }
 
-  const updatedText = spotlightUpdatedAt ? `Updated ${formatTimeAgo(spotlightUpdatedAt)}` : 'Updated recently';
-  const spotlightChangedText = `Spotlight refreshed ${formatTimeAgo(new Date(spotlightUpdatedAt))}`;
+  const spotlightChangedText = spotlightUpdatedAt
+    ? `Spotlight refreshed ${formatTimeAgo(spotlightUpdatedAt)}`
+    : 'Spotlight refreshed recently';
 
   container.innerHTML = `
     <section id="spotlight" class="spotlight-trend">
@@ -458,11 +466,10 @@ function renderSpotlight(trends) {
         <div class="spotlight-stats">
           <span>🔥 Hype: ${hype}</span>
           <span>🚫 Not: ${notVotes}</span>
-          <span>⚡ Use More: ${growthDelta >= 0 ? `+${growthDelta}` : growthDelta}</span>
+          <span>⚡ Popularity: ${growthDelta >= 0 ? `+${growthDelta}` : growthDelta}</span>
         </div>
       </div>
       <div class="update-time">
-        <p>${escapeHtml(updatedText)}</p>
         <p class="spotlight-refreshed">${escapeHtml(spotlightChangedText)}</p>
       </div>
     </section>
