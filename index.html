@@ -368,11 +368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </nav>
   </header>
 
-<div class="news-ticker">
-  <div class="ticker-track-wrapper">
-    <div class="ticker-track" id="ticker"></div>
-  </div>
-</div>
+<div class="site-ambient-glow" aria-hidden="true"></div>
 
 <div class="interactive-bg" id="heroInteractive">
   <canvas class="interactive-bg__canvas" aria-hidden="true"></canvas>
@@ -383,8 +379,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <div class="search-bar" style="text-align:center; margin: 2rem;">
-      <form id="trendSearchForm" style="display: flex; justify-content: center;">
-        <div style="position: relative; width: 60%; max-width: 400px;">
+      <form id="trendSearchForm" class="search-bar__form">
+        <div class="search-bar__wrapper">
           <i class="fas fa-search" style="
             position: absolute;
             top: 50%;
@@ -398,19 +394,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             id="trendSearchInput"
             type="text"
             placeholder="Search trends..."
-            style="
-              padding: 0.8rem 1rem 0.8rem 2.4rem;
-              width: 100%;
-              box-sizing: border-box;
-              border-radius: 8px;
-              background-color: #3a3a3a;
-              border: none;
-              color: white;
-              font-size: 1rem;
-              transition: box-shadow 0.3s ease, background-color 0.3s ease;
-            "
-            onfocus="this.style.boxShadow='0 0 6px 2px #ff3c3c'; this.style.backgroundColor='#4a4a4a';"
-            onblur="this.style.boxShadow='none'; this.style.backgroundColor='#3a3a3a';"
           />
         </div>
       </form>
