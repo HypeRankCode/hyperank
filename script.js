@@ -485,52 +485,6 @@ window.__spotlightMeta = {
   get updated() { return spotlightUpdatedAt; }
 };
 
-function setupHeroAmbient() {
-  const ambient = document.getElementById('heroAmbient');
-  if (!ambient) return;
-  const overlay = ambient.querySelector('.hero-ambient__overlay');
-  if (!overlay) return;
-
-  const setGlow = (xPercent, yPercent, opacity) => {
-    overlay.style.setProperty('--glow-x', `${xPercent}%`);
-    overlay.style.setProperty('--glow-y', `${yPercent}%`);
-    overlay.style.setProperty('--glow-opacity', `${opacity}`);
-  };
-
-  let raf = null;
-  let pending = null;
-
-  const queueUpdate = () => {
-    if (raf || !pending) return;
-    raf = requestAnimationFrame(() => {
-      setGlow(pending.x, pending.y, pending.opacity);
-      pending = null;
-      raf = null;
-    });
-  };
-
-  ambient.addEventListener('mousemove', (event) => {
-    const rect = ambient.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.22 };
-    queueUpdate();
-  });
-
-  ambient.addEventListener('mouseenter', (event) => {
-    const rect = ambient.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.22 };
-    queueUpdate();
-  });
-
-  ambient.addEventListener('mouseleave', () => {
-    pending = { x: parseFloat(overlay.style.getPropertyValue('--glow-x')) || 50, y: parseFloat(overlay.style.getPropertyValue('--glow-y')) || 40, opacity: 0 };
-    queueUpdate();
-  });
-}
-
 // Run it immediately
 updateLastUpdatedTime();
 
@@ -1153,5 +1107,3 @@ async function updateCreditsUI(userId, username) {
 }
 
 });
-
-document.addEventListener("DOMContentLoaded", setupHeroAmbient);
