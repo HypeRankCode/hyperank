@@ -4,7 +4,7 @@
   position: relative;
   width: 100%;
   min-height: 440px;
-  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95) 0%, rgba(17, 17, 17, 1) 80%);
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.92) 0%, rgba(17, 17, 17, 1) 85%);
   overflow: hidden;
   isolation: isolate;
 }
@@ -16,7 +16,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  background: #1a1a1a;
+  background: radial-gradient(circle at center, rgba(26, 26, 26, 0.55), rgba(17, 17, 17, 0.95));
 }
 
 .interactive-bg__content {
