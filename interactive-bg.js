@@ -1,9 +1,9 @@
 const DEFAULT_CONFIG = {
-  particleCount: 90,
-  edgeThreshold: 130,
-  mouseRadius: 150,
-  particleSize: 1.8,
-  maxSpeed: 0.32,
+  particleCount: 80,
+  edgeThreshold: 120,
+  mouseRadius: 140,
+  particleSize: 1.6,
+  maxSpeed: 0.3,
   redColor: '#ff3b3b',
   reducedMotion: false
 };
@@ -31,7 +31,7 @@ class InteractiveTriangles {
     this.adjacency = new Map();
     this.contentElement = container.querySelector('.interactive-bg__content');
     this.contentRect = null;
-    this.contentPadding = 48;
+    this.contentPadding = 32;
     this.lastRectUpdate = 0;
 
     this._handleResize = this.handleResize.bind(this);
@@ -74,7 +74,7 @@ class InteractiveTriangles {
   applyResponsiveConfig() {
     const width = window.innerWidth;
     const deviceMemory = navigator.deviceMemory || 8;
-    const scale = width < 768 ? 0.35 : deviceMemory <= 4 ? 0.6 : 1;
+    const scale = width < 768 ? 0.3 : deviceMemory <= 4 ? 0.55 : 1;
     this.particleCount = Math.max(20, Math.floor(this.config.particleCount * scale));
   }
 
@@ -369,11 +369,11 @@ export default function initInteractiveBg(containerOrSelector, config = {}) {
 
 // Default config explanation for HypeRank integration
 export const hypeRankDefaultConfig = {
-  particleCount: 90,
-  edgeThreshold: 130,
-  mouseRadius: 150,
-  particleSize: 1.8,
-  maxSpeed: 0.32,
+  particleCount: 80,
+  edgeThreshold: 120,
+  mouseRadius: 140,
+  particleSize: 1.6,
+  maxSpeed: 0.3,
   redColor: '#ff3b3b'
 };
 
