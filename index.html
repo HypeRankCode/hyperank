@@ -368,7 +368,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </nav>
   </header>
 
-<div class="site-ambient-glow" aria-hidden="true"></div>
+<div class="news-ticker">
+  <div class="ticker-track-wrapper">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+</div>
 
 <div class="interactive-bg" id="heroInteractive">
   <canvas class="interactive-bg__canvas" aria-hidden="true"></canvas>
@@ -378,18 +382,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Vote on the latest trends and discover what's heating up</p>
     </section>
 
-    <div class="search-bar" style="text-align:center; margin: 2rem;">
-      <form id="trendSearchForm" class="search-bar__form">
-        <div class="search-bar__wrapper">
-          <i class="fas fa-search" style="
-            position: absolute;
-            top: 50%;
-            left: 12px;
-            transform: translateY(-50%);
-            color: #aaa;
-            font-size: 1rem;
-            pointer-events: none;
-          "></i>
+    <div class="search-bar hero-search">
+      <form id="trendSearchForm" class="hero-search__form">
+        <div class="hero-search__input-wrap">
+          <i class="fas fa-search"></i>
           <input
             id="trendSearchInput"
             type="text"
@@ -397,16 +393,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           />
         </div>
       </form>
-      <div style="margin-top: 1rem;">
-        <a href="dictionary.html" style="color: #ccc; font-size: 0.95rem; text-decoration: underline;">
+      <div class="hero-search__link">
+        <a href="dictionary.html">
           <i class="fas fa-language"></i> Browse the Dictionary
         </a>
       </div>
     </div>
   </div>
 </div>
-
-<div class="site-ambient-dust" aria-hidden="true"></div>
 
 <section class="page-layout" style="display: flex; gap: 1rem; padding: 1rem;">
 
