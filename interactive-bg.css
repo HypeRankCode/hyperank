@@ -17,7 +17,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(circle at center, rgba(26, 26, 26, 0.55), rgba(17, 17, 17, 0.95));
+  background: rgba(17, 17, 17, 0.95);
 }
 
 .interactive-bg__content {
