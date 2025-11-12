@@ -1,12 +1,11 @@
 html {
   scroll-behavior: smooth;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
+  overflow-y: scroll;
 }
 
-@supports not (scrollbar-gutter: stable) {
-  html {
-    overflow-y: scroll;
-  }
+body {
+  scrollbar-gutter: stable both-edges;
 }
 
 :root {
