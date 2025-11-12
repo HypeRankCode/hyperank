@@ -358,8 +358,15 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0'
     );
 
+    const input = document.getElementById('dictSearchInput');
+    const button = document.getElementById('dictSearchBtn');
+    const result = document.getElementById('dictResult');
+    const allTermsContainer = document.getElementById('dictAllTerms');
+
     let trends = [];
     let hasRenderedAllTerms = false;
+
+    window.__supabase = supabase;
 
     async function fetchTrends() {
       const { data, error } = await supabase.from('trends').select('*');
@@ -368,16 +375,13 @@
         return [];
       }
       trends = data || [];
+      window.__dictionaryTrends = trends;
       renderAllTerms();
+      window.dispatchEvent(new CustomEvent('dictionary-trends-ready'));
       return trends;
     }
 
     await fetchTrends();
-
-    const input = document.getElementById('dictSearchInput');
-    const button = document.getElementById('dictSearchBtn');
-    const result = document.getElementById('dictResult');
-    const allTermsContainer = document.getElementById('dictAllTerms');
 
 function renderAllTerms() {
   if (!allTermsContainer || !Array.isArray(trends) || trends.length === 0) {
@@ -526,18 +530,7 @@ function runSearch(term) {
       });
     });
 
-    window.addEventListener("load", async () => {
-      try {
-        const { data, error } = await supabase.from('trends').select('*');
-        if (error) {
-          console.error("Supabase error:", error);
-        } else {
-          trends = data || [];
-          renderAllTerms();
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-      }
+    window.addEventListener("dictionary-trends-ready", () => {
       dataReady = true;
       tryHideLoader();
     });
