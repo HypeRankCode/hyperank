@@ -751,46 +751,6 @@ const { data, error } = await supabase
     });
   }
   
-fetch("news.json")
-  .then(res => res.json())
-  .then(data => {
-    const wrapper = document.querySelector(".ticker-track-wrapper");
-    if (!wrapper || !Array.isArray(data)) return;
-
-    const ticker = document.createElement("div");
-    ticker.className = "ticker-track";
-    wrapper.appendChild(ticker);
-
-    const separator = " &nbsp;&nbsp; • &nbsp;&nbsp; ";
-    const baseText = data.map(item => item.trim()).join(separator); // no trailing separator
-
-    const numClones = 3;
-    for (let i = 0; i < numClones; i++) {
-      const span = document.createElement("div");
-      span.className = "ticker-content";
-      span.innerHTML = baseText;
-      ticker.appendChild(span);
-    }
-
-    let position = 0;
-    const speed = 0.3;
-
-    function animateTicker() {
-      position -= speed;
-      ticker.style.transform = `translateX(${position}px)`;
-
-      const first = ticker.children[0];
-      if (first && position <= -first.offsetWidth) {
-        position += first.offsetWidth;
-        ticker.appendChild(first);
-      }
-
-      requestAnimationFrame(animateTicker);
-    }
-
-    requestAnimationFrame(animateTicker);
-  });
-  
 
 let hasShownCreditMsg = false; // global flag to show message only once
 
