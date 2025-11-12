@@ -513,7 +513,7 @@ function setupHeroAmbient() {
     const rect = ambient.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.6 };
+    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.35 };
     queueUpdate();
   });
 
@@ -521,7 +521,7 @@ function setupHeroAmbient() {
     const rect = ambient.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.6 };
+    pending = { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)), opacity: 0.35 };
     queueUpdate();
   });
 
