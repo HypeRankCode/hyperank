@@ -394,15 +394,35 @@ function buildTickerInsights(trends) {
   return insights.slice(0, 12);
 }
 
+let currentSpotlightId = null;
+let spotlightScore = -Infinity;
+let spotlightUpdatedAt = null;
+
 function renderSpotlight(trends) {
   const container = document.getElementById('spotlight-container');
   if (!container || !Array.isArray(trends) || trends.length === 0) {
     return;
   }
 
-  const sorted = [...trends].sort((a, b) => trendScore(b) - trendScore(a));
+  const sorted = [...trends]
+    .filter(trend => typeof trend.hype === 'number' || typeof trend.votes === 'number')
+    .sort((a, b) => trendScore(b) - trendScore(a));
   const best = sorted[0];
   if (!best) return;
+
+  const candidateScore = trendScore(best);
+  const spotlightId = best.id ?? best.name ?? best.label;
+  const significantChange = !currentSpotlightId || spotlightId !== currentSpotlightId;
+  const scoreDelta = Math.abs(candidateScore - spotlightScore);
+  const threshold = Math.max(40, spotlightScore * 0.15);
+
+  if (!significantChange && scoreDelta < threshold) {
+    return;
+  }
+
+  currentSpotlightId = spotlightId;
+  spotlightScore = candidateScore;
+  spotlightUpdatedAt = best.updated_at ? new Date(best.updated_at) : new Date();
 
   const label = best.label ?? best.name ?? 'Trending';
   const description = best.description ?? 'No description yet. Be the first to add one!';
@@ -413,7 +433,6 @@ function renderSpotlight(trends) {
   const totalVotes = best.votes ?? hype + notVotes;
   const hypeRatio = totalVotes > 0 ? Math.round((hype / totalVotes) * 100) : null;
   const growthDelta = more - less;
-  const updatedAt = best.updated_at ? new Date(best.updated_at) : null;
 
   let headline = 'Leading the culture right now';
   if (growthDelta >= 5) {
@@ -424,7 +443,8 @@ function renderSpotlight(trends) {
     headline = `Backed by ${totalVotes} votes this week`;
   }
 
-  const updatedText = updatedAt ? `Updated ${formatTimeAgo(updatedAt)}` : 'Updated recently';
+  const updatedText = spotlightUpdatedAt ? `Updated ${formatTimeAgo(spotlightUpdatedAt)}` : 'Updated recently';
+  const spotlightChangedText = `Spotlight refreshed ${formatTimeAgo(new Date(spotlightUpdatedAt))}`;
 
   container.innerHTML = `
     <section id="spotlight" class="spotlight-trend">
@@ -443,6 +463,7 @@ function renderSpotlight(trends) {
       </div>
       <div class="update-time">
         <p>${escapeHtml(updatedText)}</p>
+        <p class="spotlight-refreshed">${escapeHtml(spotlightChangedText)}</p>
       </div>
     </section>
   `;
@@ -451,6 +472,11 @@ function renderSpotlight(trends) {
 window.buildTickerInsights = buildTickerInsights;
 window.renderSpotlightFromTrends = renderSpotlight;
 window.escapeTrendHtml = escapeHtml;
+window.__spotlightMeta = {
+  get currentId() { return currentSpotlightId; },
+  get score() { return spotlightScore; },
+  get updated() { return spotlightUpdatedAt; }
+};
 
 // Run it immediately
 updateLastUpdatedTime();
