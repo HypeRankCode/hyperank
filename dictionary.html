@@ -430,7 +430,7 @@
 
     let trends = [];
     let filterValue = '';
-    let activeLetter = null;
+    const activeLetters = new Set();
 
     window.__supabase = supabase;
 
@@ -465,24 +465,18 @@ function getGroupKey(label) {
   return '#';
 }
 
-function renderAlphabetNav(activeLetters) {
+function renderAlphabetNav(availableLetters) {
   if (!alphabetNav) return;
-  const activeSet = new Set(activeLetters);
+  const availableSet = new Set(availableLetters);
 
   alphabetNav.innerHTML = LETTER_ORDER.map(letter => {
-    const disabled = !activeSet.has(letter);
+    const disabled = !availableSet.has(letter);
+    const isActive = !disabled && activeLetters.has(letter);
     const classes = ['dict-alpha-button'];
     if (disabled) classes.push('disabled');
-    if (!disabled && activeLetter === letter) classes.push('active');
+    if (isActive) classes.push('active');
     return `<button type="button" class="${classes.join(' ')}" data-letter="${letter}" ${disabled ? 'disabled' : ''}>${letter}</button>`;
   }).join('');
-}
-
-function updateAlphabetActiveState() {
-  if (!alphabetNav) return;
-  alphabetNav.querySelectorAll('.dict-alpha-button').forEach(btn => {
-    btn.classList.toggle('active', !btn.classList.contains('disabled') && btn.dataset.letter === activeLetter);
-  });
 }
 
 function renderAllTerms() {
@@ -525,17 +519,26 @@ function renderAllTerms() {
     return acc;
   }, {});
 
-  const letters = LETTER_ORDER.filter(letter => grouped[letter]?.length);
-  renderAlphabetNav(letters);
+  const availableLetters = LETTER_ORDER.filter(letter => grouped[letter]?.length);
 
-  if (activeLetter && !letters.includes(activeLetter)) {
-    activeLetter = null;
-  }
-  if (!activeLetter && letters.length > 0) {
-    activeLetter = letters[0];
+  activeLetters.forEach(letter => {
+    if (!availableLetters.includes(letter)) {
+      activeLetters.delete(letter);
+    }
+  });
+
+  renderAlphabetNav(availableLetters);
+
+  const lettersToRender = activeLetters.size > 0
+    ? availableLetters.filter(letter => activeLetters.has(letter))
+    : availableLetters;
+
+  if (lettersToRender.length === 0) {
+    allTermsContainer.innerHTML = `<p class="dict-empty-state">No terms match the current letter selection.</p>`;
+    return;
   }
 
-  allTermsContainer.innerHTML = letters.map(letter => {
+  allTermsContainer.innerHTML = lettersToRender.map(letter => {
     const items = grouped[letter]
       .map(entry => `<button class="dict-term-pill" data-term="${entry.label}">${entry.label}</button>`)
       .join('');
@@ -546,8 +549,6 @@ function renderAllTerms() {
       </div>
     `;
   }).join('');
-
-  updateAlphabetActiveState();
 }
 
 function scrollToLetter(letter) {
@@ -563,9 +564,20 @@ if (alphabetNav) {
     if (!(target instanceof HTMLElement)) return;
     const letter = target.dataset.letter;
     if (!letter || target.classList.contains('disabled')) return;
-    activeLetter = letter;
-    updateAlphabetActiveState();
-    scrollToLetter(letter);
+
+    let shouldScroll = false;
+    if (activeLetters.has(letter)) {
+      activeLetters.delete(letter);
+    } else {
+      activeLetters.add(letter);
+      shouldScroll = true;
+    }
+
+    renderAllTerms();
+
+    if (shouldScroll) {
+      scrollToLetter(letter);
+    }
   });
 }
 
@@ -606,9 +618,11 @@ function runSearch(term) {
         ${match.tags ? `<div class="dict-tags">Tags: ${Array.isArray(match.tags) ? match.tags.join(", ") : match.tags}</div>` : ''}
       </div>`;
 
-    activeLetter = getGroupKey(match.label);
+    const letterKey = getGroupKey(match.label);
+    activeLetters.clear();
+    activeLetters.add(letterKey);
     renderAllTerms();
-    scrollToLetter(activeLetter);
+    scrollToLetter(letterKey);
   } else {
     const suggestions = getSuggestions(lowered);
     if (suggestions.length > 0) {
