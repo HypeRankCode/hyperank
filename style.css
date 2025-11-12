@@ -1,13 +1,13 @@
 html {
   scroll-behavior: smooth;
-  scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable;
   overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: #ff3c3c #1a1010;
 }
 
 body {
-  scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable;
 }
 
 :root {
