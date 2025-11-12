@@ -260,6 +260,59 @@
   margin-bottom: 2.5rem;
 }
 
+.dict-all-terms {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dict-term-group {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.dict-term-letter {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+  color: #ff6b6b;
+  text-transform: uppercase;
+}
+
+.dict-term-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dict-term-pill {
+  background: #1f1f1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  color: #f1f1f1;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.dict-term-pill:hover,
+.dict-term-pill:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255, 107, 107, 0.7);
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.35);
+  outline: none;
+}
+
+.dict-term-pill:active {
+  transform: translateY(0);
+}
+
 
   </style>
 </head>
@@ -284,6 +337,12 @@
   </div>
 
   <div id="dictResult"></div>
+
+  <section id="dictAllTermsSection" style="margin-top: 3rem; text-align: left;">
+    <h2 style="text-align:center; margin-bottom: 1rem;">All Terms</h2>
+    <p class="dict-description" style="text-align:center; margin-top: -0.5rem;">Browse every entry in alphabetical order.</p>
+    <div id="dictAllTerms" class="dict-all-terms"></div>
+  </section>
 </main>
 
 
@@ -300,11 +359,17 @@
     );
 
     let trends = [];
+    let hasRenderedAllTerms = false;
 
     async function fetchTrends() {
       const { data, error } = await supabase.from('trends').select('*');
-      if (error) return console.error('Supabase error:', error);
-      trends = data;
+      if (error) {
+        console.error('Supabase error:', error);
+        return [];
+      }
+      trends = data || [];
+      renderAllTerms();
+      return trends;
     }
 
     await fetchTrends();
@@ -312,6 +377,48 @@
     const input = document.getElementById('dictSearchInput');
     const button = document.getElementById('dictSearchBtn');
     const result = document.getElementById('dictResult');
+    const allTermsContainer = document.getElementById('dictAllTerms');
+
+function renderAllTerms() {
+  if (!allTermsContainer || !Array.isArray(trends) || trends.length === 0) {
+    if (allTermsContainer && !hasRenderedAllTerms) {
+      allTermsContainer.innerHTML = `<p style="text-align:center; color:#aaa;">No dictionary terms yet.</p>`;
+      hasRenderedAllTerms = true;
+    }
+    return;
+  }
+
+  const sorted = [...trends]
+    .filter(entry => entry?.label)
+    .sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
+
+  const grouped = sorted.reduce((acc, entry) => {
+    const initial = entry.label[0]?.toUpperCase() || '#';
+    if (!acc[initial]) acc[initial] = [];
+    acc[initial].push(entry);
+    return acc;
+  }, {});
+
+  const letters = Object.keys(grouped).sort((a, b) => {
+    if (a === '#') return 1;
+    if (b === '#') return -1;
+    return a.localeCompare(b);
+  });
+
+  allTermsContainer.innerHTML = letters.map(letter => {
+    const items = grouped[letter]
+      .map(entry => `<button class="dict-term-pill" data-term="${entry.label}">${entry.label}</button>`)
+      .join('');
+    return `
+      <div class="dict-term-group">
+        <h3 class="dict-term-letter">${letter}</h3>
+        <div class="dict-term-list">${items}</div>
+      </div>
+    `;
+  }).join('');
+
+  hasRenderedAllTerms = true;
+}
 
 function getSuggestions(term) {
   const lowered = term.toLowerCase();
@@ -378,6 +485,18 @@ function runSearch(term) {
         button.click();
       }
     };
+
+    if (allTermsContainer) {
+      allTermsContainer.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const term = target.dataset.term;
+        if (!term) return;
+        input.value = term;
+        runSearch(term);
+        input.focus();
+      });
+    }
   </script>
 
   <script src="/includes/includes.js"></script>
@@ -410,8 +529,12 @@ function runSearch(term) {
     window.addEventListener("load", async () => {
       try {
         const { data, error } = await supabase.from('trends').select('*');
-        if (error) console.error("Supabase error:", error);
-        else trends = data || [];
+        if (error) {
+          console.error("Supabase error:", error);
+        } else {
+          trends = data || [];
+          renderAllTerms();
+        }
       } catch (err) {
         console.error("Fetch error:", err);
       }
