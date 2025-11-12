@@ -3,8 +3,8 @@
 .interactive-bg {
   position: relative;
   width: 100%;
-  min-height: 380px;
-  background: radial-gradient(circle at center, rgba(255, 59, 59, 0.08), #1a1a1a 70%);
+  min-height: 440px;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95) 0%, rgba(17, 17, 17, 1) 80%);
   overflow: hidden;
   isolation: isolate;
 }
@@ -22,9 +22,9 @@
 .interactive-bg__content {
   position: relative;
   z-index: 1;
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 3rem clamp(1rem, 6vw, 4rem) 4rem;
+  width: min(92vw, 1180px);
+  padding: clamp(3rem, 8vw, 4.5rem) clamp(1rem, 6vw, 4rem) clamp(3.5rem, 9vw, 5rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,7 +33,7 @@
 
 @media (max-width: 768px) {
   .interactive-bg {
-    min-height: 320px;
+    min-height: 360px;
   }
 
   .interactive-bg__content {

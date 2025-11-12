@@ -1,9 +1,9 @@
 const DEFAULT_CONFIG = {
-  particleCount: 110,
-  edgeThreshold: 140,
-  mouseRadius: 160,
-  particleSize: 2,
-  maxSpeed: 0.35,
+  particleCount: 90,
+  edgeThreshold: 130,
+  mouseRadius: 150,
+  particleSize: 1.8,
+  maxSpeed: 0.32,
   redColor: '#ff3b3b',
   reducedMotion: false
 };
@@ -29,6 +29,10 @@ class InteractiveTriangles {
     this.edges = [];
     this.neighbors = [];
     this.adjacency = new Map();
+    this.contentElement = container.querySelector('.interactive-bg__content');
+    this.contentRect = null;
+    this.contentPadding = 48;
+    this.lastRectUpdate = 0;
 
     this._handleResize = this.handleResize.bind(this);
     this._handlePointerMove = this.handlePointerMove.bind(this);
@@ -106,6 +110,7 @@ class InteractiveTriangles {
     this.ctx.scale(this.dpr, this.dpr);
 
     this.createParticles();
+    this.updateContentRect();
   }
 
   handlePointerMove(event) {
@@ -200,8 +205,13 @@ class InteractiveTriangles {
 
     ctx.clearRect(0, 0, width, height);
 
-    ctx.lineWidth = 0.7;
-    ctx.strokeStyle = hexToRgba(red, 0.22);
+    ctx.lineWidth = 0.55;
+    ctx.strokeStyle = hexToRgba(red, 0.18);
+
+    const insideMask = new Array(this.particleCount);
+    for (let i = 0; i < this.particleCount; i++) {
+      insideMask[i] = this.isInsideContent(particles[i]);
+    }
 
     for (let i = 0; i < this.particleCount; i++) {
       const pi = particles[i];
@@ -210,6 +220,7 @@ class InteractiveTriangles {
         const j = nb[n];
         if (j <= i) continue;
         const pj = particles[j];
+        if (insideMask[i] || insideMask[j]) continue;
         ctx.beginPath();
         ctx.moveTo(pi.x, pi.y);
         ctx.lineTo(pj.x, pj.y);
@@ -217,7 +228,7 @@ class InteractiveTriangles {
       }
     }
 
-    ctx.fillStyle = hexToRgba(red, 0.08);
+    ctx.fillStyle = hexToRgba(red, 0.05);
     for (let i = 0; i < this.particleCount; i++) {
       const nb = neighbors[i];
       const len = nb.length;
@@ -228,6 +239,7 @@ class InteractiveTriangles {
           const k = nb[b];
           if (j <= i || k <= j) continue;
           if (!this.adjacency.has(`${Math.min(j, k)}-${Math.max(j, k)}`)) continue;
+          if (insideMask[i] || insideMask[j] || insideMask[k]) continue;
           const p1 = particles[i];
           const p2 = particles[j];
           const p3 = particles[k];
@@ -241,10 +253,11 @@ class InteractiveTriangles {
       }
     }
 
-    ctx.fillStyle = hexToRgba('#ffffff', 0.65);
+    ctx.fillStyle = hexToRgba('#ffffff', 0.55);
     const size = this.config.particleSize;
     for (let i = 0; i < this.particleCount; i++) {
       const p = particles[i];
+      if (insideMask[i]) continue;
       ctx.beginPath();
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.fill();
@@ -258,6 +271,11 @@ class InteractiveTriangles {
 
   loop = () => {
     this.frameId = requestAnimationFrame(this.loop);
+    const now = performance.now();
+    if (now - this.lastRectUpdate > 400) {
+      this.updateContentRect();
+      this.lastRectUpdate = now;
+    }
     this.updateParticles();
     this.buildGraph();
     this.draw();
@@ -292,6 +310,29 @@ class InteractiveTriangles {
     this.config = { ...this.config, ...newConfig };
     this.applyResponsiveConfig();
     this.createParticles();
+    this.updateContentRect();
+  }
+
+  updateContentRect() {
+    if (!this.contentElement) {
+      this.contentRect = null;
+      return;
+    }
+    const contentBox = this.contentElement.getBoundingClientRect();
+    const containerBox = this.container.getBoundingClientRect();
+    const padding = this.contentPadding;
+    this.contentRect = {
+      x: Math.max(0, contentBox.left - containerBox.left - padding),
+      y: Math.max(0, contentBox.top - containerBox.top - padding),
+      width: Math.min(containerBox.width, contentBox.width + padding * 2),
+      height: Math.min(containerBox.height, contentBox.height + padding * 2)
+    };
+  }
+
+  isInsideContent(point) {
+    if (!this.contentRect) return false;
+    const rect = this.contentRect;
+    return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
   }
 }
 
@@ -328,11 +369,11 @@ export default function initInteractiveBg(containerOrSelector, config = {}) {
 
 // Default config explanation for HypeRank integration
 export const hypeRankDefaultConfig = {
-  particleCount: 120,
-  edgeThreshold: 150,
-  mouseRadius: 170,
-  particleSize: 2,
-  maxSpeed: 0.4,
+  particleCount: 90,
+  edgeThreshold: 130,
+  mouseRadius: 150,
+  particleSize: 1.8,
+  maxSpeed: 0.32,
   redColor: '#ff3b3b'
 };
 
