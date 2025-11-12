@@ -319,19 +319,13 @@
   transform: translateY(0);
 }
 
-.dict-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  max-width: 820px;
-  margin: 0 auto 2rem auto;
-}
-
 .dict-alphabet {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: center;
+  max-width: 820px;
+  margin: 1.5rem auto 2rem auto;
 }
 
 .dict-alpha-button {
@@ -371,59 +365,11 @@
   transform: none;
 }
 
-.dict-filter {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.dict-filter-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.95rem;
-  color: #f0f0f0;
-  opacity: 0.75;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-#dictFilterInput {
-  width: min(360px, 100%);
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
-  font-size: 0.95rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-#dictFilterInput:focus {
-  border-color: rgba(255, 68, 68, 0.8);
-  box-shadow: 0 0 8px rgba(255, 68, 68, 0.35);
-  background-color: rgba(255, 68, 68, 0.12);
-  outline: none;
-}
-
 .dict-empty-state {
   text-align: center;
   color: #aaa;
   font-size: 0.95rem;
   padding: 1.5rem 0;
-}
-
-@media (max-width: 640px) {
-  .dict-controls {
-    gap: 1rem;
-  }
-
-  .dict-filter-label {
-    width: 100%;
-    justify-content: center;
-  }
 }
 
 
@@ -444,7 +390,7 @@
   <div class="dict-input-row">
     <div class="dict-input-wrapper">
       <i class="fas fa-language"></i>
-      <input id="dictSearchInput" type="text" placeholder="Enter a slang or trend..." />
+      <input id="dictSearchInput" type="text" placeholder="Search or filter the slang dictionary..." />
     </div>
     <button id="dictSearchBtn">Search</button>
   </div>
@@ -455,16 +401,7 @@
     <h2 style="text-align:center; margin-bottom: 1rem;">All Terms</h2>
     <p class="dict-description" style="text-align:center; margin-top: -0.5rem;">Browse every entry in alphabetical order.</p>
 
-    <div class="dict-controls">
-      <div class="dict-alphabet" id="dictAlphabetNav" aria-label="Alphabetical navigation"></div>
-      <div class="dict-filter">
-        <label for="dictFilterInput" class="dict-filter-label">
-          <i class="fas fa-filter"></i>
-          Filter
-        </label>
-        <input id="dictFilterInput" type="text" placeholder="Filter by keyword, tag, or vibe..." autocomplete="off" />
-      </div>
-    </div>
+  <div class="dict-alphabet" id="dictAlphabetNav" aria-label="Alphabetical navigation"></div>
 
     <div id="dictAllTerms" class="dict-all-terms"></div>
   </section>
@@ -488,7 +425,6 @@
     const result = document.getElementById('dictResult');
     const allTermsContainer = document.getElementById('dictAllTerms');
     const alphabetNav = document.getElementById('dictAlphabetNav');
-    const filterInput = document.getElementById('dictFilterInput');
 
     const LETTER_ORDER = ['0-9', ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), '#'];
 
@@ -633,8 +569,8 @@ if (alphabetNav) {
   });
 }
 
-if (filterInput) {
-  filterInput.addEventListener('input', (event) => {
+if (input) {
+  input.addEventListener('input', (event) => {
     filterValue = event.target.value;
     renderAllTerms();
   });
@@ -660,12 +596,6 @@ function runSearch(term) {
   const match = trends.find(entry => entry.label.toLowerCase() === lowered);
 
   if (match) {
-    if (filterValue) {
-      filterValue = '';
-      if (filterInput) filterInput.value = '';
-      renderAllTerms();
-    }
-
     result.innerHTML = `
       <div class="dict-entry">
         <strong>${match.label}</strong>
@@ -677,7 +607,7 @@ function runSearch(term) {
       </div>`;
 
     activeLetter = getGroupKey(match.label);
-    updateAlphabetActiveState();
+    renderAllTerms();
     scrollToLetter(activeLetter);
   } else {
     const suggestions = getSuggestions(lowered);
