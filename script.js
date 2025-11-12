@@ -310,7 +310,7 @@ function trendScore(trend) {
   const hype = trend.hype ?? 0;
   const votes = trend.votes ?? 0;
   const more = trend.more ?? 0;
-  const dead = trend.dead ?? 0;
+  const notVotes = trend.dead ?? 0;
   const less = trend.less ?? 0;
   const updatedAt = trend.updated_at ? new Date(trend.updated_at) : null;
   const now = Date.now();
@@ -319,7 +319,7 @@ function trendScore(trend) {
     const hoursSinceUpdate = Math.max(1, (now - updatedAt.getTime()) / 36e5);
     recencyBoost = 50 / hoursSinceUpdate;
   }
-  return hype * 2 + votes + more * 1.5 - dead - less + recencyBoost;
+  return hype * 2 + votes + more * 1.5 - notVotes - less + recencyBoost;
 }
 
 function buildTickerInsights(trends) {
@@ -359,8 +359,8 @@ function buildTickerInsights(trends) {
     if (!trend?.label) return;
     const label = trend.label;
     const hype = trend.hype ?? 0;
-    const dead = trend.dead ?? 0;
-    const totalVotes = trend.votes ?? (hype + dead);
+    const notVotes = trend.dead ?? 0;
+    const totalVotes = trend.votes ?? (hype + notVotes);
     const more = trend.more ?? 0;
     const less = trend.less ?? 0;
     const hypeRatio = totalVotes > 0 ? Math.round((hype / totalVotes) * 100) : null;
@@ -374,9 +374,9 @@ function buildTickerInsights(trends) {
     } else if (hypeRatio !== null && hypeRatio >= 70) {
       const emoji = getIcon('hype');
       pushInsight('hype', `${emoji} ${label} is riding a ${hypeRatio}% hype wave`);
-    } else if (dead > hype && dead > 0) {
+    } else if (notVotes > hype && notVotes > 0) {
       const emoji = getIcon('cooling');
-      pushInsight('cooling', `${emoji} ${label} is cooling off (${dead} dead votes)`);
+      pushInsight('cooling', `${emoji} ${label} is cooling off (${notVotes} Not votes)`);
     } else if (totalVotes > 0) {
       const emoji = getIcon('general');
       pushInsight('general', `${emoji} ${label} climbing with ${totalVotes} votes`);
@@ -407,10 +407,10 @@ function renderSpotlight(trends) {
   const label = best.label ?? best.name ?? 'Trending';
   const description = best.description ?? 'No description yet. Be the first to add one!';
   const hype = best.hype ?? 0;
-  const dead = best.dead ?? 0;
+  const notVotes = best.dead ?? 0;
   const more = best.more ?? 0;
   const less = best.less ?? 0;
-  const totalVotes = best.votes ?? hype + dead;
+  const totalVotes = best.votes ?? hype + notVotes;
   const hypeRatio = totalVotes > 0 ? Math.round((hype / totalVotes) * 100) : null;
   const growthDelta = more - less;
   const updatedAt = best.updated_at ? new Date(best.updated_at) : null;
@@ -437,7 +437,7 @@ function renderSpotlight(trends) {
         </span>
         <div class="spotlight-stats">
           <span>🔥 Hype: ${hype}</span>
-          <span>💀 Dead: ${dead}</span>
+          <span>🚫 Not: ${notVotes}</span>
           <span>⚡ Use More: ${growthDelta >= 0 ? `+${growthDelta}` : growthDelta}</span>
         </div>
       </div>
@@ -969,8 +969,9 @@ try {
     title.textContent = trend.label;
 
     const hype = trend.hype || 0;
-    const dead = trend.dead || 0;
-    const total = hype + dead;
+    const more = trend.more || 0;
+    const less = trend.less || 0;
+    const total = hype + (trend.dead || 0);
 
     let status = '<i class="fas fa-minus" style="color:orange;"></i> MID';
     let sparkClass = "orange";
@@ -978,13 +979,13 @@ try {
 
     if (total > 0) {
       const hypeRatio = hype / total;
-      const deadRatio = dead / total;
+      const notRatio = (trend.dead || 0) / total;
 
       if (hypeRatio > 0.6) {
         status = '<i class="fas fa-arrow-trend-up" style="color:limegreen;"></i> HOT';
         sparkClass = "green";
         sparkText = "▁▃▅▇▆";
-      } else if (deadRatio > 0.6) {
+      } else if (notRatio > 0.6) {
         status = '<i class="fas fa-arrow-trend-down" style="color:#f44;"></i> NOT';
         sparkClass = "red";
         sparkText = "▆▅▃▂";
@@ -1022,9 +1023,8 @@ try {
     const totalMoreVotes = moreVotes + lessVotes;
 
     const hypeVotes = trend.hype || 0;
-    const deadVotes = trend.dead || 0;
-    const totalMainVotes = hypeVotes + deadVotes;
-
+    const notMainVotes = trend.dead || 0;
+    const totalMainVotes = hypeVotes + notMainVotes;
     let score = 0;
 
     if (totalMoreVotes > 0 || totalMainVotes > 0) {
