@@ -596,23 +596,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div id="siteFooter"></div>
 
 
-<script>
-  fetch('spotlight.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('spotlight-container').innerHTML = html;
-    })
-    .catch(error => {
-      console.error("Failed to load spotlight section:", error);
-    });
-</script>
-
 <!-- Footer Include Only -->
 <script src="/includes/includes.js"></script>
 <script>
   const includesLoaded = { footer: false };
   let dataReady = false;
   let tickerReady = false;
+  let cachedTickerAnimation = null;
+  let cachedTrends = [];
 
   function tryHideLoader() {
     if (includesLoaded.footer && dataReady && tickerReady) {
@@ -648,8 +639,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         tryHideLoader();
         return;
       }
-      trends = data || [];
-      populateTicker(trends);
+      cachedTrends = data || [];
+      populateTicker(cachedTrends);
     } catch (err) {
       console.error("Fetch error:", err);
       dataReady = true;
@@ -667,9 +658,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       tryHideLoader();
       return;
     }
-    tickerEl.innerHTML = trends
-      .map(trend => `<span style="margin-right: 1rem;">${trend.name}</span>`)
-      .join(' • ');
+    if (cachedTickerAnimation) {
+      cancelAnimationFrame(cachedTickerAnimation);
+      cachedTickerAnimation = null;
+    }
+
+    const buildInsights = typeof window.buildTickerInsights === 'function'
+      ? window.buildTickerInsights
+      : () => [];
+    const escapeHtml = typeof window.escapeTrendHtml === 'function'
+      ? window.escapeTrendHtml
+      : (value) => value;
+
+    const insights = buildInsights(trends);
+    const fallback = trends.map(trend => trend.label ?? trend.name ?? '').filter(Boolean);
+    const items = insights.length > 0 ? insights : fallback;
+
+    if (!items.length) {
+      tickerEl.innerHTML = `<span class="ticker-content">No trends yet — add one!</span>`;
+      dataReady = true;
+      tickerReady = true;
+      tryHideLoader();
+      if (typeof window.renderSpotlightFromTrends === 'function') {
+        window.renderSpotlightFromTrends(trends);
+      }
+      return;
+    }
+
+    tickerEl.innerHTML = '';
+    tickerEl.style.transform = 'translateX(0)';
+    const separator = ' &nbsp;&nbsp; • &nbsp;&nbsp; ';
+    const baseText = items
+      .map(item => escapeHtml(item))
+      .join(separator);
+
+    const numClones = Math.max(3, Math.ceil(320 / Math.max(baseText.length, 1)));
+    for (let i = 0; i < numClones; i++) {
+      const span = document.createElement('div');
+      span.className = 'ticker-content';
+      span.innerHTML = baseText;
+      tickerEl.appendChild(span);
+    }
+
+    let position = 0;
+    const speed = 0.35;
+
+    const animateTicker = () => {
+      position -= speed;
+      tickerEl.style.transform = `translateX(${position}px)`;
+
+      const first = tickerEl.children[0];
+      if (first && position <= -first.offsetWidth) {
+        position += first.offsetWidth;
+        tickerEl.appendChild(first);
+      }
+
+      cachedTickerAnimation = requestAnimationFrame(animateTicker);
+    };
+
+    cachedTickerAnimation = requestAnimationFrame(animateTicker);
+
+    if (typeof window.renderSpotlightFromTrends === 'function') {
+      window.renderSpotlightFromTrends(trends);
+    }
 
     dataReady = true;
     tickerReady = true;

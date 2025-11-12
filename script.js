@@ -3,6 +3,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const supabaseUrl = 'https://rrnucumzptbwdxtkccyx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJybnVjdW16cHRid2R4dGtjY3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDcxNDAsImV4cCI6MjA2NzY4MzE0MH0.HH923Txx1G6YXlJcKaDFVpEBK6WuLRT7adqQRi_Isj0';
 const supabase = createClient(supabaseUrl, supabaseKey);
+window.supabase = supabase;
 
 let currentUser = null;
 let hasShownCreditMsg = false;
@@ -295,6 +296,140 @@ function formatTimeAgo(date) {
   const days = Math.floor(hours / 24);
   return `${days} days ago`;
 }
+
+function escapeHtml(value) {
+  return (value ?? '')
+    .toString()
+    .replace(/[&<>"']/g, (char) => {
+      const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return entities[char] || char;
+    });
+}
+
+function trendScore(trend) {
+  const hype = trend.hype ?? 0;
+  const votes = trend.votes ?? 0;
+  const more = trend.more ?? 0;
+  const dead = trend.dead ?? 0;
+  const less = trend.less ?? 0;
+  const updatedAt = trend.updated_at ? new Date(trend.updated_at) : null;
+  const now = Date.now();
+  let recencyBoost = 0;
+  if (updatedAt) {
+    const hoursSinceUpdate = Math.max(1, (now - updatedAt.getTime()) / 36e5);
+    recencyBoost = 50 / hoursSinceUpdate;
+  }
+  return hype * 2 + votes + more * 1.5 - dead - less + recencyBoost;
+}
+
+function buildTickerInsights(trends) {
+  const insights = [];
+  const seen = new Set();
+  const now = new Date();
+  const sorted = [...trends].sort((a, b) => trendScore(b) - trendScore(a));
+
+  sorted.forEach((trend) => {
+    if (!trend?.label) return;
+    const label = trend.label;
+    const hype = trend.hype ?? 0;
+    const dead = trend.dead ?? 0;
+    const totalVotes = trend.votes ?? (hype + dead);
+    const more = trend.more ?? 0;
+    const less = trend.less ?? 0;
+    const hypeRatio = totalVotes > 0 ? Math.round((hype / totalVotes) * 100) : null;
+    const createdAt = trend.created_at ? new Date(trend.created_at) : null;
+    const hoursSinceCreate = createdAt ? (now - createdAt) / 36e5 : Infinity;
+    const growthDelta = more - less;
+
+    let message = '';
+    if (hypeRatio !== null && hypeRatio >= 70) {
+      message = `🔥 ${label} is riding a ${hypeRatio}% hype wave`;
+    } else if (growthDelta > 4) {
+      message = `⚡ ${label} is surging with +${growthDelta} more votes today`;
+    } else if (dead > hype && dead > 0) {
+      message = `📉 ${label} is cooling off (${dead} dead votes)`;
+    } else if (totalVotes > 0) {
+      message = `📈 ${label} climbing with ${totalVotes} votes`;
+    }
+
+    if (!message) {
+      message = `✨ ${label} is trending now`;
+    }
+
+    if (!seen.has(message)) {
+      insights.push(message);
+      seen.add(message);
+    }
+
+    if (hoursSinceCreate <= 72) {
+      const newMsg = `🆕 ${label} just dropped ${Math.round(hoursSinceCreate)}h ago`;
+      if (!seen.has(newMsg)) {
+        insights.push(newMsg);
+        seen.add(newMsg);
+      }
+    }
+  });
+
+  return insights.slice(0, 12);
+}
+
+function renderSpotlight(trends) {
+  const container = document.getElementById('spotlight-container');
+  if (!container || !Array.isArray(trends) || trends.length === 0) {
+    return;
+  }
+
+  const sorted = [...trends].sort((a, b) => trendScore(b) - trendScore(a));
+  const best = sorted[0];
+  if (!best) return;
+
+  const label = best.label ?? best.name ?? 'Trending';
+  const description = best.description ?? 'No description yet. Be the first to add one!';
+  const hype = best.hype ?? 0;
+  const dead = best.dead ?? 0;
+  const more = best.more ?? 0;
+  const less = best.less ?? 0;
+  const totalVotes = best.votes ?? hype + dead;
+  const hypeRatio = totalVotes > 0 ? Math.round((hype / totalVotes) * 100) : null;
+  const growthDelta = more - less;
+  const updatedAt = best.updated_at ? new Date(best.updated_at) : null;
+
+  let headline = 'Leading the culture right now';
+  if (growthDelta >= 5) {
+    headline = `Exploding with +${growthDelta} more votes`;
+  } else if (hypeRatio !== null && hypeRatio >= 70) {
+    headline = `${hypeRatio}% of voters say it’s hype`;
+  } else if (totalVotes > 0) {
+    headline = `Backed by ${totalVotes} votes this week`;
+  }
+
+  const updatedText = updatedAt ? `Updated ${formatTimeAgo(updatedAt)}` : 'Updated recently';
+
+  container.innerHTML = `
+    <section id="spotlight" class="spotlight-trend">
+      <h2>Spotlight Trend</h2>
+      <div class="spotlight-card">
+        <h3>“${escapeHtml(label)}”</h3>
+        <p>${escapeHtml(description)}</p>
+        <span class="rank-meta">
+          <i class="fas fa-fire" style="color:#f44;"></i> ${escapeHtml(headline)}
+        </span>
+        <div class="spotlight-stats">
+          <span>🔥 Hype: ${hype}</span>
+          <span>💀 Dead: ${dead}</span>
+          <span>⚡ Use More: ${growthDelta >= 0 ? `+${growthDelta}` : growthDelta}</span>
+        </div>
+      </div>
+      <div class="update-time">
+        <p>${escapeHtml(updatedText)}</p>
+      </div>
+    </section>
+  `;
+}
+
+window.buildTickerInsights = buildTickerInsights;
+window.renderSpotlightFromTrends = renderSpotlight;
+window.escapeTrendHtml = escapeHtml;
 
 // Run it immediately
 updateLastUpdatedTime();

@@ -512,6 +512,24 @@ header {
   z-index: 1;
 }
 
+.spotlight-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1.2rem;
+  font-size: 0.85rem;
+}
+
+.spotlight-stats span {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  color: #ffe5e5;
+  letter-spacing: 0.02em;
+}
+
 
 .rank-meta {
   color: #ff3c3c;
