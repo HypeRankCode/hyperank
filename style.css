@@ -1019,3 +1019,51 @@ footer a:hover {
   
 }
 
+.hero-ambient {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  isolation: isolate;
+  background: radial-gradient(circle at center, rgba(255, 68, 68, 0.12), rgba(17, 17, 17, 0.95) 70%);
+}
+
+.hero-ambient__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.1) brightness(0.45);
+  pointer-events: none;
+  z-index: -2;
+}
+
+.hero-ambient__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  --glow-x: 50%;
+  --glow-y: 40%;
+  --glow-opacity: 0;
+  background:
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 68, 68, var(--glow-opacity)) 0%, rgba(255, 68, 68, 0) 45%),
+    linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.85) 75%);
+  transition: background 0.2s ease;
+}
+
+.hero-ambient__content {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .hero-ambient__content {
+    padding: 2.5rem 1rem 3rem;
+  }
+}
+
