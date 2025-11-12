@@ -54,6 +54,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="interactive-bg.css" />
+  <link rel="stylesheet" href="site-dust.css" />
 
 <script>
   // Only redirect to /verified if the hash contains "type=signup"
@@ -736,11 +737,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
   
+<div class="site-dust" aria-hidden="true"></div>
+
 <script type="module">
   import initInteractiveBg, { hypeRankDefaultConfig } from './interactive-bg.js';
+  import initSiteDust, { hypeRankDustConfig } from './site-dust.js';
 
   const heroBg = initInteractiveBg('#heroInteractive', hypeRankDefaultConfig);
-  window.heroBg = heroBg; // optional for console tweaking
+  const dust = initSiteDust('body', hypeRankDustConfig);
+
+  window.heroBg = heroBg;
+  window.siteDust = dust;
 </script>
 
 </body>
