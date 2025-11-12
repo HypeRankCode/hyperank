@@ -17,7 +17,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   overflow: hidden;
   opacity: 0.22;
   mix-blend-mode: screen;
@@ -27,25 +27,25 @@ body {
 .site-ambient-glow::after {
   content: "";
   position: absolute;
-  width: 42vw;
-  height: 42vw;
-  max-width: 640px;
-  max-height: 640px;
-  background: radial-gradient(circle, rgba(255, 59, 59, 0.18) 0%, rgba(255, 59, 59, 0) 70%);
+  width: 36vw;
+  height: 36vw;
+  max-width: 520px;
+  max-height: 520px;
+  background: radial-gradient(circle, rgba(255, 59, 59, 0.16) 0%, rgba(255, 59, 59, 0) 75%);
   filter: blur(0px);
   border-radius: 50%;
   animation: glowPulse 18s ease-in-out infinite;
 }
 
 .site-ambient-glow::before {
-  top: -25vh;
-  left: -25vw;
+  top: -30vh;
+  left: -32vw;
 }
 
 .site-ambient-glow::after {
-  bottom: -30vh;
-  right: -20vw;
-  animation-delay: 5s;
+  bottom: -32vh;
+  right: -28vw;
+  animation-delay: 6s;
 }
 
 @keyframes glowPulse {
@@ -72,22 +72,23 @@ body {
   right: 0;
   bottom: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
   overflow: hidden;
   opacity: 0.35;
+  mix-blend-mode: screen;
 }
 
 .site-ambient-dust::before,
 .site-ambient-dust::after {
   content: "";
   position: absolute;
-  width: 480px;
-  height: 480px;
+  width: 420px;
+  height: 420px;
   background-repeat: no-repeat;
   background-size: 160px 160px, 220px 220px, 120px 120px;
   background-position: center;
   filter: blur(0px);
-  opacity: 0.6;
+  opacity: 0.55;
   animation: dustDrift 28s linear infinite;
 }
 
