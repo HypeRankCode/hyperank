@@ -5,6 +5,17 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 window.supabase = supabase;
 
+async function sendSupabaseKeepAlivePing() {
+  try {
+    if (typeof window === "undefined" || !window.sessionStorage) return;
+    if (window.sessionStorage.getItem("supabase_ping_sent") === "1") return;
+    window.sessionStorage.setItem("supabase_ping_sent", "1");
+    await supabase.from("health_logs").select("id").limit(1);
+  } catch (err) {
+    console.warn("Supabase keep-alive ping failed (ignored):", err);
+  }
+}
+
 let currentUser = null;
 let hasShownCreditMsg = false;
 
@@ -509,6 +520,7 @@ function animateCount(el, endValue) {
 
 
 document.addEventListener("DOMContentLoaded", async () => {
+  sendSupabaseKeepAlivePing();
   renderVotePair(); // 🎯 Load first voting pair automatically
 
   const hash = window.location.hash;
