@@ -30,16 +30,12 @@ export function useAvatarDragRotation(mode: "springSpin" | "free") {
     if (pointerId.current !== e.pointerId) return;
     pointerId.current = null;
     setIsDragging(false);
-    if (mode === "springSpin") {
-      setYaw(0);
-      setPitch(0);
-    }
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {
       /* already released */
     }
-  }, [mode]);
+  }, []);
 
   const resetRotation = useCallback(() => {
     setYaw(0);

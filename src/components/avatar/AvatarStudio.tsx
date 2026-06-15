@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +28,6 @@ import { PoseIcon } from "./PoseIcon";
 import {
   StudioViewControls,
   STUDIO_VIEW_DEFAULT,
-  STUDIO_ZOOM_MIN,
-  STUDIO_ZOOM_MAX,
   STUDIO_PAN_X_LIMIT,
   STUDIO_PAN_Y_LIMIT,
   type StudioViewState,
@@ -76,6 +74,7 @@ export function AvatarStudio({
   const [confirmSave, setConfirmSave] = useState(false);
   const [error, setError] = useState("");
   const stageRef = useRef<StageCaptureHandle>(null);
+  const stageContainerRef = useRef<HTMLDivElement>(null);
   const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
 
   const pointerProps = avatarDragPointerProps(rotation, {
@@ -111,15 +110,17 @@ export function AvatarStudio({
     rotation.resetRotation();
   }, [rotation]);
 
-  const onWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    setView((prev) => ({
-      ...prev,
-      zoom: Math.max(
-        STUDIO_ZOOM_MIN,
-        Math.min(STUDIO_ZOOM_MAX, prev.zoom - e.deltaY * 0.0012)
-      ),
-    }));
+  // Trap wheel over the stage so the page doesn't scroll (React onWheel is passive).
+  useEffect(() => {
+    const el = stageContainerRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
   async function takePhoto() {
@@ -234,10 +235,11 @@ export function AvatarStudio({
     <div className="grid gap-6 xl:grid-cols-[1fr_300px]">
       <div className="relative min-w-0">
         <div
+          ref={stageContainerRef}
           className={avatarDragCursorClass(rotation.isDragging) +
-            " relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl"}
+            " relative aspect-video w-full touch-none overflow-hidden overscroll-contain rounded-2xl border border-white/10 bg-black shadow-2xl"}
+          style={{ touchAction: "none" }}
           {...pointerProps}
-          onWheel={onWheel}
         >
           <AvatarStageCanvas
             ref={stageRef}
@@ -263,7 +265,7 @@ export function AvatarStudio({
           </div>
 
           <div className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/55 px-2.5 py-1.5 text-[10px] text-white/70 backdrop-blur-sm md:left-5 md:top-5">
-            Drag to rotate · Shift+drag to pan · Scroll to zoom
+            Drag to rotate · Shift+drag to pan · Zoom with controls below
           </div>
 
           <AnimatePresence>

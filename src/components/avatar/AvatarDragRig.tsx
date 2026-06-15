@@ -13,6 +13,7 @@ interface AvatarDragRigProps {
   pitch: number;
   isDragging?: boolean;
   position?: [number, number, number];
+  onDragEnd?: () => void;
   children: React.ReactNode;
 }
 
@@ -22,11 +23,13 @@ export function AvatarDragRig({
   pitch,
   isDragging = false,
   position = [0, 0, 0],
+  onDragEnd,
   children,
 }: AvatarDragRigProps) {
   const rig = useRef<THREE.Group>(null);
   const spin = useRef(0);
   const smoothOffset = useRef({ yaw: 0, pitch: 0 });
+  const wasDragging = useRef(false);
 
   useFrame((_, delta) => {
     if (!rig.current) return;
@@ -36,6 +39,14 @@ export function AvatarDragRig({
       rig.current.rotation.x = pitch;
       return;
     }
+
+    if (wasDragging.current && !isDragging) {
+      spin.current += yaw;
+      smoothOffset.current.yaw = 0;
+      smoothOffset.current.pitch = 0;
+      onDragEnd?.();
+    }
+    wasDragging.current = isDragging;
 
     spin.current += delta * 0.4;
 

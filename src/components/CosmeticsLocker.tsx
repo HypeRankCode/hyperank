@@ -146,6 +146,17 @@ export function CosmeticsLocker({
   const previewStudioBg =
     STUDIO_BACKGROUNDS[previewBackgroundId] ?? STUDIO_BACKGROUNDS.default;
 
+  const canAffordSelected =
+    !selectedItem ||
+    selectedOwned ||
+    selectedItem.cost_credits === 0 ||
+    (profile?.credits ?? 0) >= selectedItem.cost_credits;
+
+  const pendingCanAfford =
+    pendingBuy && profile
+      ? profile.credits >= pendingBuy.cost_credits
+      : false;
+
   useRegisterUnsavedChanges(
     hasPreviewChanges,
     "You have unsaved outfit changes. Leave the locker anyway?"
@@ -237,6 +248,7 @@ export function CosmeticsLocker({
           avatarConfig={appearance}
           equipped={previewEquipped}
           size="full"
+          opaqueBackground={false}
         />
       </div>
 
@@ -310,9 +322,11 @@ export function CosmeticsLocker({
               type="button"
               className="w-full bg-gold text-black hover:bg-gold/90"
               onClick={() => setPendingBuy(selectedItem)}
-              disabled={buying}
+              disabled={buying || !canAffordSelected}
             >
-              Buy {selectedItem.name} — {selectedItem.cost_credits} credits
+              {canAffordSelected
+                ? `Buy ${selectedItem.name} — ${selectedItem.cost_credits} credits`
+                : `Need ${selectedItem.cost_credits - (profile?.credits ?? 0)} more credits`}
             </Button>
           )}
           {selectedItem &&
@@ -407,11 +421,14 @@ export function CosmeticsLocker({
         open={!!pendingBuy}
         title={`Buy ${pendingBuy?.name ?? "item"}?`}
         description={
-          pendingBuy
-            ? `Spend ${pendingBuy.cost_credits} credits? You'll own it permanently and can equip it anytime. Balance after: ${(profile?.credits ?? 0) - pendingBuy.cost_credits} credits.`
+          pendingBuy && profile
+            ? pendingCanAfford
+              ? `Spend ${pendingBuy.cost_credits} credits? You'll own it permanently and can equip it anytime. Balance after: ${profile.credits - pendingBuy.cost_credits} credits.`
+              : `You only have ${profile.credits} credits but ${pendingBuy.name} costs ${pendingBuy.cost_credits}. Vote on trends and keep your streak to earn more.`
             : undefined
         }
-        confirmLabel="Buy now"
+        confirmLabel={pendingCanAfford ? "Buy now" : "Not enough credits"}
+        confirmDisabled={!pendingCanAfford}
         loading={buying}
         onConfirm={confirmPurchase}
         onCancel={() => setPendingBuy(null)}

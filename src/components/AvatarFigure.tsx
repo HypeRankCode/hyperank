@@ -23,9 +23,11 @@ interface AvatarFigureProps {
   size?: "small" | "full";
   animate?: boolean;
   interactive?: boolean;
+  /** When false, wrapper/canvas are transparent so a parent can show locker backgrounds */
+  opaqueBackground?: boolean;
 }
 
-const AVATAR_LOOK_Y = 0.52;
+const AVATAR_LOOK_Y = 0.68;
 
 function AvatarCamera() {
   const { camera } = useThree();
@@ -54,7 +56,11 @@ function AvatarScene({
         yaw={drag.yaw}
         pitch={drag.pitch}
         isDragging={drag.isDragging}
-        position={[0, -0.3, 0]}
+        position={[0, 0.02, 0]}
+        onDragEnd={() => {
+          drag.setYaw(0);
+          drag.setPitch(0);
+        }}
       >
         <ProceduralBody appearance={appearance} pose="default" />
       </AvatarDragRig>
@@ -68,6 +74,7 @@ export function AvatarFigure({
   size = "full",
   animate = true,
   interactive = true,
+  opaqueBackground = true,
 }: AvatarFigureProps) {
   const appearance = resolveAvatarAppearance(config, equipped);
   const isSmall = size === "small";
@@ -81,15 +88,26 @@ export function AvatarFigure({
         isSmall
           ? "h-20 w-20 overflow-hidden rounded-full bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
           : avatarDragCursorClass(canInteract && drag.isDragging) +
-            " relative h-full min-h-[400px] w-full rounded-xl bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
+            " relative h-full min-h-[400px] w-full rounded-xl" +
+            (opaqueBackground
+              ? " bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
+              : " bg-transparent")
       }
       {...pointerProps}
     >
       <Canvas
-        camera={{ position: [0, AVATAR_LOOK_Y, 4.1], fov: 36 }}
+        camera={{ position: [0, AVATAR_LOOK_Y, 4.85], fov: 38 }}
         dpr={CANVAS_DPR}
-        gl={CANVAS_GL_PROPS}
-        onCreated={({ gl }) => attachWebGLContextGuard(gl)}
+        gl={{
+          ...CANVAS_GL_PROPS,
+          alpha: !opaqueBackground,
+        }}
+        onCreated={({ gl }) => {
+          attachWebGLContextGuard(gl);
+          if (!opaqueBackground) {
+            gl.setClearColor(0x000000, 0);
+          }
+        }}
         style={{
           width: isSmall ? 80 : "100%",
           height: isSmall ? 80 : "100%",

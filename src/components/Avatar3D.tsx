@@ -21,6 +21,7 @@ interface Avatar3DProps {
   equipped?: Record<string, string>;
   size?: "small" | "full";
   animate?: boolean;
+  opaqueBackground?: boolean;
 }
 
 export function Avatar3D({
@@ -29,6 +30,7 @@ export function Avatar3D({
   equipped = {},
   size = "full",
   animate = true,
+  opaqueBackground = true,
 }: Avatar3DProps) {
   if (isProceduralAvatar(modelUrl)) {
     return (
@@ -37,6 +39,7 @@ export function Avatar3D({
         equipped={equipped}
         size={size}
         animate={animate && size !== "small"}
+        opaqueBackground={opaqueBackground}
       />
     );
   }

@@ -26,10 +26,10 @@ export const STUDIO_BACKGROUNDS: Record<string, StudioBackground> = {
   default: {
     id: "default",
     label: "Hype Stage",
-    floor: "#141414",
-    wall: "#080808",
+    floor: "#2a2a32",
+    wall: "#1e1e28",
     accent: "#e82222",
-    spotColor: "#e82222",
+    spotColor: "#ff5555",
   },
   bg_space: {
     id: "bg_space",

@@ -162,7 +162,7 @@ export function WatchMesh({ color, design }: { color: string; design: string }) 
   });
 
   return (
-    <group position={[0, -0.66, 0.05]}>
+    <group position={[0, 0, 0.05]}>
       <mesh rotation={[0, 0, Math.PI / 2]} material={mat}>
         <torusGeometry args={[0.055, 0.018, 8, 16]} />
       </mesh>

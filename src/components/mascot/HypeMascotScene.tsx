@@ -34,7 +34,7 @@ function MascotWithBadge() {
   });
 
   return (
-    <group ref={group} position={[0, -0.72, 0]} scale={0.86}>
+    <group ref={group} position={[0, -0.62, 0]} scale={0.86}>
       <ProceduralBody appearance={MASCOT} pose="stance" />
       <mesh position={[0, 1.48, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.5, 0.028, 8, 32]} />
@@ -63,8 +63,8 @@ export function HypeMascotScene({
 }) {
   const camera =
     size === "hero"
-      ? { position: [0, 0.55, 5.5] as const, fov: 42 }
-      : { position: [0, 0.58, 4.2] as const, fov: 38 };
+      ? { position: [0, 0.68, 5.8] as const, fov: 42 }
+      : { position: [0, 0.7, 4.5] as const, fov: 38 };
 
   return (
     <Canvas

@@ -19,6 +19,7 @@ import type { ProfilePose } from "@/lib/avatar/studio";
 import { STUDIO_BACKGROUNDS } from "@/lib/avatar/studio";
 import { ProceduralBody } from "./ProceduralBody";
 import { AvatarDragRig } from "./AvatarDragRig";
+import { StudioStage } from "./StudioStage";
 import {
   attachWebGLContextGuard,
   CANVAS_DPR,
@@ -43,7 +44,7 @@ interface StageSceneProps {
   rotation: StudioRotationState;
 }
 
-const BASE_CAMERA = { x: 0, y: 0.55, z: 4.85, lookY: 0.5 };
+const BASE_CAMERA = { x: 0, y: 0.78, z: 5.65, lookY: 0.68, fov: 40 };
 
 function StudioCamera({ view }: { view: StudioViewState }) {
   const { camera } = useThree();
@@ -81,40 +82,26 @@ function StageContents({
     <>
       <StudioCamera view={view} />
       <color attach="background" args={[bg.wall]} />
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[2, 4, 3]} intensity={1.15} color="#ffffff" />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[2, 5, 4]} intensity={1.1} color="#ffffff" castShadow />
       <spotLight
-        position={[0, 4, 2]}
-        angle={0.45}
-        penumbra={0.6}
-        intensity={1.35}
+        position={[0, 4.5, 2.5]}
+        angle={0.42}
+        penumbra={0.65}
+        intensity={1.2}
         color={bg.spotColor}
         castShadow
       />
-      <pointLight position={[-2, 2, 1]} intensity={0.35} color={bg.accent} />
+      <pointLight position={[-2.5, 2, 2]} intensity={0.3} color={bg.accent} />
+      <pointLight position={[2.5, 2, 2]} intensity={0.25} color={bg.accent} />
 
-      <mesh position={[0, 2.2, -2.2]}>
-        <planeGeometry args={[8, 5]} />
-        <meshStandardMaterial color={bg.wall} />
-      </mesh>
-      <mesh position={[0, -0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[2.2, 48]} />
-        <meshStandardMaterial color={bg.floor} metalness={0.2} roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[1.1, 1.35, 48]} />
-        <meshStandardMaterial
-          color={bg.accent}
-          emissive={bg.accent}
-          emissiveIntensity={0.25}
-        />
-      </mesh>
+      <StudioStage bg={bg} />
 
       <AvatarDragRig
         mode="free"
         yaw={rotation.yaw}
         pitch={rotation.pitch}
-        position={[0, -0.3, 0]}
+        position={[0, 0.02, 0.12]}
       >
         <ProceduralBody appearance={appearance} pose={pose} />
       </AvatarDragRig>
@@ -170,7 +157,7 @@ export const AvatarStageCanvas = forwardRef<
     <Canvas
       gl={{ ...CANVAS_GL_PROPS, preserveDrawingBuffer: true }}
       dpr={CANVAS_DPR}
-      camera={{ position: [0, BASE_CAMERA.y, BASE_CAMERA.z], fov: 36, near: 0.1, far: 20 }}
+      camera={{ position: [0, BASE_CAMERA.y, BASE_CAMERA.z], fov: BASE_CAMERA.fov, near: 0.1, far: 20 }}
       style={{ width: "100%", height: "100%", touchAction: "none" }}
       shadows
     >
