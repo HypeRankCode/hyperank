@@ -6,6 +6,7 @@ import { DailyDropCountdown } from "@/components/DailyDropCountdown";
 import { TrendCard } from "@/components/TrendCard";
 import { AdSlot } from "@/components/AdSlot";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { PageShell, SectionHeader } from "@/components/PageShell";
 
 export default async function HomePage() {
@@ -37,26 +38,31 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="border-b border-[var(--border-subtle)]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 px-4 py-16 lg:flex-row lg:gap-16 lg:px-6 lg:py-20">
-          <div className="flex-1 text-center lg:text-left">
-            <p className="section-label mb-4">Culture intelligence</p>
-            <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-zinc-50 md:text-5xl lg:text-[3.25rem]">
-              Measure what&apos;s{" "}
-              <span className="text-[var(--accent-hype)]">hype</span>
-              <br className="hidden sm:block" />
-              {" "}and what&apos;s fading.
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.08] via-transparent to-transparent" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center md:py-24 lg:flex-row lg:text-left">
+          <div className="flex-1">
+            <Badge variant="live" className="mb-6">
+              Live culture rankings
+            </Badge>
+            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
+              What&apos;s{" "}
+              <span className="text-gradient-fire">hot.</span>
+              <br />
+              What&apos;s{" "}
+              <span className="text-[var(--text-secondary)]">dead.</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-[var(--text-secondary)] lg:mx-0">
-              HypeRank is a community-driven platform for ranking trends, tracking
-              momentum, and rewarding consistent participation.
+            <p className="mx-auto mt-6 max-w-lg text-lg text-[var(--text-secondary)] lg:mx-0">
+              Vote on internet culture. Stack streaks. Earn credits. Customize
+              your avatar and flex on the leaderboard.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Button asChild size="lg">
-                <Link href="/trends">Browse trends</Link>
+                <Link href="/trends">Start voting</Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/battles">View battles</Link>
+              <Button asChild variant="glow" size="lg">
+                <Link href="/battles">Live battles</Link>
               </Button>
               {!user && (
                 <Button asChild variant="ghost" size="lg">
@@ -64,40 +70,53 @@ export default async function HomePage() {
                 </Button>
               )}
             </div>
-          </div>
-
-          <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 rounded-2xl bg-red-500/[0.06] blur-3xl" />
-            <div className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-6">
-              <Image
-                src="/logo.png"
-                alt="HypeRank"
-                width={280}
-                height={280}
-                className="mx-auto"
-                priority
-              />
+            <div className="mt-10 flex flex-wrap justify-center gap-8 lg:justify-start">
+              {[
+                { label: "Votes cast", value: "∞" },
+                { label: "Daily drops", value: "24h" },
+                { label: "Your streak", value: user ? "🔥" : "—" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-display text-2xl font-bold text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
+          </div>
+          <div className="relative mt-12 flex-shrink-0 lg:mt-0">
+            <div className="absolute inset-0 rounded-full bg-red-500/20 blur-[80px]" />
+            <Image
+              src="/logo.png"
+              alt="HypeRank"
+              width={320}
+              height={320}
+              className="relative animate-float drop-shadow-[0_0_60px_rgba(255,43,43,0.5)]"
+              priority
+            />
           </div>
         </div>
       </section>
 
       <PageShell wide>
-        <section className="mb-14">
+        <section className="mb-16">
           <SectionHeader
             label="Daily drop"
-            title="Today's featured trends"
-            subtitle="New picks every 24 hours. Vote while they're live."
+            title="Today's picks"
+            subtitle="Fresh trends drop every day. Vote before the clock resets."
             action={<DailyDropCountdown />}
           />
           {dailyDrops.length === 0 ? (
-            <div className="surface-card p-12 text-center">
+            <div className="surface-card rounded-2xl p-12 text-center">
               <p className="text-[var(--text-secondary)]">
-                No drop available yet. Check back soon.
+                No drop today yet. Check back soon.
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {dailyDrops.map((t) => (
                 <TrendCard
                   key={t.id}
@@ -110,29 +129,37 @@ export default async function HomePage() {
         </section>
 
         {activeBattle.data && (
-          <section className="mb-14">
+          <section className="mb-16">
             <SectionHeader
-              label="Active"
-              title="Live battle"
+              label="Live now"
+              title="Battle arena"
               action={
                 <Link
                   href="/battles"
-                  className="text-sm font-medium text-[var(--accent-hype)] hover:underline"
+                  className="text-sm font-medium text-red-400 hover:text-red-300"
                 >
-                  All battles
+                  View all →
                 </Link>
               }
             />
             <Link
               href={`/battles/${activeBattle.data.id}`}
-              className="surface-card-hover block p-6 md:p-8"
+              className="group surface-card-hover block overflow-hidden p-8"
             >
-              <p className="font-display text-xl font-semibold text-zinc-100">
-                A head-to-head matchup is in progress
-              </p>
-              <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                Cast your vote and follow results in real time.
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Badge variant="live" className="mb-3">
+                    Battle live
+                  </Badge>
+                  <p className="font-display text-2xl font-bold group-hover:text-red-400">
+                    A head-to-head is happening right now
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    Pick your side. Watch the votes roll in.
+                  </p>
+                </div>
+                <span className="hidden text-4xl md:block">⚔️</span>
+              </div>
             </Link>
           </section>
         )}
@@ -140,17 +167,17 @@ export default async function HomePage() {
         <section>
           <SectionHeader
             label="Trending"
-            title="Popular right now"
-            subtitle="Ranked by community votes and recent activity."
+            title="What's moving"
+            subtitle="The pulse of the internet, ranked by the crowd."
           />
           {trending.length === 0 ? (
-            <div className="surface-card p-12 text-center">
+            <div className="surface-card rounded-2xl p-12 text-center">
               <p className="text-[var(--text-secondary)]">
-                No trends indexed yet.
+                No trends yet. Seed via POST /api/seed/trends
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               {trending.map((t, i) => (
                 <div key={t.id}>
                   <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />

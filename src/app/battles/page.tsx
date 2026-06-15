@@ -27,9 +27,10 @@ export default async function BattlesPage() {
       />
 
       {!battles?.length ? (
-        <div className="surface-card p-12 text-center">
-          <p className="text-[var(--text-secondary)]">
-            No battles scheduled. Check back soon.
+        <div className="surface-card rounded-2xl p-16 text-center">
+          <p className="text-4xl">⚔️</p>
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
+            No battles live right now. Check back soon.
           </p>
         </div>
       ) : (

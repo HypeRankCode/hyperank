@@ -12,20 +12,14 @@ export function Badge({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide",
-        variant === "default" &&
-          "border border-[var(--border-subtle)] bg-zinc-900 text-[var(--text-secondary)]",
-        variant === "hype" &&
-          "border border-red-500/20 bg-red-500/10 text-red-400",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wider",
+        variant === "default" && "border border-white/10 bg-white/5 text-[var(--text-secondary)]",
+        variant === "hype" && "border border-red-500/40 bg-red-500/15 text-red-400",
         variant === "live" && "pill-live",
-        variant === "dead" &&
-          "border border-zinc-700 bg-zinc-800/80 text-zinc-400",
-        variant === "gold" &&
-          "border border-yellow-600/20 bg-yellow-500/10 text-[var(--accent-gold)]",
-        variant === "neon" &&
-          "border border-emerald-600/20 bg-emerald-500/10 text-emerald-400",
-        variant === "outline" &&
-          "border border-[var(--border-subtle)] text-[var(--text-secondary)]",
+        variant === "dead" && "border border-white/10 bg-white/5 text-[var(--text-secondary)]",
+        variant === "gold" && "border border-yellow-500/30 bg-yellow-500/10 text-gold",
+        variant === "neon" && "border border-emerald-500/30 bg-emerald-500/10 text-neon",
+        variant === "outline" && "border border-white/15 text-[var(--text-secondary)]",
         className
       )}
       {...props}

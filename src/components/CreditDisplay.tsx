@@ -25,9 +25,11 @@ export function CreditDisplay() {
   if (credits === null) return null;
 
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-2.5 py-1 font-mono text-xs text-[var(--accent-gold)]">
-      <span className="text-[var(--text-secondary)]">Credits</span>
-      <span className="font-medium tabular-nums">{credits.toLocaleString()}</span>
+    <div className="flex items-center gap-1.5 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1.5 font-mono text-sm text-gold">
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+      </svg>
+      <span className="font-semibold">{credits.toLocaleString()}</span>
     </div>
   );
 }

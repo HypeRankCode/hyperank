@@ -26,8 +26,11 @@ export function DailyDropCountdown() {
   }, []);
 
   return (
-    <span className="font-mono text-xs text-[var(--text-secondary)]">
-      Resets in {formatCountdown(remaining)}
-    </span>
+    <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2">
+      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_#00e676]" />
+      <span className="font-mono text-sm text-emerald-400">
+        Next drop in {formatCountdown(remaining)}
+      </span>
+    </div>
   );
 }

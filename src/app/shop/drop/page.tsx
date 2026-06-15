@@ -33,8 +33,9 @@ export default async function ShopDropPage() {
       />
 
       {!drop ? (
-        <div className="surface-card p-12 text-center">
-          <p className="text-[var(--text-secondary)]">
+        <div className="surface-card rounded-2xl p-16 text-center">
+          <p className="text-4xl">✨</p>
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
             No active drop. Check back Monday noon UTC.
           </p>
         </div>

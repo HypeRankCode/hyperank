@@ -58,11 +58,10 @@ export function TrendCard({
       if (data.bonus_credits && profile) {
         updateCredits(profile.credits + data.bonus_credits);
         confetti({
-          particleCount: 40,
-          spread: 50,
-          colors: ["#e82222", "#d4a017"],
-          origin: { y: 0.8 },
-          disableForReducedMotion: true,
+          particleCount: 80,
+          spread: 60,
+          colors: ["#ff2b2b", "#ffc933", "#00e676"],
+          origin: { y: 0.7 },
         });
       }
     } catch {
@@ -76,25 +75,36 @@ export function TrendCard({
 
   return (
     <>
-      <article
-        className={`surface-card-hover group p-5 ${
-          trend.is_daily_drop ? "border-[var(--border-accent)]" : ""
+      <motion.article
+        className={`surface-card-hover group relative overflow-hidden p-6 ${
+          trend.is_daily_drop
+            ? "border-red-500/30 shadow-hype-sm"
+            : ""
         }`}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -4 }}
+        transition={{ type: "spring", stiffness: 400, damping: 28 }}
       >
-        <div className="flex items-start justify-between gap-3">
+        {/* Corner glow on daily drops */}
+        {trend.is_daily_drop && (
+          <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-red-500/20 blur-3xl" />
+        )}
+
+        <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             {trend.is_daily_drop && (
-              <Badge variant="hype" className="mb-2.5">
-                Daily drop
+              <Badge variant="hype" className="mb-2">
+                Today&apos;s drop
               </Badge>
             )}
             <Link href={`/trends/${trend.slug}`}>
-              <h3 className="font-display text-lg font-semibold text-zinc-100 transition-colors group-hover:text-[var(--accent-hype)]">
+              <h3 className="font-display text-xl font-bold transition-colors group-hover:text-red-400">
                 {trend.name}
               </h3>
             </Link>
             {trend.description && (
-              <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <p className="mt-1.5 line-clamp-2 text-sm text-[var(--text-secondary)]">
                 {trend.description}
               </p>
             )}
@@ -106,25 +116,26 @@ export function TrendCard({
           )}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="relative mt-4 flex flex-wrap items-center gap-2">
           {velocity > 8 && <Badge variant="live">Rising</Badge>}
           {velocity > 0 && velocity <= 3 && (
-            <Badge variant="dead">Declining</Badge>
+            <Badge variant="dead">Cooling off</Badge>
           )}
           {hotTakeCount > 0 && (
-            <span className="text-xs text-[var(--text-secondary)]">
-              {hotTakeCount} hot takes
+            <span className="font-mono text-xs text-[var(--text-secondary)]">
+              {hotTakeCount} takes
             </span>
           )}
         </div>
 
-        <div className="mt-4">
+        {/* Hype meter */}
+        <div className="relative mt-5">
           <div className="mb-2 flex items-end justify-between">
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-2xl font-semibold tabular-nums text-zinc-100">
-                {hypePercent}%
+            <div className="flex items-baseline gap-1">
+              <span className="font-display text-3xl font-extrabold text-red-400">
+                {hypePercent}
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">hype</span>
+              <span className="text-sm text-[var(--text-secondary)]">% hype</span>
             </div>
             <span className="font-mono text-xs text-[var(--text-secondary)]">
               {totalVotes.toLocaleString()} votes
@@ -133,42 +144,39 @@ export function TrendCard({
           <HeatBar velocity={velocity} hypePercent={hypePercent} />
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <Button
-            className="flex-1"
-            variant={userVote === "hype" ? "default" : "secondary"}
-            disabled={!!userVote || loading}
-            onClick={() => vote("hype")}
-          >
-            Hype
-          </Button>
-          <Button
-            className="flex-1"
-            variant={userVote === "dead" ? "dead" : "secondary"}
-            disabled={!!userVote || loading}
-            onClick={() => vote("dead")}
-          >
-            Dead
-          </Button>
+        <div className="relative mt-5 flex gap-2">
+          <motion.div className="flex-1" whileTap={{ scale: 0.92 }}>
+            <Button
+              className={`w-full ${
+                userVote === "hype"
+                  ? "shadow-hype"
+                  : ""
+              }`}
+              variant={userVote === "hype" ? "default" : "secondary"}
+              disabled={!!userVote || loading}
+              onClick={() => vote("hype")}
+            >
+              🔥 Hype
+            </Button>
+          </motion.div>
+          <motion.div className="flex-1" whileTap={{ scale: 0.92 }}>
+            <Button
+              className="w-full"
+              variant={userVote === "dead" ? "dead" : "secondary"}
+              disabled={!!userVote || loading}
+              onClick={() => vote("dead")}
+            >
+              💀 Dead
+            </Button>
+          </motion.div>
           <Button
             variant="outline"
             size="icon"
             onClick={() => setPredictOpen(true)}
-            title="Predict outcome"
-            aria-label="Predict outcome"
+            title="Predict"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.75}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              />
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </Button>
         </div>
@@ -178,12 +186,12 @@ export function TrendCard({
             href={trend.sponsor_cta_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 block rounded-lg border border-[var(--border-subtle)] py-2 text-center text-sm text-[var(--text-secondary)] transition-colors hover:border-zinc-600 hover:text-zinc-200"
+            className="mt-4 block rounded-xl border border-white/10 py-2.5 text-center text-sm transition-colors hover:border-red-500/40 hover:bg-red-500/5"
           >
             {trend.sponsor_cta_label ?? "Learn more"}
           </a>
         )}
-      </article>
+      </motion.article>
 
       <PredictionModal
         open={predictOpen}

@@ -29,7 +29,7 @@ const config: Config = {
           foreground: "hsl(var(--muted-foreground))",
         },
         border: "hsl(var(--border))",
-        hype: "#e82222",
+        hype: "#ff2b2b",
         "hype-dim": "#cc2222",
         dead: "#3d3d4a",
         gold: "#ffc933",
@@ -48,7 +48,9 @@ const config: Config = {
         "2xl": "20px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0, 0, 0, 0.4)",
+        hype: "0 0 40px rgba(255, 43, 43, 0.35)",
+        "hype-sm": "0 0 20px rgba(255, 43, 43, 0.2)",
+        card: "0 8px 32px rgba(0, 0, 0, 0.5)",
       },
       keyframes: {
         "heat-pulse": {
