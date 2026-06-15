@@ -11,9 +11,8 @@ import { TrendCard } from "@/components/TrendCard";
 import { AdSlot } from "@/components/AdSlot";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PageShell, SectionHeader } from "@/components/PageShell";
 import { HypeMascot } from "@/components/HypeMascot";
-import { HomeQuickNav } from "@/components/home/HomeQuickNav";
-import { FeedSection } from "@/components/home/FeedSection";
 import { FeaturedPitchBanner } from "@/components/home/FeaturedPitchBanner";
 import { PitchCard } from "@/components/pitches/PitchCard";
 
@@ -26,7 +25,7 @@ export default async function HomePage() {
   const [dailyDrops, trending, activePitches, featuredPitch, activeBattle] =
     await Promise.all([
       getTrends({ dailyDrop: true, limit: 5 }),
-      getTrends({ limit: 8 }),
+      getTrends({ limit: 10 }),
       getActivePitches(5),
       getTodaysWinningPitch(),
       supabase
@@ -55,213 +54,224 @@ export default async function HomePage() {
   }
 
   const communityDrop = dailyDrops.find((t) => t.is_community_pick);
-  const otherDrops = dailyDrops.filter((t) => !t.is_community_pick);
 
   return (
-    <div className="min-h-screen pb-20 md:pb-0">
-      {/* Compact app header */}
-      <div className="border-b border-white/[0.06] bg-gradient-to-b from-red-500/[0.06] to-transparent">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 md:max-w-4xl md:flex-row md:items-center md:py-8">
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block">
-              <HypeMascot size="sm" />
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.08] via-transparent to-transparent" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center md:py-24 lg:flex-row lg:text-left">
+          <div className="flex-1">
+            <Badge variant="live" className="mb-6">
+              Live culture rankings
+            </Badge>
+            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
+              What&apos;s{" "}
+              <span className="text-gradient-fire">hot.</span>
+              <br />
+              What&apos;s{" "}
+              <span className="text-[var(--text-secondary)]">dead.</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-lg text-lg text-[var(--text-secondary)] lg:mx-0">
+              Vote on internet culture. Pitch the next viral thing. Stack
+              streaks, earn credits, and flex on the leaderboard.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Button asChild size="lg">
+                <Link href="/trends">Start voting</Link>
+              </Button>
+              <Button asChild variant="glow" size="lg">
+                <Link href="/pitches">Auditions</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/battles">Live battles</Link>
+              </Button>
+              {!user && (
+                <Button asChild variant="ghost" size="lg">
+                  <Link href="/login">Sign in</Link>
+                </Button>
+              )}
             </div>
-            <div className="min-w-0 flex-1">
-              <Badge variant="live" className="mb-2">
-                Live now
-              </Badge>
-              <h1 className="font-display text-2xl font-extrabold tracking-tight text-white md:text-3xl">
-                What&apos;s{" "}
-                <span className="text-gradient-fire">hot</span> today?
-              </h1>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Vote, pitch, battle — stack streaks and credits.
-              </p>
-              <HomeQuickNav />
+            <div className="mt-10 flex flex-wrap justify-center gap-8 lg:justify-start">
+              {[
+                { label: "Votes cast", value: "∞" },
+                { label: "Daily drops", value: "24h" },
+                { label: "Your streak", value: user ? "🔥" : "—" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-display text-2xl font-bold text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="shrink-0 self-start md:self-center">
-            <DailyDropCountdown />
+          <div className="relative mt-12 flex-shrink-0 lg:mt-0">
+            <HypeMascot size="hero" />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Unified feed */}
-      <div className="mx-auto max-w-3xl px-4 py-4 md:max-w-4xl">
-        <div className="surface-card overflow-hidden rounded-3xl border border-white/[0.08] shadow-2xl shadow-black/40">
-          {(featuredPitch || communityDrop) && (
-            <FeedSection
-              title="Featured today"
+      <PageShell wide>
+        {(featuredPitch || communityDrop) && (
+          <section className="mb-16">
+            <SectionHeader
               label="Community"
-              noPadding
+              title="Featured today"
+              subtitle="The top audition pick — pitched and voted on by the crowd."
               action={
                 <Link
                   href="/pitches"
-                  className="text-xs font-medium text-red-400 hover:text-red-300"
+                  className="text-sm font-medium text-red-400 hover:text-red-300"
                 >
                   All auditions →
                 </Link>
               }
-            >
+            />
+            <div className="surface-card overflow-hidden rounded-2xl">
               {featuredPitch ? (
                 <FeaturedPitchBanner pitch={featuredPitch} />
               ) : communityDrop ? (
-                <div className="p-4 md:p-6">
+                <div className="p-6">
                   <TrendCard
                     trend={communityDrop}
                     userVote={userVotes[communityDrop.id] ?? null}
                   />
                 </div>
               ) : null}
-            </FeedSection>
-          )}
+            </div>
+          </section>
+        )}
 
-          <FeedSection
-            title="Today's picks"
+        <section className="mb-16">
+          <SectionHeader
             label="Daily drop"
-            action={
-              <Link
-                href="/trends"
-                className="text-xs font-medium text-red-400 hover:text-red-300"
-              >
-                See all →
-              </Link>
-            }
-            noPadding
-          >
-            {dailyDrops.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-[var(--text-secondary)] md:px-6">
-                No drop yet today.{" "}
+            title="Today's picks"
+            subtitle="Fresh trends drop every day. Vote before the clock resets."
+            action={<DailyDropCountdown />}
+          />
+          {dailyDrops.length === 0 ? (
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
+                No drop today yet.{" "}
                 <Link href="/pitches" className="text-red-400 hover:text-red-300">
                   Pitch the first one →
                 </Link>
               </p>
-            ) : (
-              <div className="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-none md:px-6">
-                {[...(communityDrop ? [communityDrop] : []), ...otherDrops].map(
-                  (t) => (
-                    <div
-                      key={t.id}
-                      className="w-[min(100%,280px)] shrink-0 snap-start"
-                    >
-                      <TrendCard
-                        trend={t}
-                        userVote={userVotes[t.id] ?? null}
-                      />
-                    </div>
-                  )
-                )}
-              </div>
-            )}
-          </FeedSection>
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {dailyDrops.map((t) => (
+                <TrendCard
+                  key={t.id}
+                  trend={t}
+                  userVote={userVotes[t.id] ?? null}
+                />
+              ))}
+            </div>
+          )}
+        </section>
 
-          <FeedSection
-            title="Live auditions"
+        <section className="mb-16">
+          <SectionHeader
             label="Go viral"
+            title="Live auditions"
+            subtitle="Pitch an idea, rally votes — the winner becomes today's featured drop."
             action={
-              <Button asChild variant="ghost" size="sm" className="h-8 text-xs">
-                <Link href="/pitches">Pitch yours</Link>
-              </Button>
+              <Link
+                href="/pitches"
+                className="text-sm font-medium text-red-400 hover:text-red-300"
+              >
+                Pitch yours →
+              </Link>
             }
-            noPadding
-          >
-            {activePitches.length === 0 ? (
-              <div className="px-4 py-6 text-center md:px-6">
-                <p className="text-sm text-[var(--text-secondary)]">
-                  Be the first to audition the next big thing.
-                </p>
-                <Button asChild size="sm" className="mt-3">
-                  <Link href="/pitches">Start an audition</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="divide-y divide-white/[0.06]">
-                {activePitches.map((pitch, i) => (
-                  <PitchCard
-                    key={pitch.id}
-                    pitch={pitch}
-                    rank={i + 1}
-                    compact
-                    userVoted={votedPitchIds.has(pitch.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </FeedSection>
+          />
+          {activePitches.length === 0 ? (
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
+                No auditions yet — be the first to pitch the next big thing.
+              </p>
+              <Button asChild className="mt-4">
+                <Link href="/pitches">Start an audition</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="surface-card divide-y divide-white/[0.06] overflow-hidden rounded-2xl">
+              {activePitches.map((pitch, i) => (
+                <PitchCard
+                  key={pitch.id}
+                  pitch={pitch}
+                  rank={i + 1}
+                  userVoted={votedPitchIds.has(pitch.id)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
 
-          {activeBattle.data && (
-            <FeedSection
+        {activeBattle.data && (
+          <section className="mb-16">
+            <SectionHeader
+              label="Live now"
               title="Battle arena"
-              label="Live"
               action={
                 <Link
                   href="/battles"
-                  className="text-xs font-medium text-red-400 hover:text-red-300"
+                  className="text-sm font-medium text-red-400 hover:text-red-300"
                 >
-                  All battles →
+                  View all →
                 </Link>
               }
+            />
+            <Link
+              href={`/battles/${activeBattle.data.id}`}
+              className="group surface-card-hover block overflow-hidden p-8"
             >
-              <Link
-                href={`/battles/${activeBattle.data.id}`}
-                className="group flex items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:border-red-500/20 hover:bg-red-500/5 md:p-5"
-              >
+              <div className="flex items-center justify-between">
                 <div>
-                  <Badge variant="live" className="mb-2">
-                    Head-to-head live
+                  <Badge variant="live" className="mb-3">
+                    Battle live
                   </Badge>
-                  <p className="font-display font-bold group-hover:text-red-400">
-                    Pick a side — votes are rolling in
+                  <p className="font-display text-2xl font-bold group-hover:text-red-400">
+                    A head-to-head is happening right now
                   </p>
-                  <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    Jump in before it closes
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    Pick your side. Watch the votes roll in.
                   </p>
                 </div>
-                <span className="text-3xl">⚔️</span>
-              </Link>
-            </FeedSection>
-          )}
-
-          <FeedSection
-            title="Trending now"
-            label="Feed"
-            action={
-              <Link
-                href="/trends"
-                className="text-xs font-medium text-red-400 hover:text-red-300"
-              >
-                Full feed →
-              </Link>
-            }
-          >
-            {trending.length === 0 ? (
-              <p className="py-6 text-center text-sm text-[var(--text-secondary)]">
-                No trends yet.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {trending.map((t, i) => (
-                  <div key={t.id}>
-                    <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />
-                    {i === 2 && <AdSlot slot="home-feed-1" />}
-                  </div>
-                ))}
+                <span className="hidden text-4xl md:block">⚔️</span>
               </div>
-            )}
-          </FeedSection>
+            </Link>
+          </section>
+        )}
 
-          {!user && (
-            <div className="border-t border-white/[0.06] bg-gradient-to-r from-red-500/5 to-transparent px-4 py-6 text-center md:px-6">
-              <p className="text-sm text-[var(--text-secondary)]">
-                Sign in to vote, pitch, and earn credits.
+        <section>
+          <SectionHeader
+            label="Trending"
+            title="What's moving"
+            subtitle="The pulse of the internet, ranked by the crowd."
+          />
+          {trending.length === 0 ? (
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
+                No trends yet. Seed via POST /api/seed/trends
               </p>
-              <Button asChild className="mt-3" size="sm">
-                <Link href="/login">Get started</Link>
-              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2">
+              {trending.map((t, i) => (
+                <div key={t.id}>
+                  <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />
+                  {i === 2 && <AdSlot slot="home-feed-1" />}
+                </div>
+              ))}
             </div>
           )}
-        </div>
-      </div>
-    </div>
+        </section>
+      </PageShell>
+    </>
   );
 }
