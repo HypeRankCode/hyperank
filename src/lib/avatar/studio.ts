@@ -5,14 +5,13 @@ export type ProfilePose =
   | "peace"
   | "stance";
 
-export const PROFILE_POSES: { id: ProfilePose; label: string; emoji: string }[] =
-  [
-    { id: "default", label: "Chill", emoji: "🧍" },
-    { id: "wave", label: "Wave", emoji: "👋" },
-    { id: "flex", label: "Flex", emoji: "💪" },
-    { id: "peace", label: "Peace", emoji: "✌️" },
-    { id: "stance", label: "Stance", emoji: "😤" },
-  ];
+export const PROFILE_POSES: { id: ProfilePose; label: string }[] = [
+  { id: "default", label: "Chill" },
+  { id: "wave", label: "Wave" },
+  { id: "flex", label: "Flex" },
+  { id: "peace", label: "Peace" },
+  { id: "stance", label: "Stance" },
+];
 
 export interface StudioBackground {
   id: string;

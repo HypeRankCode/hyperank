@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { PhotoCropper } from "./PhotoCropper";
 import {
   AvatarStageCanvas,
   type StageCaptureHandle,
+  type StudioDragState,
 } from "./AvatarStageCanvas";
 import {
   PROFILE_POSES,
@@ -24,6 +25,14 @@ import { useUserStore } from "@/stores/useUserStore";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { useRegisterUnsavedChanges } from "@/hooks/useRegisterUnsavedChanges";
 import { useUnsavedChangesStore } from "@/stores/useUnsavedChangesStore";
+import { PoseIcon } from "./PoseIcon";
+import {
+  StudioViewControls,
+  STUDIO_VIEW_DEFAULT,
+  STUDIO_ZOOM_MIN,
+  STUDIO_ZOOM_MAX,
+  type StudioViewState,
+} from "./StudioViewControls";
 
 interface AvatarStudioProps {
   avatarConfig: Record<string, unknown>;
@@ -51,6 +60,10 @@ export function AvatarStudio({
       ? equipped.background
       : "default"
   );
+  const [view, setView] = useState<StudioViewState>(STUDIO_VIEW_DEFAULT);
+  const [dragYaw, setDragYaw] = useState(0);
+  const [dragPitch, setDragPitch] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [flashing, setFlashing] = useState(false);
   const [captured, setCaptured] = useState<string | null>(null);
   const [cropped, setCropped] = useState<string | null>(null);
@@ -58,7 +71,16 @@ export function AvatarStudio({
   const [confirmSave, setConfirmSave] = useState(false);
   const [error, setError] = useState("");
   const stageRef = useRef<StageCaptureHandle>(null);
+  const pointerId = useRef<number | null>(null);
+  const lastPointer = useRef({ x: 0, y: 0 });
+  const panMode = useRef(false);
   const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
+
+  const drag: StudioDragState = {
+    yaw: dragYaw,
+    pitch: dragPitch,
+    isDragging,
+  };
 
   useRegisterUnsavedChanges(
     Boolean(captured || cropped),
@@ -68,6 +90,68 @@ export function AvatarStudio({
   const ownedBackgrounds = Object.values(STUDIO_BACKGROUNDS).filter(
     (bg) => bg.id === "default" || ownedIds.includes(bg.id)
   );
+
+  const resetView = useCallback(() => {
+    setView(STUDIO_VIEW_DEFAULT);
+    setDragYaw(0);
+    setDragPitch(0);
+  }, []);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    pointerId.current = e.pointerId;
+    panMode.current = e.shiftKey;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
+    if (!panMode.current) setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (pointerId.current !== e.pointerId) return;
+      const dx = e.clientX - lastPointer.current.x;
+      const dy = e.clientY - lastPointer.current.y;
+      lastPointer.current = { x: e.clientX, y: e.clientY };
+
+      if (panMode.current || e.shiftKey) {
+        setView((prev) => ({
+          ...prev,
+          panX: Math.max(-0.4, Math.min(0.4, prev.panX + dx * 0.004)),
+          panY: Math.max(-0.28, Math.min(0.28, prev.panY - dy * 0.004)),
+        }));
+        return;
+      }
+
+      if (!isDragging) return;
+      setDragYaw((prev) => prev + dx * 0.012);
+      setDragPitch((prev) =>
+        Math.max(-0.3, Math.min(0.3, prev + dy * 0.006))
+      );
+    },
+    [isDragging]
+  );
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    if (pointerId.current !== e.pointerId) return;
+    pointerId.current = null;
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+  }, []);
+
+  const onWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    setView((prev) => ({
+      ...prev,
+      zoom: Math.max(
+        STUDIO_ZOOM_MIN,
+        Math.min(STUDIO_ZOOM_MAX, prev.zoom - e.deltaY * 0.0012)
+      ),
+    }));
+  }, []);
 
   async function takePhoto() {
     setError("");
@@ -169,29 +253,41 @@ export function AvatarStudio({
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-      <div className="relative">
-        <div className="relative aspect-[4/5] max-h-[520px] overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
+    <div className="grid gap-6 xl:grid-cols-[1fr_300px]">
+      <div className="relative min-w-0">
+        <div
+          className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl cursor-grab active:cursor-grabbing"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
+          onWheel={onWheel}
+        >
           <AvatarStageCanvas
             ref={stageRef}
             config={appearance}
             equipped={equipped}
             pose={pose}
             backgroundId={backgroundId}
+            view={view}
+            drag={drag}
           />
 
-          {/* Viewfinder overlay */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-4 rounded-lg border-2 border-white/25" />
-            <div className="absolute left-4 right-4 top-1/2 h-px bg-white/10" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-white/50">
+            <div className="absolute inset-3 rounded-lg border border-white/20 md:inset-5" />
+            <div className="absolute left-3 right-3 top-1/2 h-px bg-white/10 md:left-5 md:right-5" />
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-white/50 md:bottom-5 md:left-5 md:right-5">
               <span>HYPERANK STUDIO</span>
               <span>POSE: {pose.toUpperCase()}</span>
             </div>
-            <div className="absolute left-4 top-4 h-6 w-6 border-l-2 border-t-2 border-red-500/60" />
-            <div className="absolute right-4 top-4 h-6 w-6 border-r-2 border-t-2 border-red-500/60" />
-            <div className="absolute bottom-4 left-4 h-6 w-6 border-b-2 border-l-2 border-red-500/60" />
-            <div className="absolute bottom-4 right-4 h-6 w-6 border-b-2 border-r-2 border-red-500/60" />
+            <div className="absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2 border-red-500/60 md:left-5 md:top-5" />
+            <div className="absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2 border-red-500/60 md:right-5 md:top-5" />
+            <div className="absolute bottom-3 left-3 h-6 w-6 border-b-2 border-l-2 border-red-500/60 md:bottom-5 md:left-5" />
+            <div className="absolute bottom-3 right-3 h-6 w-6 border-b-2 border-r-2 border-red-500/60 md:right-5 md:bottom-5" />
+          </div>
+
+          <div className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/55 px-2.5 py-1.5 text-[10px] text-white/70 backdrop-blur-sm md:left-5 md:top-5">
+            Drag to spin · Shift+drag to pan · Scroll to zoom
           </div>
 
           <AnimatePresence>
@@ -207,7 +303,13 @@ export function AvatarStudio({
           </AnimatePresence>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <StudioViewControls
+            view={view}
+            onChange={setView}
+            onReset={resetView}
+            className="pointer-events-auto"
+          />
           <Button
             type="button"
             size="lg"
@@ -215,40 +317,55 @@ export function AvatarStudio({
             onClick={takePhoto}
             disabled={flashing}
           >
-            <span className="text-lg">📸</span>
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 9a2 2 0 012-2h2l1-2h8l1 2h2a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
             Take photo
           </Button>
-          {currentAvatarUrl && (
-            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <span>Current:</span>
-              <ProfileAvatar
-                avatarUrl={currentAvatarUrl}
-                username={username}
-                size="sm"
-              />
-            </div>
-          )}
         </div>
+
+        {currentAvatarUrl && (
+          <div className="mt-3 flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <span>Current icon:</span>
+            <ProfileAvatar
+              avatarUrl={currentAvatarUrl}
+              username={username}
+              size="sm"
+            />
+          </div>
+        )}
         {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
       </div>
 
       <div className="space-y-6">
         <div>
           <p className="section-label mb-2">Pose</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-2">
             {PROFILE_POSES.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => setPose(p.id)}
-                className={`rounded-xl border p-3 text-left transition ${
+                className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition ${
                   pose === p.id
-                    ? "border-red-500/50 bg-red-500/10"
-                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                    ? "border-red-500/50 bg-red-500/10 text-white"
+                    : "border-white/10 bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <span className="text-xl">{p.emoji}</span>
-                <p className="mt-1 text-sm font-medium">{p.label}</p>
+                <PoseIcon pose={p.id} className="shrink-0" />
+                <span className="text-sm font-medium">{p.label}</span>
               </button>
             ))}
           </div>

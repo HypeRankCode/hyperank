@@ -58,7 +58,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-white/[0.06]">
+      <section className="relative overflow-x-hidden border-b border-white/[0.06]">
         <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.08] via-transparent to-transparent" />
         <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center md:py-24 lg:flex-row lg:text-left">
           <div className="flex-1">
@@ -70,7 +70,7 @@ export default async function HomePage() {
               <span className="text-gradient-fire">hot.</span>
               <br />
               What&apos;s{" "}
-              <span className="text-[var(--text-secondary)]">dead.</span>
+              <span className="text-[var(--text-secondary)]">not.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-lg text-lg text-[var(--text-secondary)] lg:mx-0">
               Vote on internet culture. Pitch the next viral thing. Stack
@@ -109,7 +109,7 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-          <div className="relative mt-12 flex-shrink-0 lg:mt-0">
+          <div className="relative mt-12 shrink-0 overflow-visible lg:mt-0">
             <HypeMascot size="hero" />
           </div>
         </div>

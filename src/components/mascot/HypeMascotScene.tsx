@@ -29,12 +29,12 @@ function MascotWithBadge() {
   useFrame((_, delta) => {
     if (group.current) {
       group.current.rotation.y += delta * 0.35;
-      group.current.position.y = Math.sin(Date.now() * 0.0018) * 0.04;
+      group.current.position.y = Math.sin(Date.now() * 0.0018) * 0.03;
     }
   });
 
   return (
-    <group ref={group} position={[0, -0.15, 0]}>
+    <group ref={group} position={[0, -0.55, 0]} scale={0.92}>
       <ProceduralBody appearance={MASCOT} pose="flex" />
       <mesh position={[0, 1.75, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.55, 0.03, 8, 32]} />
@@ -56,10 +56,19 @@ function MascotWithBadge() {
   );
 }
 
-export function HypeMascotScene() {
+export function HypeMascotScene({
+  size = "hero",
+}: {
+  size?: "hero" | "md" | "sm";
+}) {
+  const camera =
+    size === "hero"
+      ? { position: [0, 0.95, 4.6] as const, fov: 40 }
+      : { position: [0, 1.05, 3.6] as const, fov: 38 };
+
   return (
     <Canvas
-      camera={{ position: [0, 1.05, 3.6], fov: 38 }}
+      camera={camera}
       dpr={CANVAS_DPR}
       gl={CANVAS_GL_PROPS}
       onCreated={({ gl }) => attachWebGLContextGuard(gl)}

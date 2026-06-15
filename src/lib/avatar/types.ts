@@ -21,10 +21,17 @@ export interface AvatarConfig {
 
 export interface AvatarVisualExtras {
   hatColor?: string;
+  hatDesign?: "beanie" | "crown" | "flame";
+  shirtDesign?: "tee" | "hyperank" | "fire";
+  pantsDesign?: "jogger" | "jeans" | "camo";
+  shoesDesign?: "sneaker" | "gold";
   effect?: string;
   jewelryWatch?: string;
+  jewelryWatchDesign?: "silver" | "gold";
   jewelryChain?: string;
+  jewelryChainDesign?: "silver" | "gold";
   jewelryEarrings?: string;
+  jewelryEarringsDesign?: "studs" | "hoops" | "diamond";
 }
 
 export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
@@ -33,7 +40,7 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   shirt: "#e82222",
   pants: "#141414",
   shoes: "#2a2a2a",
-  eyeColor: "#2a1810",
+  eyeColor: "#4a3728",
   gender: "male",
   bodyType: "default",
   faceType: "default",
@@ -45,24 +52,24 @@ export const COSMETIC_VISUALS: Record<
   string,
   Partial<AvatarConfig> & AvatarVisualExtras
 > = {
-  hat_default: { hatColor: "#2a2a2a" },
-  hat_crown: { hatColor: "#ffc933" },
-  hat_flame: { hatColor: "#e82222" },
-  shirt_default: { shirt: "#f0f0f0" },
-  shirt_hyperank: { shirt: "#e82222" },
-  shirt_fire: { shirt: "#ff6b35" },
-  pants_default: { pants: "#141414" },
-  pants_jeans: { pants: "#2563eb" },
-  pants_camo: { pants: "#3d4f2f" },
-  shoes_default: { shoes: "#2a2a2a" },
-  shoes_gold: { shoes: "#ffc933" },
-  watch_silver: { jewelryWatch: "#c0c0c0" },
-  watch_gold: { jewelryWatch: "#ffc933" },
-  chain_silver: { jewelryChain: "#c0c0c0" },
-  chain_gold: { jewelryChain: "#ffc933" },
-  earrings_studs: { jewelryEarrings: "#ffc933" },
-  earrings_hoops: { jewelryEarrings: "#e8e8e8" },
-  earrings_diamond: { jewelryEarrings: "#b9f2ff" },
+  hat_default: { hatColor: "#2a2a2a", hatDesign: "beanie" },
+  hat_crown: { hatColor: "#ffc933", hatDesign: "crown" },
+  hat_flame: { hatColor: "#e82222", hatDesign: "flame" },
+  shirt_default: { shirt: "#f0f0f0", shirtDesign: "tee" },
+  shirt_hyperank: { shirt: "#e82222", shirtDesign: "hyperank" },
+  shirt_fire: { shirt: "#ff6b35", shirtDesign: "fire" },
+  pants_default: { pants: "#141414", pantsDesign: "jogger" },
+  pants_jeans: { pants: "#2563eb", pantsDesign: "jeans" },
+  pants_camo: { pants: "#3d4f2f", pantsDesign: "camo" },
+  shoes_default: { shoes: "#2a2a2a", shoesDesign: "sneaker" },
+  shoes_gold: { shoes: "#ffc933", shoesDesign: "gold" },
+  watch_silver: { jewelryWatch: "#c0c0c0", jewelryWatchDesign: "silver" },
+  watch_gold: { jewelryWatch: "#ffc933", jewelryWatchDesign: "gold" },
+  chain_silver: { jewelryChain: "#c0c0c0", jewelryChainDesign: "silver" },
+  chain_gold: { jewelryChain: "#ffc933", jewelryChainDesign: "gold" },
+  earrings_studs: { jewelryEarrings: "#ffc933", jewelryEarringsDesign: "studs" },
+  earrings_hoops: { jewelryEarrings: "#e8e8e8", jewelryEarringsDesign: "hoops" },
+  earrings_diamond: { jewelryEarrings: "#b9f2ff", jewelryEarringsDesign: "diamond" },
   bg_space: {},
   bg_neon_city: {},
   effect_fire_aura: { effect: "fire" },
