@@ -23,19 +23,25 @@ interface HypeMascotProps {
 }
 
 const SIZES = {
-  hero: "h-[360px] w-[360px] md:h-[420px] md:w-[420px]",
+  hero: "h-[380px] w-[380px] md:h-[440px] md:w-[440px]",
   md: "h-40 w-40",
   sm: "h-24 w-24",
 };
 
 export function HypeMascot({ size = "hero", className = "" }: HypeMascotProps) {
+  const isHero = size === "hero";
+
   return (
     <div
       className={`relative overflow-visible ${SIZES[size]} ${className}`}
       aria-hidden
     >
       <div className="absolute inset-0 rounded-full bg-red-500/25 blur-[70px]" />
-      <div className="relative h-full w-full overflow-visible pt-4 animate-float drop-shadow-[0_0_50px_rgba(255,43,43,0.45)]">
+      <div
+        className={`relative flex h-full w-full justify-center overflow-visible ${
+          isHero ? "items-end pb-2" : "items-center"
+        } animate-float drop-shadow-[0_0_50px_rgba(255,43,43,0.45)]`}
+      >
         <HypeMascotScene size={size} />
       </div>
     </div>

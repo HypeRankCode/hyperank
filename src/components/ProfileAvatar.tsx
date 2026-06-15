@@ -41,7 +41,7 @@ export function ProfileAvatar({
           src={avatarUrl}
           alt={username ? `${username}'s profile` : "Profile"}
           fill
-          className="object-cover object-[center_62%]"
+          className="object-cover object-center"
           sizes={size === "lg" || size === "xl" ? "128px" : "48px"}
           unoptimized
         />

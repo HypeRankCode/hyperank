@@ -173,7 +173,16 @@ export function AvatarStudio({
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="flex flex-col items-center gap-4">
           <p className="section-label">Your new profile icon</p>
-          <ProfileAvatar avatarUrl={cropped} username={username} size="xl" ring />
+          <div className="overflow-hidden rounded-full ring-2 ring-red-500/40 ring-offset-2 ring-offset-black">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cropped}
+              alt="Profile icon preview"
+              width={128}
+              height={128}
+              className="h-32 w-32 object-cover"
+            />
+          </div>
           <p className="text-center text-sm text-[var(--text-secondary)]">
             This is how you&apos;ll appear on battles, leaderboards, and the
             header.

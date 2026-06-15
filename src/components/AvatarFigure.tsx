@@ -14,7 +14,8 @@ import {
   avatarDragPointerProps,
   useAvatarDragRotation,
 } from "@/hooks/useAvatarDragRotation";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
+import { useEffect } from "react";
 
 interface AvatarFigureProps {
   config?: Parameters<typeof resolveAvatarAppearance>[0];
@@ -22,6 +23,17 @@ interface AvatarFigureProps {
   size?: "small" | "full";
   animate?: boolean;
   interactive?: boolean;
+}
+
+const AVATAR_LOOK_Y = 0.52;
+
+function AvatarCamera() {
+  const { camera } = useThree();
+  useEffect(() => {
+    camera.lookAt(0, AVATAR_LOOK_Y, 0);
+    camera.updateProjectionMatrix();
+  }, [camera]);
+  return null;
 }
 
 function AvatarScene({
@@ -33,6 +45,7 @@ function AvatarScene({
 }) {
   return (
     <>
+      <AvatarCamera />
       <ambientLight intensity={0.5} />
       <directionalLight position={[3, 5, 2]} intensity={1.2} />
       <pointLight position={[-2, 3, 2]} intensity={0.4} color="#e82222" />
@@ -41,7 +54,7 @@ function AvatarScene({
         yaw={drag.yaw}
         pitch={drag.pitch}
         isDragging={drag.isDragging}
-        position={[0, -0.12, 0]}
+        position={[0, -0.3, 0]}
       >
         <ProceduralBody appearance={appearance} pose="default" />
       </AvatarDragRig>
@@ -73,7 +86,7 @@ export function AvatarFigure({
       {...pointerProps}
     >
       <Canvas
-        camera={{ position: [0, 0.85, 4.4], fov: 38 }}
+        camera={{ position: [0, AVATAR_LOOK_Y, 4.1], fov: 36 }}
         dpr={CANVAS_DPR}
         gl={CANVAS_GL_PROPS}
         onCreated={({ gl }) => attachWebGLContextGuard(gl)}

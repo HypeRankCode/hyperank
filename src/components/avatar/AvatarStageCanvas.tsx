@@ -43,7 +43,7 @@ interface StageSceneProps {
   rotation: StudioRotationState;
 }
 
-const BASE_CAMERA = { x: 0, y: 0.78, z: 4.85, lookY: 0.88 };
+const BASE_CAMERA = { x: 0, y: 0.55, z: 4.85, lookY: 0.5 };
 
 function StudioCamera({ view }: { view: StudioViewState }) {
   const { camera } = useThree();
@@ -114,7 +114,7 @@ function StageContents({
         mode="free"
         yaw={rotation.yaw}
         pitch={rotation.pitch}
-        position={[0, -0.18, 0]}
+        position={[0, -0.3, 0]}
       >
         <ProceduralBody appearance={appearance} pose={pose} />
       </AvatarDragRig>

@@ -19,47 +19,60 @@ export function usePatternMaterial(
     return () => texture?.dispose();
   }, [texture]);
 
-  return useMemo(() => {
+  const metalness = opts?.metalness ?? 0.05;
+  const roughness = opts?.roughness ?? 0.85;
+  const emissive = opts?.emissive ?? "#000000";
+  const emissiveIntensity = opts?.emissiveIntensity ?? 0;
+
+  const material = useMemo(() => {
     const mat = new THREE.MeshStandardMaterial({
       color: pattern === "solid" ? color : "#ffffff",
-      map: texture ?? undefined,
-      metalness: opts?.metalness ?? 0.05,
-      roughness: opts?.roughness ?? 0.85,
-      emissive: opts?.emissive ?? "#000000",
-      emissiveIntensity: opts?.emissiveIntensity ?? 0,
+      metalness,
+      roughness,
+      emissive,
+      emissiveIntensity,
     });
+    if (texture) {
+      mat.map = texture;
+    }
     return mat;
-  }, [pattern, color, texture, opts?.metalness, opts?.roughness, opts?.emissive, opts?.emissiveIntensity]);
+  }, [pattern, color, texture, metalness, roughness, emissive, emissiveIntensity]);
+
+  useEffect(() => {
+    return () => material.dispose();
+  }, [material]);
+
+  return material;
 }
 
 export function HatMesh({
   design,
   color,
   headY,
-  dims,
+  headR,
 }: {
   design: string;
   color: string;
   headY: number;
-  dims: { w: number; h: number; d: number };
+  headR: number;
 }) {
   const knitMat = usePatternMaterial("knit", color);
   const goldMat = usePatternMaterial("gold", color, { metalness: 0.85, roughness: 0.2 });
-  const top = headY + dims.h / 2;
+  const top = headY + headR;
 
   if (design === "crown") {
     return (
       <group>
-        <mesh position={[0, top + 0.04, 0]} material={goldMat} castShadow>
-          <cylinderGeometry args={[dims.w * 0.55, dims.w * 0.62, 0.1, 16]} />
+        <mesh position={[0, top + 0.02, 0]} material={goldMat} castShadow>
+          <cylinderGeometry args={[headR * 0.95, headR * 1.05, 0.08, 20]} />
         </mesh>
-        {[-0.14, -0.07, 0, 0.07, 0.14].map((x, i) => (
-          <mesh key={i} position={[x, top + 0.16, 0]} material={goldMat} castShadow>
-            <boxGeometry args={[0.06, 0.18, 0.06]} />
+        {[-0.12, -0.06, 0, 0.06, 0.12].map((x, i) => (
+          <mesh key={i} position={[x, top + 0.14, 0]} material={goldMat} castShadow>
+            <coneGeometry args={[0.035, 0.14, 8]} />
           </mesh>
         ))}
-        <mesh position={[0, top + 0.26, 0]} material={goldMat}>
-          <sphereGeometry args={[0.05, 8, 8]} />
+        <mesh position={[0, top + 0.22, 0]} material={goldMat}>
+          <sphereGeometry args={[0.045, 10, 10]} />
         </mesh>
       </group>
     );
@@ -68,17 +81,17 @@ export function HatMesh({
   if (design === "flame") {
     return (
       <group>
-        <mesh position={[0, top + 0.06, -0.02]} material={knitMat} castShadow>
-          <boxGeometry args={[dims.w + 0.1, 0.14, dims.d + 0.08]} />
+        <mesh position={[0, top + 0.04, -0.02]} material={knitMat} castShadow>
+          <sphereGeometry args={[headR * 1.05, 14, 14]} />
         </mesh>
-        {[-0.1, 0, 0.1].map((x, i) => (
+        {[-0.08, 0, 0.08].map((x, i) => (
           <mesh
             key={i}
-            position={[x, top + 0.22, -0.04]}
-            rotation={[0.2, 0, 0]}
+            position={[x, top + 0.18, -0.03]}
+            rotation={[0.25, 0, 0]}
             castShadow
           >
-            <coneGeometry args={[0.07, 0.2, 6]} />
+            <coneGeometry args={[0.055, 0.16, 10]} />
             <meshStandardMaterial
               color={i === 1 ? "#ffc933" : "#ff4500"}
               emissive={i === 1 ? "#ffc933" : "#ff4500"}
@@ -90,17 +103,16 @@ export function HatMesh({
     );
   }
 
-  // beanie
   return (
     <group>
-      <mesh position={[0, top + 0.05, -0.02]} material={knitMat} castShadow>
-        <boxGeometry args={[dims.w + 0.1, 0.16, dims.d + 0.08]} />
+      <mesh position={[0, top + 0.04, -0.01]} material={knitMat} castShadow>
+        <sphereGeometry args={[headR * 1.08, 16, 16]} />
       </mesh>
-      <mesh position={[0, top - 0.02, dims.d * 0.1]} material={knitMat} castShadow>
-        <boxGeometry args={[dims.w + 0.14, 0.06, 0.08]} />
+      <mesh position={[0, top - headR * 0.15, headR * 0.35]} material={knitMat} castShadow>
+        <torusGeometry args={[headR * 0.95, headR * 0.06, 10, 20]} />
       </mesh>
-      <mesh position={[0, top + 0.14, 0]}>
-        <sphereGeometry args={[0.05, 8, 8]} />
+      <mesh position={[0, top + 0.12, 0]}>
+        <sphereGeometry args={[0.04, 8, 8]} />
         <meshStandardMaterial color={color} />
       </mesh>
     </group>
@@ -120,35 +132,24 @@ export function ShoeMesh({
   const goldMat = usePatternMaterial("gold", color, { metalness: 0.9, roughness: 0.15 });
   const mat = design === "gold" ? goldMat : sneakerMat;
   const soleColor = design === "gold" ? "#c9a227" : "#111111";
-  const shoeY = -0.12;
-  const shoeH = 0.13;
 
   return (
-    <group position={[x, shoeY, 0.05]}>
-      {/* Sole */}
-      <mesh position={[0, -shoeH / 2 + 0.02, 0.02]} castShadow>
-        <boxGeometry args={[0.3, 0.05, 0.36]} />
-        <meshStandardMaterial color={soleColor} roughness={0.9} />
+    <group position={[x, 0.04, 0.04]}>
+      <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <capsuleGeometry args={[0.09, 0.22, 8, 14]} />
+        <meshStandardMaterial color={soleColor} roughness={0.92} />
       </mesh>
-      {/* Upper */}
-      <mesh position={[0, 0.02, 0]} material={mat} castShadow>
-        <boxGeometry args={[0.27, shoeH, 0.3]} />
+      <mesh position={[0, 0.04, -0.01]} material={mat} castShadow>
+        <sphereGeometry args={[0.1, 14, 14]} />
       </mesh>
-      {/* Toe cap */}
-      <mesh position={[0, 0.02, 0.14]} material={mat} castShadow>
-        <boxGeometry args={[0.25, shoeH * 0.85, 0.08]} />
+      <mesh position={[0, 0.03, 0.08]} material={mat} castShadow>
+        <sphereGeometry args={[0.08, 12, 12]} />
       </mesh>
       {design === "sneaker" && (
-        <>
-          <mesh position={[0, 0.06, 0.05]}>
-            <boxGeometry args={[0.22, 0.04, 0.18]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, -0.02, -0.1]}>
-            <boxGeometry args={[0.08, 0.06, 0.04]} />
-            <meshStandardMaterial color="#e82222" />
-          </mesh>
-        </>
+        <mesh position={[0, 0.06, 0.02]}>
+          <sphereGeometry args={[0.06, 10, 10]} />
+          <meshStandardMaterial color="#ffffff" roughness={0.4} />
+        </mesh>
       )}
     </group>
   );
@@ -161,7 +162,7 @@ export function WatchMesh({ color, design }: { color: string; design: string }) 
   });
 
   return (
-    <group position={[0, -0.68, 0.06]}>
+    <group position={[0, -0.66, 0.05]}>
       <mesh rotation={[0, 0, Math.PI / 2]} material={mat}>
         <torusGeometry args={[0.055, 0.018, 8, 16]} />
       </mesh>
@@ -180,28 +181,36 @@ export function WatchMesh({ color, design }: { color: string; design: string }) 
   );
 }
 
-export function ChainMesh({ color, design }: { color: string; design: string }) {
+export function ChainMesh({
+  color,
+  design,
+  neckY = 1.12,
+}: {
+  color: string;
+  design: string;
+  neckY?: number;
+}) {
   const mat = usePatternMaterial(design === "gold" ? "gold" : "silver", color, {
     metalness: 0.92,
     roughness: 0.12,
   });
 
   return (
-    <group position={[0, 1.32, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
+    <group position={[0, neckY, 0.14]} rotation={[Math.PI / 2, 0, 0]}>
       <mesh material={mat}>
-        <torusGeometry args={[0.2, 0.028, 8, 24]} />
+        <torusGeometry args={[0.18, 0.022, 10, 24]} />
       </mesh>
       {[0, 1, 2, 3, 4].map((i) => (
         <mesh
           key={i}
-          position={[Math.sin((i / 5) * Math.PI * 2) * 0.2, Math.cos((i / 5) * Math.PI * 2) * 0.2, 0]}
+          position={[Math.sin((i / 5) * Math.PI * 2) * 0.18, Math.cos((i / 5) * Math.PI * 2) * 0.18, 0]}
           material={mat}
         >
-          <boxGeometry args={[0.04, 0.06, 0.02]} />
+          <sphereGeometry args={[0.022, 8, 8]} />
         </mesh>
       ))}
-      <mesh position={[0, -0.22, 0]} material={mat}>
-        <boxGeometry args={[0.08, 0.1, 0.04]} />
+      <mesh position={[0, -0.2, 0]} material={mat}>
+        <sphereGeometry args={[0.04, 10, 10]} />
       </mesh>
     </group>
   );

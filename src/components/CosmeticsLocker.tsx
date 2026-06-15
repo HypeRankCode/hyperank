@@ -12,6 +12,7 @@ import {
   hasUnownedEquipped,
   ownedEquippedOnly,
 } from "@/lib/avatar/types";
+import { STUDIO_BACKGROUNDS } from "@/lib/avatar/studio";
 
 interface Cosmetic {
   id: string;
@@ -137,6 +138,14 @@ export function CosmeticsLocker({
     [previewEquipped, ownedIds]
   );
 
+  const previewBackgroundId =
+    previewEquipped.background &&
+    STUDIO_BACKGROUNDS[previewEquipped.background]
+      ? previewEquipped.background
+      : "default";
+  const previewStudioBg =
+    STUDIO_BACKGROUNDS[previewBackgroundId] ?? STUDIO_BACKGROUNDS.default;
+
   useRegisterUnsavedChanges(
     hasPreviewChanges,
     "You have unsaved outfit changes. Leave the locker anyway?"
@@ -204,7 +213,17 @@ export function CosmeticsLocker({
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="card-glass relative flex min-h-[400px] items-center justify-center overflow-hidden p-4">
+      <div
+        className="card-glass relative flex min-h-[400px] items-center justify-center overflow-hidden p-4"
+        style={{
+          background: `linear-gradient(180deg, ${previewStudioBg.wall} 0%, ${previewStudioBg.floor} 55%, #050505 100%)`,
+          boxShadow: `inset 0 0 0 1px ${previewStudioBg.accent}33`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-x-8 bottom-6 h-px opacity-40"
+          style={{ backgroundColor: previewStudioBg.accent }}
+        />
         {previewHasUnowned && (
           <Badge
             variant="outline"

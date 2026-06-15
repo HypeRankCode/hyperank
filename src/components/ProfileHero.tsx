@@ -7,42 +7,51 @@ import {
   getAppearanceFromConfig,
   getEquippedFromConfig,
 } from "@/lib/avatar/types";
+import { STUDIO_BACKGROUNDS } from "@/lib/avatar/studio";
 
 export function ProfileHero({ profile }: { profile: Profile }) {
   const rawConfig = (profile.avatar_config as Record<string, unknown>) ?? {};
-  const bg =
-    getEquippedFromConfig(rawConfig).background ??
-    (typeof rawConfig.background === "string" ? rawConfig.background : "default");
+  const equipped = getEquippedFromConfig(rawConfig);
+  const bgId =
+    equipped.background && STUDIO_BACKGROUNDS[equipped.background]
+      ? equipped.background
+      : typeof rawConfig.background === "string" &&
+          STUDIO_BACKGROUNDS[rawConfig.background]
+        ? rawConfig.background
+        : "default";
+  const studioBg = STUDIO_BACKGROUNDS[bgId] ?? STUDIO_BACKGROUNDS.default;
 
   return (
     <section
-      className={`relative overflow-hidden rounded-xl border border-[var(--border)] p-6 ${
-        bg === "bg_neon_city"
-          ? "bg-gradient-to-b from-purple-900/40 to-[var(--bg-card)]"
-          : bg === "bg_space"
-            ? "bg-gradient-to-b from-indigo-950/60 to-[var(--bg-card)]"
-            : "bg-[var(--bg-card)]"
-      }`}
+      className="relative overflow-hidden rounded-xl border border-[var(--border)] p-6"
+      style={{
+        background: `linear-gradient(180deg, ${studioBg.wall}ee 0%, var(--bg-card) 70%)`,
+        boxShadow: `inset 0 0 0 1px ${studioBg.accent}22`,
+      }}
     >
       <div className="grid gap-6 md:grid-cols-2">
-        {profile.avatar_url ? (
-          <div className="flex items-center justify-center">
-            <ProfileAvatar
-              avatarUrl={profile.avatar_url}
-              username={profile.username}
-              size="xl"
-              ring
-              className="h-48 w-48 md:h-56 md:w-56"
-            />
-          </div>
-        ) : (
+        <div className="relative flex min-h-[400px] items-center justify-center md:min-h-[420px]">
           <Avatar3D
             modelUrl={profile.avatar_rpm_url ?? ""}
             avatarConfig={getAppearanceFromConfig(rawConfig)}
-            equipped={getEquippedFromConfig(rawConfig)}
+            equipped={equipped}
             size="full"
           />
-        )}
+          {profile.avatar_url && (
+            <div
+              className="absolute bottom-3 right-3 md:bottom-4 md:right-4"
+              title="Profile icon"
+            >
+              <ProfileAvatar
+                avatarUrl={profile.avatar_url}
+                username={profile.username}
+                size="sm"
+                ring
+                className="h-14 w-14 shadow-lg shadow-black/50 ring-offset-[var(--bg-card)]"
+              />
+            </div>
+          )}
+        </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-3xl font-bold">
             {profile.display_name ?? profile.username}
