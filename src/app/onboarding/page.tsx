@@ -80,6 +80,12 @@ export default function OnboardingPage() {
       is_minor: ageResult.isMinor,
       age_verified: true,
       is_public: !ageResult.isMinor,
+      owned_cosmetic_ids: [
+        "hat_default",
+        "shirt_default",
+        "shirt_hyperank",
+        "shoes_default",
+      ],
     });
 
     if (insertError) {

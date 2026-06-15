@@ -11,6 +11,8 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { PredictionModal } from "./PredictionModal";
 import { useUserStore } from "@/stores/useUserStore";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuthModalStore } from "@/stores/useAuthModalStore";
 
 interface TrendCardProps {
   trend: Trend;
@@ -30,6 +32,8 @@ export function TrendCard({
   const [loading, setLoading] = useState(false);
   const [predictOpen, setPredictOpen] = useState(false);
   const { setUserVote: storeVote, updateCredits, profile } = useUserStore();
+  const requireAuth = useRequireAuth();
+  const showAuthModal = useAuthModalStore((s) => s.show);
 
   const hypePercent = calcHypePercent(hypeVotes, deadVotes);
   const velocity = trend.vote_velocity;
@@ -37,6 +41,8 @@ export function TrendCard({
 
   async function vote(type: "hype" | "dead") {
     if (userVote || loading) return;
+    if (!requireAuth("Sign in to vote on trends")) return;
+
     setLoading(true);
 
     const prevHype = hypeVotes;
@@ -52,7 +58,14 @@ export function TrendCard({
         body: JSON.stringify({ trend_id: trend.id, vote_type: type }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        if (res.status === 401) {
+          showAuthModal("Sign in to vote");
+          throw new Error("auth");
+        }
+        if (res.status === 403) throw new Error(data.error ?? "Complete your profile first.");
+        throw new Error(data.error);
+      }
 
       storeVote(trend.id, type);
       if (data.bonus_credits && profile) {
@@ -64,7 +77,13 @@ export function TrendCard({
           origin: { y: 0.7 },
         });
       }
-    } catch {
+    } catch (e) {
+      if (e instanceof Error && e.message === "auth") {
+        setHypeVotes(prevHype);
+        setDeadVotes(prevDead);
+        setUserVote(null);
+        return;
+      }
       setHypeVotes(prevHype);
       setDeadVotes(prevDead);
       setUserVote(null);
@@ -172,7 +191,10 @@ export function TrendCard({
           <Button
             variant="outline"
             size="icon"
-            onClick={() => setPredictOpen(true)}
+            onClick={() => {
+              if (!requireAuth("Sign in to make predictions")) return;
+              setPredictOpen(true);
+            }}
             title="Predict"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

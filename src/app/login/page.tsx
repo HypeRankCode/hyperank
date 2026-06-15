@@ -1,32 +1,137 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getSiteUrl } from "@/lib/site";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-export default function LoginPage() {
+type Mode = "signin" | "signup" | "forgot";
+
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") ?? "/dashboard";
+  const urlError = searchParams.get("error");
+
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (urlError === "auth") {
+      setError("Sign-in failed. Try again or use a different method.");
+    }
+  }, [urlError]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        router.replace(redirect.startsWith("/") ? redirect : "/dashboard");
+      }
+    });
+  }, [router, redirect]);
+
+  async function routeAfterLogin() {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      router.push(redirect);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username, age_verified")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!profile?.username) router.push("/onboarding");
+    else if (!profile.age_verified) router.push("/onboarding/age");
+    else router.push(redirect.startsWith("/") ? redirect : "/dashboard");
+  }
 
   async function signInWith(provider: "google" | "discord" | "twitter") {
     setLoading(provider);
     setError("");
+    setMessage("");
     const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback`;
+    const callbackUrl = new URL(`${getSiteUrl()}/auth/callback`);
+    if (redirect && redirect !== "/dashboard") {
+      callbackUrl.searchParams.set("redirect", redirect);
+    }
 
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo,
+        redirectTo: callbackUrl.toString(),
         queryParams:
           provider === "twitter" ? { prompt: "login" } : undefined,
       },
     });
 
     if (authError) {
-      setError("Something went wrong. Try again.");
+      setError(authError.message);
+      setLoading(null);
+    }
+  }
+
+  async function handleEmailSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setLoading("email");
+
+    const supabase = createClient();
+
+    try {
+      if (mode === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+          email,
+          { redirectTo: `${getSiteUrl()}/auth/callback?type=recovery` }
+        );
+        if (resetError) throw resetError;
+        setMessage("Check your email for a password reset link.");
+        setLoading(null);
+        return;
+      }
+
+      if (mode === "signup") {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${getSiteUrl()}/auth/callback`,
+          },
+        });
+        if (signUpError) throw signUpError;
+        setMessage(
+          "Account created. Check your email to confirm, then sign in."
+        );
+        setMode("signin");
+        setLoading(null);
+        return;
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) throw signInError;
+
+      await routeAfterLogin();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
       setLoading(null);
     }
   }
@@ -34,7 +139,6 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-card backdrop-blur-xl md:grid-cols-2">
-        {/* Brand panel */}
         <div className="relative hidden flex-col justify-between overflow-hidden p-10 md:flex">
           <div
             className="absolute inset-0 opacity-40"
@@ -68,60 +172,201 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Auth panel */}
         <div className="flex flex-col justify-center p-8 md:p-10">
-          <div className="mb-8 md:hidden">
+          <div className="mb-6 md:hidden">
             <Logo />
           </div>
-          <h2 className="font-display text-2xl font-bold">Welcome back</h2>
+
+          <h2 className="font-display text-2xl font-bold">
+            {mode === "signup"
+              ? "Create account"
+              : mode === "forgot"
+                ? "Reset password"
+                : "Welcome back"}
+          </h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Sign in with your account. No forms before you&apos;re in.
+            {mode === "forgot"
+              ? "We'll email you a reset link."
+              : "OAuth, email, or both — your call."}
           </p>
 
-          <div className="mt-8 space-y-3">
+          {mode !== "forgot" && (
+            <div className="mt-6 space-y-3">
+              <Button
+                className="w-full justify-center gap-3"
+                variant="secondary"
+                disabled={!!loading}
+                onClick={() => signInWith("google")}
+              >
+                <GoogleIcon />
+                {loading === "google" ? "Redirecting…" : "Continue with Google"}
+              </Button>
+              <Button
+                className="w-full justify-center gap-3"
+                variant="secondary"
+                disabled={!!loading}
+                onClick={() => signInWith("discord")}
+              >
+                <DiscordIcon />
+                {loading === "discord"
+                  ? "Redirecting…"
+                  : "Continue with Discord"}
+              </Button>
+              <Button
+                className="w-full justify-center gap-3"
+                variant="secondary"
+                disabled={!!loading}
+                onClick={() => signInWith("twitter")}
+              >
+                <XIcon />
+                {loading === "twitter" ? "Redirecting…" : "Continue with X"}
+              </Button>
+            </div>
+          )}
+
+          {mode !== "forgot" && (
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-xs text-[var(--text-secondary)]">or</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+          )}
+
+          <form onSubmit={handleEmailSubmit} className="space-y-3">
+            <div>
+              <label className="text-sm text-[var(--text-secondary)]">
+                Email
+              </label>
+              <Input
+                className="mt-1.5"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            {mode !== "forgot" && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm text-[var(--text-secondary)]">
+                    Password
+                  </label>
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      className="text-xs text-red-400 hover:underline"
+                      onClick={() => {
+                        setMode("forgot");
+                        setError("");
+                        setMessage("");
+                      }}
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <Input
+                  className="mt-1.5"
+                  type="password"
+                  autoComplete={
+                    mode === "signup" ? "new-password" : "current-password"
+                  }
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              </div>
+            )}
+
             <Button
-              className="w-full justify-center gap-3"
-              variant="secondary"
+              type="submit"
+              className="w-full"
               disabled={!!loading}
-              onClick={() => signInWith("google")}
             >
-              <GoogleIcon />
-              {loading === "google" ? "Redirecting…" : "Continue with Google"}
+              {loading === "email"
+                ? "Working…"
+                : mode === "signup"
+                  ? "Sign up with email"
+                  : mode === "forgot"
+                    ? "Send reset link"
+                    : "Sign in with email"}
             </Button>
-            <Button
-              className="w-full justify-center gap-3"
-              variant="secondary"
-              disabled={!!loading}
-              onClick={() => signInWith("discord")}
-            >
-              <DiscordIcon />
-              {loading === "discord" ? "Redirecting…" : "Continue with Discord"}
-            </Button>
-            <Button
-              className="w-full justify-center gap-3"
-              variant="secondary"
-              disabled={!!loading}
-              onClick={() => signInWith("twitter")}
-            >
-              <XIcon />
-              {loading === "twitter" ? "Redirecting…" : "Continue with X"}
-            </Button>
-          </div>
+          </form>
 
           {error && (
             <p className="mt-4 text-center text-sm text-red-400">{error}</p>
           )}
+          {message && (
+            <p className="mt-4 text-center text-sm text-emerald-400">
+              {message}
+            </p>
+          )}
 
-          <p className="mt-8 text-center text-xs text-[var(--text-secondary)]">
+          <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
+            {mode === "signup" ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="text-red-400 hover:underline"
+                  onClick={() => setMode("signin")}
+                >
+                  Sign in
+                </button>
+              </>
+            ) : mode === "forgot" ? (
+              <>
+                <button
+                  type="button"
+                  className="text-red-400 hover:underline"
+                  onClick={() => setMode("signin")}
+                >
+                  Back to sign in
+                </button>
+              </>
+            ) : (
+              <>
+                New here?{" "}
+                <button
+                  type="button"
+                  className="text-red-400 hover:underline"
+                  onClick={() => setMode("signup")}
+                >
+                  Create account
+                </button>
+              </>
+            )}
+          </p>
+
+          <p className="mt-6 text-center text-xs text-[var(--text-secondary)]">
             By continuing you agree to our{" "}
-            <a href="/legal/terms" className="text-red-400 hover:underline">
+            <Link href="/legal/terms" className="text-red-400 hover:underline">
               Terms
-            </a>
+            </Link>
             . Age check happens once after sign-in.
           </p>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-[var(--text-secondary)]">
+          Loading…
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
 

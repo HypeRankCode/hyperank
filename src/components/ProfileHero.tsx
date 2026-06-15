@@ -2,9 +2,16 @@ import { Avatar3D } from "./Avatar3DClient";
 import { SocialLinksBar } from "./SocialLinksBar";
 import { Badge } from "./ui/badge";
 import type { Profile } from "@/lib/types/database";
+import {
+  getAppearanceFromConfig,
+  getEquippedFromConfig,
+} from "@/lib/avatar/types";
 
 export function ProfileHero({ profile }: { profile: Profile }) {
-  const bg = profile.avatar_config?.background ?? "default";
+  const rawConfig = (profile.avatar_config as Record<string, unknown>) ?? {};
+  const bg =
+    getEquippedFromConfig(rawConfig).background ??
+    (typeof rawConfig.background === "string" ? rawConfig.background : "default");
 
   return (
     <section
@@ -19,6 +26,8 @@ export function ProfileHero({ profile }: { profile: Profile }) {
       <div className="grid gap-6 md:grid-cols-2">
         <Avatar3D
           modelUrl={profile.avatar_rpm_url ?? ""}
+          avatarConfig={getAppearanceFromConfig(rawConfig)}
+          equipped={getEquippedFromConfig(rawConfig)}
           size="full"
         />
         <div className="flex flex-col justify-center">

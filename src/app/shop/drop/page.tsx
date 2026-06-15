@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ShopDropExtras } from "@/components/ShopDropExtras";
-import { Button } from "@/components/ui/button";
+import { ShopBuyButton } from "@/components/ShopBuyButton";
 import { Badge } from "@/components/ui/badge";
 import { PageShell, SectionHeader } from "@/components/PageShell";
 
@@ -98,13 +98,5 @@ export default async function ShopDropPage() {
         </Link>
       </div>
     </PageShell>
-  );
-}
-
-function ShopBuyButton({ shopItemId }: { shopItemId: string }) {
-  return (
-    <Button size="sm" className="w-full" asChild>
-      <Link href={`/shop/drop?buy=${shopItemId}`}>Buy now</Link>
-    </Button>
   );
 }

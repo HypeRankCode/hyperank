@@ -5,6 +5,9 @@ import { Avatar3D } from "./Avatar3DClient";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useUserStore } from "@/stores/useUserStore";
+import {
+  getAppearanceFromConfig,
+} from "@/lib/avatar/types";
 
 interface Cosmetic {
   id: string;
@@ -20,6 +23,7 @@ interface CosmeticsLockerProps {
   ownedIds: string[];
   equipped: Record<string, string>;
   modelUrl: string;
+  avatarConfig?: Record<string, unknown> | null;
 }
 
 const CATEGORIES = [
@@ -45,7 +49,9 @@ export function CosmeticsLocker({
   ownedIds,
   equipped: initialEquipped,
   modelUrl,
+  avatarConfig,
 }: CosmeticsLockerProps) {
+  const appearance = getAppearanceFromConfig(avatarConfig);
   const [category, setCategory] = useState("hat");
   const [equipped, setEquipped] = useState(initialEquipped);
   const [saving, setSaving] = useState(false);
@@ -64,7 +70,7 @@ export function CosmeticsLocker({
     await fetch("/api/avatar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ avatar_config: equipped }),
+      body: JSON.stringify({ equipped }),
     });
     setSaving(false);
   }
@@ -82,7 +88,12 @@ export function CosmeticsLocker({
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="card-glass flex min-h-[400px] items-center justify-center p-4">
-        <Avatar3D modelUrl={modelUrl} size="full" />
+        <Avatar3D
+          modelUrl={modelUrl}
+          avatarConfig={appearance}
+          equipped={equipped}
+          size="full"
+        />
       </div>
 
       <div>

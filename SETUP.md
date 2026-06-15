@@ -6,6 +6,17 @@ Stack: **GitHub → Vercel → Cloudflare DNS → Supabase**
 
 ---
 
+## Your action items (app can't do these for you)
+
+- [ ] **Sign in + finish onboarding** — OAuth/email → `/onboarding` (username + birth year). Voting returns 403 until profile exists.
+- [ ] **Set `ADMIN_USER_ID`** in Vercel to your Supabase user UUID (unlocks `/admin`).
+- [ ] **Build your avatar** — `/locker` uses the built-in character builder (Ready Player Me shut down Jan 2026; no external setup needed).
+- [ ] **Seed shop drop** (after deploy): `curl -L -X POST https://www.hyperank.ca/api/seed/shop -H "Authorization: Bearer $CRON_SECRET"`
+- [ ] **Enable Supabase Email** provider for password sign-in
+- [ ] **AdSense / analytics** — add IDs when approved (slots are placeholders)
+
+---
+
 ## Tier 1 — Do today (site won't work without these)
 
 ### Supabase
@@ -30,7 +41,6 @@ Stack: **GitHub → Vercel → Cloudflare DNS → Supabase**
 | `NEXT_PUBLIC_SITE_URL` | `https://www.hyperank.ca` (use `www` — bare `hyperank.ca` redirects) |
 | `CRON_SECRET` | Random string (`openssl rand -hex 32`) |
 | `ADMIN_USER_ID` | Your Supabase user UUID (see below) |
-| `NEXT_PUBLIC_RPM_SUBDOMAIN` | `hyperank` (after RPM setup) |
 | `CONTACT_EMAIL` | `legal@hyperank.ca` |
 
 - [ ] Redeploy after adding env vars (Deployments → ⋯ → Redeploy)
@@ -59,6 +69,9 @@ curl -L -X POST https://www.hyperank.ca/api/seed/trends \
   -H "Authorization: Bearer $CRON_SECRET"
 
 curl -L -X POST https://www.hyperank.ca/api/seed/dictionary \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -L -X POST https://www.hyperank.ca/api/seed/shop \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
 
@@ -113,6 +126,19 @@ npm run dev
 
 - [ ] Save and test login at `/login`
 
+### Supabase Auth — Email & password
+
+**Authentication → Providers → Email** — enable Email provider.
+
+- [ ] Turn on **Email** sign-in
+- [ ] (Optional) Require email confirmation before first login
+- [ ] **Authentication → URL configuration** — ensure redirect URLs include:
+  - `https://www.hyperank.ca/auth/callback`
+  - `http://localhost:3000/auth/callback`
+- [ ] `NEXT_PUBLIC_SITE_URL` must match Site URL (use `www` if that is canonical)
+
+Users can sign up / sign in with email on `/login`, and use **Forgot password** for reset links (lands on `/auth/update-password`).
+
 ### Cloudflare DNS → Vercel
 
 - [ ] Cloudflare → DNS for `hyperank.ca`:
@@ -143,12 +169,13 @@ Supabase → **Authentication → Providers → Email**:
 
 ## Tier 3 — Core product working end-to-end
 
-### Ready Player Me (avatars)
+### Avatars (built-in)
 
-- [ ] [readyplayer.me/developers](https://readyplayer.me/developers) → create app
-- [ ] Subdomain: `hyperank` → matches `NEXT_PUBLIC_RPM_SUBDOMAIN`
-- [ ] Allowed parent URLs: `https://hyperank.ca`, `http://localhost:3000`
-- [ ] Test `/locker` → create avatar → should save to profile
+Ready Player Me was acquired by Netflix and shut down in Jan 2026. HypeRank uses a **built-in procedural 3D avatar** — no external account or API keys.
+
+- [ ] Sign in → `/locker` → customize skin, hair, shirt, body type → **Save character**
+- [ ] Equip cosmetics from the locker (starter items granted on onboarding)
+- [ ] Users with old RPM URLs automatically fall back to the built-in avatar
 
 ### Vercel Cron jobs (Hobby plan)
 

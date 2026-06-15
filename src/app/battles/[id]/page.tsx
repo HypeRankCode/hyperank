@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BattleVoteClient } from "@/components/BattleVoteClient";
 import { Avatar3D } from "@/components/Avatar3DClient";
+import { BackLink } from "@/components/BackLink";
 
 export default async function BattleDetailPage({
   params,
@@ -43,7 +44,8 @@ export default async function BattleDetailPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="font-display text-center text-3xl font-bold">Battle</h1>
+      <BackLink href="/battles" label="Battles" />
+      <h1 className="mt-4 text-center font-display text-3xl font-bold">Battle</h1>
 
       <div className="mt-8 grid grid-cols-2 gap-6">
         <div className="text-center">

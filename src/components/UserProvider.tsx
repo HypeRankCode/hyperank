@@ -6,23 +6,41 @@ import { useUserStore } from "@/stores/useUserStore";
 import type { Profile } from "@/lib/types/database";
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  const setUser = useUserStore((s) => s.setUser);
   const setProfile = useUserStore((s) => s.setProfile);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      supabase
+
+    async function loadProfile(userId: string) {
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) return;
-          if (data) setProfile(data as Profile);
-        });
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (error) return;
+      setProfile(data ? (data as Profile) : null);
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const user = session?.user ?? null;
+      setUser(user);
+      if (user) loadProfile(user.id);
+      else setProfile(null);
     });
-  }, [setProfile]);
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user ?? null;
+      setUser(user);
+      if (user) loadProfile(user.id);
+      else setProfile(null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [setUser, setProfile]);
 
   return <>{children}</>;
 }

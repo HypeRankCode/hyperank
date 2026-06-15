@@ -1,9 +1,15 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmeticsLocker } from "@/components/CosmeticsLocker";
-import { RPMEditor } from "@/components/RPMEditor";
+import { AvatarBuilder } from "@/components/AvatarBuilder";
 import { PageShell, SectionHeader } from "@/components/PageShell";
+import { BackLink } from "@/components/BackLink";
 import { Badge } from "@/components/ui/badge";
+import {
+  getAppearanceFromConfig,
+  getEquippedFromConfig,
+  hasBuiltAvatar,
+} from "@/lib/avatar/types";
 
 export const metadata = { title: "Your Locker | HypeRank" };
 
@@ -24,36 +30,47 @@ export default async function LockerPage() {
 
   const { data: cosmetics } = await supabase.from("cosmetics").select("*");
 
+  const rawConfig = (profile.avatar_config as Record<string, unknown>) ?? {};
+  const built = hasBuiltAvatar(profile.avatar_rpm_url, rawConfig);
+  const equipped = getEquippedFromConfig(rawConfig);
+  const appearance = getAppearanceFromConfig(rawConfig);
+
   return (
     <PageShell wide>
+      <BackLink href="/dashboard" label="Dashboard" />
       <SectionHeader
+        className="mt-4"
         label="Avatar"
         title="Your Locker"
         subtitle="Build your character. Equip cosmetics. Flex."
-        action={
-          <Badge variant="hype">{profile.username}</Badge>
-        }
+        action={<Badge variant="hype">{profile.username}</Badge>}
       />
 
-      {!profile.avatar_rpm_url ? (
+      {!built ? (
         <div className="surface-card rounded-2xl p-8">
           <p className="mb-6 text-[var(--text-secondary)]">
-            You haven&apos;t built your character yet. Time to fix that.
+            You haven&apos;t built your character yet. Customize below — no
+            external account needed.
           </p>
-          <RPMEditor userId={user.id} />
+          <AvatarBuilder initialConfig={appearance} />
         </div>
       ) : (
         <div className="space-y-8">
           <CosmeticsLocker
             cosmetics={cosmetics ?? []}
             ownedIds={profile.owned_cosmetic_ids ?? []}
-            equipped={(profile.avatar_config as Record<string, string>) ?? {}}
-            modelUrl={profile.avatar_rpm_url}
+            equipped={equipped}
+            modelUrl={profile.avatar_rpm_url ?? ""}
+            avatarConfig={rawConfig}
           />
           <div className="surface-card rounded-2xl p-8">
-            <h3 className="font-display text-lg font-bold">Edit avatar</h3>
+            <h3 className="font-display text-lg font-bold">Edit appearance</h3>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              Skin, hair, body type — cosmetics stay equipped in the locker
+              above.
+            </p>
             <div className="mt-4">
-              <RPMEditor userId={user.id} />
+              <AvatarBuilder initialConfig={appearance} />
             </div>
           </div>
         </div>

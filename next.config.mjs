@@ -12,9 +12,8 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://*.supabase.co https://models.readyplayer.me",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://models.readyplayer.me",
-      "frame-src https://readyplayer.me",
+      "img-src 'self' data: blob: https://*.supabase.co",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
       "media-src 'self' blob:",
     ].join('; '),
   },
@@ -24,7 +23,6 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co" },
-      { protocol: "https", hostname: "models.readyplayer.me" },
     ],
   },
   async headers() {

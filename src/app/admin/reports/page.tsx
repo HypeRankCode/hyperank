@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { ReportActions } from "@/components/ReportActions";
+import { BackLink } from "@/components/BackLink";
 
 export default async function AdminReportsPage() {
   try {
@@ -18,14 +20,18 @@ export default async function AdminReportsPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="font-display text-2xl font-bold">Reports</h1>
+      <BackLink href="/admin" label="Admin" />
+      <h1 className="mt-4 font-display text-2xl font-bold">Reports</h1>
       <div className="mt-6 space-y-3">
         {(reports ?? []).map((r) => (
           <div key={r.id} className="card-glass p-4 text-sm">
             <p>
               <strong>{r.content_type}</strong> · {r.reason}
             </p>
-            {r.details && <p className="mt-1 text-[var(--text-secondary)]">{r.details}</p>}
+            {r.details && (
+              <p className="mt-1 text-[var(--text-secondary)]">{r.details}</p>
+            )}
+            <ReportActions reportId={r.id} />
           </div>
         ))}
         {!reports?.length && (

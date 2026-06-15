@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useUserStore } from "@/stores/useUserStore";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 interface PredictionModalProps {
   open: boolean;
@@ -23,10 +24,12 @@ export function PredictionModal({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { profile, updateCredits } = useUserStore();
+  const requireAuth = useRequireAuth();
 
   if (!open) return null;
 
   async function submit() {
+    if (!requireAuth("Sign in to make predictions")) return;
     setError("");
     setLoading(true);
     try {

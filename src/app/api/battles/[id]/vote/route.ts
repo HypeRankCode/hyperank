@@ -12,6 +12,13 @@ export async function POST(
   } = await supabase.auth.getUser();
   if (!user) return apiError("UNAUTHORIZED", 401);
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (!profile) return apiError("Finish setting up your profile first.", 403);
+
   const { voted_for } = await request.json();
   if (!voted_for) return apiError("Invalid request");
 

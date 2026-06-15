@@ -31,9 +31,12 @@ export async function POST(request: Request) {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (!profile || profile.is_banned) {
+  if (!profile) {
+    return apiError("Finish setting up your profile first.", 403);
+  }
+  if (profile.is_banned) {
     return apiError("You can't do that right now.", 403);
   }
 

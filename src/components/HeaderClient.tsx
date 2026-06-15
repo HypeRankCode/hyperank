@@ -1,14 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { CreditDisplay } from "./CreditDisplay";
 import { Logo } from "./Logo";
 import { useUserStore } from "@/stores/useUserStore";
 import { cn } from "@/lib/utils";
-import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/trends", label: "Trends" },
@@ -18,16 +15,11 @@ const navLinks = [
 ];
 
 export function HeaderClient() {
-  const [user, setUser] = useState<User | null>(null);
+  const user = useUserStore((s) => s.user);
   const profile = useUserStore((s) => s.profile);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-  }, []);
-
-  if (pathname === "/login") return null;
+  if (pathname === "/login" || pathname.startsWith("/auth/")) return null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-black/60 backdrop-blur-2xl">
@@ -70,11 +62,12 @@ export function HeaderClient() {
               </span>
               <span className="font-medium">{profile.username}</span>
             </Link>
+          ) : user ? (
+            <Link href="/onboarding" className="btn-hype text-sm">
+              Finish setup
+            </Link>
           ) : (
-            <Link
-              href="/login"
-              className="btn-hype text-sm"
-            >
+            <Link href="/login" className="btn-hype text-sm">
               Sign in
             </Link>
           )}
