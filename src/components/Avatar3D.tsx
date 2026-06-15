@@ -36,7 +36,7 @@ export function Avatar3D({
         config={avatarConfig}
         equipped={equipped}
         size={size}
-        animate={animate}
+        animate={animate && size !== "small"}
       />
     );
   }

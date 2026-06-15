@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar3D } from "./Avatar3DClient";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { useUserStore } from "@/stores/useUserStore";
 import {
   getAppearanceFromConfig,
+  hasUnownedEquipped,
+  ownedEquippedOnly,
 } from "@/lib/avatar/types";
 
 interface Cosmetic {
@@ -31,6 +34,9 @@ const CATEGORIES = [
   "shirt",
   "pants",
   "shoes",
+  "watch",
+  "chain",
+  "earrings",
   "accessory",
   "background",
   "effect",
@@ -46,52 +52,124 @@ const rarityColor: Record<string, string> = {
 
 export function CosmeticsLocker({
   cosmetics,
-  ownedIds,
+  ownedIds: initialOwnedIds,
   equipped: initialEquipped,
   modelUrl,
   avatarConfig,
 }: CosmeticsLockerProps) {
   const appearance = getAppearanceFromConfig(avatarConfig);
   const [category, setCategory] = useState("hat");
-  const [equipped, setEquipped] = useState(initialEquipped);
+  const [savedEquipped, setSavedEquipped] = useState(initialEquipped);
+  const [previewEquipped, setPreviewEquipped] = useState(initialEquipped);
+  const [ownedIds, setOwnedIds] = useState(initialOwnedIds);
   const [saving, setSaving] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [error, setError] = useState("");
+  const [confirmSave, setConfirmSave] = useState(false);
+  const [pendingBuy, setPendingBuy] = useState<Cosmetic | null>(null);
+
   const profile = useUserStore((s) => s.profile);
+  const setProfile = useUserStore((s) => s.setProfile);
+  const updateCredits = useUserStore((s) => s.updateCredits);
 
   const filtered = cosmetics.filter((c) => c.category === category);
 
-  async function equip(id: string) {
-    if (!ownedIds.includes(id)) return;
-    const next = { ...equipped, [category]: id };
-    setEquipped(next);
+  const previewHasUnowned = useMemo(
+    () => hasUnownedEquipped(previewEquipped, ownedIds),
+    [previewEquipped, ownedIds]
+  );
+
+  const hasUnsavedChanges = useMemo(() => {
+    const ownedPreview = ownedEquippedOnly(previewEquipped, ownedIds);
+    return JSON.stringify(ownedPreview) !== JSON.stringify(savedEquipped);
+  }, [previewEquipped, savedEquipped, ownedIds]);
+
+  const selectedPreviewId = previewEquipped[category];
+  const selectedItem = filtered.find((c) => c.id === selectedPreviewId);
+  const selectedOwned = selectedPreviewId
+    ? ownedIds.includes(selectedPreviewId)
+    : true;
+
+  function tryOn(id: string) {
+    setError("");
+    setPreviewEquipped((prev) => ({ ...prev, [category]: id }));
   }
 
-  async function save() {
+  async function confirmPurchase() {
+    if (!pendingBuy || !profile) return;
+    if (profile.credits < pendingBuy.cost_credits) {
+      setError("Not enough credits.");
+      setPendingBuy(null);
+      return;
+    }
+
+    setBuying(true);
+    setError("");
+    const res = await fetch("/api/cosmetics/purchase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cosmetic_id: pendingBuy.id }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error ?? "Purchase failed");
+      setBuying(false);
+      setPendingBuy(null);
+      return;
+    }
+
+    const newOwned = [...ownedIds, pendingBuy.id];
+    setOwnedIds(newOwned);
+    const newCredits = profile.credits - pendingBuy.cost_credits;
+    updateCredits(newCredits);
+    setProfile({
+      ...profile,
+      credits: newCredits,
+      owned_cosmetic_ids: newOwned,
+    });
+
+    setPreviewEquipped((prev) => ({ ...prev, [category]: pendingBuy.id }));
+    setPendingBuy(null);
+    setBuying(false);
+  }
+
+  async function confirmSaveOutfit() {
+    const toSave = ownedEquippedOnly(previewEquipped, ownedIds);
     setSaving(true);
-    await fetch("/api/avatar", {
+    setError("");
+    const res = await fetch("/api/avatar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ equipped }),
+      body: JSON.stringify({ equipped: toSave }),
     });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error ?? "Save failed");
+      setSaving(false);
+      setConfirmSave(false);
+      return;
+    }
+    setSavedEquipped(toSave);
+    setPreviewEquipped(toSave);
+    setConfirmSave(false);
     setSaving(false);
-  }
-
-  async function purchase(id: string, cost: number) {
-    if (!profile || profile.credits < cost) return;
-    await fetch("/api/cosmetics/purchase", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cosmetic_id: id }),
-    });
-    window.location.reload();
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="card-glass flex min-h-[400px] items-center justify-center p-4">
+      <div className="card-glass relative flex min-h-[400px] items-center justify-center p-4">
+        {previewHasUnowned && (
+          <Badge
+            variant="outline"
+            className="absolute left-4 top-4 z-10 border-amber-500/50 text-amber-400"
+          >
+            Preview mode — buy items to keep them
+          </Badge>
+        )}
         <Avatar3D
           modelUrl={modelUrl}
           avatarConfig={appearance}
-          equipped={equipped}
+          equipped={previewEquipped}
           size="full"
         />
       </div>
@@ -101,6 +179,7 @@ export function CosmeticsLocker({
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => setCategory(cat)}
               className={`rounded-full px-3 py-1 text-sm capitalize ${
                 category === cat
@@ -116,21 +195,32 @@ export function CosmeticsLocker({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {filtered.map((item) => {
             const owned = ownedIds.includes(item.id);
-            const isEquipped = equipped[category] === item.id;
+            const isPreview = previewEquipped[category] === item.id;
             return (
               <button
                 key={item.id}
-                onClick={() =>
-                  owned ? equip(item.id) : purchase(item.id, item.cost_credits)
-                }
+                type="button"
+                onClick={() => tryOn(item.id)}
                 className={`card-glass relative p-3 text-left transition ${
                   rarityColor[item.rarity] ?? ""
-                } border ${isEquipped ? "ring-2 ring-hype" : ""}`}
+                } border ${isPreview ? "ring-2 ring-hype" : ""} ${
+                  !owned ? "opacity-90" : ""
+                }`}
               >
+                {!owned && (
+                  <span className="absolute right-2 top-2 text-[10px] text-amber-400">
+                    🔒
+                  </span>
+                )}
                 <p className="text-sm font-medium">{item.name}</p>
                 <Badge variant="outline" className="mt-1 text-[10px]">
                   {item.rarity}
                 </Badge>
+                {isPreview && !owned && (
+                  <Badge variant="outline" className="mt-1 text-[10px] text-amber-400">
+                    Try-on
+                  </Badge>
+                )}
                 {!owned && (
                   <p className="mt-2 text-xs text-gold">
                     {item.cost_credits > 0
@@ -143,10 +233,75 @@ export function CosmeticsLocker({
           })}
         </div>
 
-        <Button className="mt-6 w-full" onClick={save} disabled={saving}>
-          {saving ? "Saving..." : "Save outfit"}
-        </Button>
+        {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+
+        <div className="mt-6 space-y-2">
+          {selectedItem && !selectedOwned && selectedItem.cost_credits > 0 && (
+            <Button
+              type="button"
+              className="w-full bg-gold text-black hover:bg-gold/90"
+              onClick={() => setPendingBuy(selectedItem)}
+              disabled={buying}
+            >
+              Buy {selectedItem.name} — {selectedItem.cost_credits} credits
+            </Button>
+          )}
+          {selectedItem &&
+            !selectedOwned &&
+            selectedItem.cost_credits === 0 &&
+            selectedItem.unlock_condition && (
+              <p className="rounded-lg bg-white/5 px-4 py-3 text-center text-sm text-[var(--text-secondary)]">
+                Preview only — unlock by:{" "}
+                <span className="text-amber-400">
+                  {selectedItem.unlock_condition.replace(/_/g, " ")}
+                </span>
+              </p>
+            )}
+
+          <Button
+            type="button"
+            className="w-full"
+            onClick={() => setConfirmSave(true)}
+            disabled={
+              saving ||
+              !hasUnsavedChanges ||
+              previewHasUnowned
+            }
+          >
+            {saving ? "Saving…" : "Save outfit"}
+          </Button>
+
+          {previewHasUnowned && hasUnsavedChanges && (
+            <p className="text-center text-xs text-amber-400">
+              Buy previewed items or remove them before saving your outfit.
+            </p>
+          )}
+        </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmSave}
+        title="Save outfit?"
+        description="This equips your owned items across your profile. Preview-only items won't be saved."
+        confirmLabel="Save outfit"
+        loading={saving}
+        onConfirm={confirmSaveOutfit}
+        onCancel={() => setConfirmSave(false)}
+      />
+
+      <ConfirmDialog
+        open={!!pendingBuy}
+        title={`Buy ${pendingBuy?.name ?? "item"}?`}
+        description={
+          pendingBuy
+            ? `Spend ${pendingBuy.cost_credits} credits? You'll own it permanently and can equip it anytime. Balance after: ${(profile?.credits ?? 0) - pendingBuy.cost_credits} credits.`
+            : undefined
+        }
+        confirmLabel="Buy now"
+        loading={buying}
+        onConfirm={confirmPurchase}
+        onCancel={() => setPendingBuy(null)}
+      />
     </div>
   );
 }

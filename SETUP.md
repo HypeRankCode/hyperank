@@ -10,7 +10,9 @@ Stack: **GitHub → Vercel → Cloudflare DNS → Supabase**
 
 - [ ] **Sign in + finish onboarding** — OAuth/email → `/onboarding` (username + birth year). Voting returns 403 until profile exists.
 - [ ] **Set `ADMIN_USER_ID`** in Vercel to your Supabase user UUID (unlocks `/admin`).
-- [ ] **Build your avatar** — `/locker` uses the built-in character builder (Ready Player Me shut down Jan 2026; no external setup needed).
+- [ ] **Profile photo studio** — `/settings/profile-photo` (snap your global profile icon)
+- [ ] **Avatars storage bucket** — run `supabase/patch_avatars_storage.sql` in SQL Editor
+- [ ] **Existing DB?** Run `supabase/patch_cosmetics_jewelry.sql` in SQL Editor for watches, chains, earrings, pants
 - [ ] **Seed shop drop** (after deploy): `curl -L -X POST https://www.hyperank.ca/api/seed/shop -H "Authorization: Bearer $CRON_SECRET"`
 - [ ] **Enable Supabase Email** provider for password sign-in
 - [ ] **AdSense / analytics** — add IDs when approved (slots are placeholders)

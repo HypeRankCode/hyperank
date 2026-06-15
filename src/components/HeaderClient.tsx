@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreditDisplay } from "./CreditDisplay";
 import { Logo } from "./Logo";
+import { ProfileAvatar } from "./ProfileAvatar";
 import { useUserStore } from "@/stores/useUserStore";
 import { cn } from "@/lib/utils";
 
@@ -55,12 +56,18 @@ export function HeaderClient() {
           {user && profile ? (
             <Link
               href={`/u/${profile.username}`}
-              className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-4 text-sm transition-all hover:border-red-500/40 hover:bg-red-500/10"
+              className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 py-1 pr-4 pl-1 text-sm transition-all hover:border-red-500/40 hover:bg-red-500/10"
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-800 text-xs font-bold text-white">
-                {profile.username[0]?.toUpperCase()}
+              <ProfileAvatar
+                avatarUrl={profile.avatar_url}
+                username={profile.username}
+                size="sm"
+                ring={Boolean(profile.avatar_url)}
+                className="h-9 w-9"
+              />
+              <span className="hidden font-medium sm:inline">
+                {profile.username}
               </span>
-              <span className="font-medium">{profile.username}</span>
             </Link>
           ) : user ? (
             <Link href="/onboarding" className="btn-hype text-sm">

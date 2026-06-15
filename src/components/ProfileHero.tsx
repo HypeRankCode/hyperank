@@ -1,4 +1,5 @@
 import { Avatar3D } from "./Avatar3DClient";
+import { ProfileAvatar } from "./ProfileAvatar";
 import { SocialLinksBar } from "./SocialLinksBar";
 import { Badge } from "./ui/badge";
 import type { Profile } from "@/lib/types/database";
@@ -24,12 +25,24 @@ export function ProfileHero({ profile }: { profile: Profile }) {
       }`}
     >
       <div className="grid gap-6 md:grid-cols-2">
-        <Avatar3D
-          modelUrl={profile.avatar_rpm_url ?? ""}
-          avatarConfig={getAppearanceFromConfig(rawConfig)}
-          equipped={getEquippedFromConfig(rawConfig)}
-          size="full"
-        />
+        {profile.avatar_url ? (
+          <div className="flex items-center justify-center">
+            <ProfileAvatar
+              avatarUrl={profile.avatar_url}
+              username={profile.username}
+              size="xl"
+              ring
+              className="h-48 w-48 md:h-56 md:w-56"
+            />
+          </div>
+        ) : (
+          <Avatar3D
+            modelUrl={profile.avatar_rpm_url ?? ""}
+            avatarConfig={getAppearanceFromConfig(rawConfig)}
+            equipped={getEquippedFromConfig(rawConfig)}
+            size="full"
+          />
+        )}
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-3xl font-bold">
             {profile.display_name ?? profile.username}

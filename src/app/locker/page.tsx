@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmeticsLocker } from "@/components/CosmeticsLocker";
@@ -56,6 +57,17 @@ export default async function LockerPage() {
         </div>
       ) : (
         <div className="space-y-8">
+          <div className="surface-card flex flex-wrap items-center justify-between gap-4 rounded-2xl p-4">
+            <div>
+              <p className="font-medium">Profile icon</p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Snap a photo in the studio — used on battles, ranks &amp; header.
+              </p>
+            </div>
+            <Link href="/settings/profile-photo" className="btn-hype text-sm">
+              Open photo studio
+            </Link>
+          </div>
           <CosmeticsLocker
             cosmetics={cosmetics ?? []}
             ownedIds={profile.owned_cosmetic_ids ?? []}

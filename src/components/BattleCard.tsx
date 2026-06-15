@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Avatar3D } from "./Avatar3DClient";
+import { ProfileAvatar } from "./ProfileAvatar";
 import { Badge } from "./ui/badge";
+
+interface VoterProfile {
+  avatar_url: string | null;
+  username?: string | null;
+}
 
 interface BattleWithTrends {
   id: string;
@@ -13,8 +18,8 @@ interface BattleWithTrends {
   status?: string;
   trend_a: { id: string; name: string; slug: string };
   trend_b: { id: string; name: string; slug: string };
-  voters_a?: { avatar_rpm_url: string | null }[];
-  voters_b?: { avatar_rpm_url: string | null }[];
+  voters_a?: VoterProfile[];
+  voters_b?: VoterProfile[];
 }
 
 export function BattleCard({ battle }: { battle: BattleWithTrends }) {
@@ -45,10 +50,11 @@ export function BattleCard({ battle }: { battle: BattleWithTrends }) {
             </p>
             <div className="mt-3 flex justify-center gap-1">
               {(battle.voters_a ?? []).slice(0, 4).map((v, i) => (
-                <Avatar3D
+                <ProfileAvatar
                   key={i}
-                  modelUrl={v.avatar_rpm_url ?? ""}
-                  size="small"
+                  avatarUrl={v.avatar_url}
+                  username={v.username}
+                  size="sm"
                 />
               ))}
             </div>
@@ -69,10 +75,11 @@ export function BattleCard({ battle }: { battle: BattleWithTrends }) {
             </p>
             <div className="mt-3 flex justify-center gap-1">
               {(battle.voters_b ?? []).slice(0, 4).map((v, i) => (
-                <Avatar3D
+                <ProfileAvatar
                   key={i}
-                  modelUrl={v.avatar_rpm_url ?? ""}
-                  size="small"
+                  avatarUrl={v.avatar_url}
+                  username={v.username}
+                  size="sm"
                 />
               ))}
             </div>

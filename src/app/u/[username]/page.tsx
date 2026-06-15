@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProfileByUsername } from "@/lib/supabase/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileHero } from "@/components/ProfileHero";
+import { ProfileOwnerBar } from "@/components/ProfileOwnerBar";
 import { PageShell, SectionHeader } from "@/components/PageShell";
 import type { Metadata } from "next";
 
@@ -22,7 +23,13 @@ export default async function ProfilePage({ params }: Props) {
   const profile = await getProfileByUsername(params.username);
   if (!profile) notFound();
 
-  if (!profile.is_public) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = user?.id === profile.id;
+
+  if (!profile.is_public && !isOwner) {
     return (
       <PageShell>
         <div className="surface-card rounded-2xl p-16 text-center">
@@ -35,7 +42,6 @@ export default async function ProfilePage({ params }: Props) {
     );
   }
 
-  const supabase = await createClient();
   const { data: votes } = await supabase
     .from("votes")
     .select("vote_type, trends(name, slug)")
@@ -45,6 +51,12 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <PageShell>
+      {isOwner && (
+        <ProfileOwnerBar
+          username={profile.username}
+          isPublic={profile.is_public}
+        />
+      )}
       <ProfileHero profile={profile} />
 
       <SectionHeader label="Activity" title="Recent votes" className="mt-10" />

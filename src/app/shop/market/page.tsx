@@ -1,13 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Avatar3D } from "@/components/Avatar3DClient";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 
 export default async function MarketplacePage() {
   const supabase = await createClient();
   const { data: listings } = await supabase
     .from("marketplace_listings")
     .select(
-      "id, asking_price, cosmetic_id, serial_number, profiles(username, avatar_rpm_url), cosmetics(name, rarity)"
+      "id, asking_price, cosmetic_id, serial_number, profiles(username, avatar_url), cosmetics(name, rarity)"
     )
     .eq("is_active", true)
     .order("asking_price", { ascending: true })
@@ -26,7 +26,7 @@ export default async function MarketplacePage() {
         {(listings ?? []).map((l) => {
           const seller = l.profiles as unknown as {
             username: string;
-            avatar_rpm_url: string | null;
+            avatar_url: string | null;
           };
           const cosmetic = l.cosmetics as unknown as {
             name: string;
@@ -44,7 +44,11 @@ export default async function MarketplacePage() {
               </p>
               <p className="mt-2 font-mono text-gold">{l.asking_price} credits</p>
               <div className="mt-2 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                <Avatar3D modelUrl={seller?.avatar_rpm_url ?? ""} size="small" />
+                <ProfileAvatar
+                  avatarUrl={seller?.avatar_url}
+                  username={seller?.username}
+                  size="sm"
+                />
                 @{seller?.username}
               </div>
             </Link>

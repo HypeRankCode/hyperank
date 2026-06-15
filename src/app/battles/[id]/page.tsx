@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BattleVoteClient } from "@/components/BattleVoteClient";
-import { Avatar3D } from "@/components/Avatar3DClient";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { BackLink } from "@/components/BackLink";
 
 export default async function BattleDetailPage({
@@ -26,14 +26,14 @@ export default async function BattleDetailPage({
 
   const { data: votesA } = await supabase
     .from("battle_votes")
-    .select("profiles(avatar_rpm_url)")
+    .select("profiles(avatar_url, username)")
     .eq("battle_id", params.id)
     .eq("voted_for", battle.trend_a_id)
     .limit(8);
 
   const { data: votesB } = await supabase
     .from("battle_votes")
-    .select("profiles(avatar_rpm_url)")
+    .select("profiles(avatar_url, username)")
     .eq("battle_id", params.id)
     .eq("voted_for", battle.trend_b_id)
     .limit(8);
@@ -53,13 +53,15 @@ export default async function BattleDetailPage({
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {(votesA ?? []).map((v, i) => {
               const p = v.profiles as unknown as {
-                avatar_rpm_url: string | null;
+                avatar_url: string | null;
+                username: string;
               } | null;
               return (
-                <Avatar3D
+                <ProfileAvatar
                   key={i}
-                  modelUrl={p?.avatar_rpm_url ?? ""}
-                  size="small"
+                  avatarUrl={p?.avatar_url}
+                  username={p?.username}
+                  size="md"
                 />
               );
             })}
@@ -70,13 +72,15 @@ export default async function BattleDetailPage({
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {(votesB ?? []).map((v, i) => {
               const p = v.profiles as unknown as {
-                avatar_rpm_url: string | null;
+                avatar_url: string | null;
+                username: string;
               } | null;
               return (
-                <Avatar3D
+                <ProfileAvatar
                   key={i}
-                  modelUrl={p?.avatar_rpm_url ?? ""}
-                  size="small"
+                  avatarUrl={p?.avatar_url}
+                  username={p?.username}
+                  size="md"
                 />
               );
             })}

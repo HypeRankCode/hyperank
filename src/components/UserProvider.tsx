@@ -39,7 +39,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       else setProfile(null);
     });
 
-    return () => subscription.unsubscribe();
+    const onFocus = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const u = session?.user ?? null;
+        if (u) loadProfile(u.id);
+      });
+    };
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("focus", onFocus);
+    };
   }, [setUser, setProfile]);
 
   return <>{children}</>;

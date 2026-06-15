@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Avatar3D } from "@/components/Avatar3DClient";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { PageShell, SectionHeader } from "@/components/PageShell";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ export default async function LeaderboardPage({
   let profiles: {
     id: string;
     username: string;
-    avatar_rpm_url: string | null;
+    avatar_url: string | null;
     total_votes?: number;
     credits?: number;
     streak_days?: number;
@@ -30,21 +30,21 @@ export default async function LeaderboardPage({
   if (tab === "voters") {
     const { data } = await supabase
       .from("profiles")
-      .select("id, username, avatar_rpm_url, total_votes")
+      .select("id, username, avatar_url, total_votes")
       .order("total_votes", { ascending: false })
       .limit(50);
     profiles = data ?? [];
   } else if (tab === "credits") {
     const { data } = await supabase
       .from("profiles")
-      .select("id, username, avatar_rpm_url, credits")
+      .select("id, username, avatar_url, credits")
       .order("credits", { ascending: false })
       .limit(50);
     profiles = data ?? [];
   } else if (tab === "streaks") {
     const { data } = await supabase
       .from("profiles")
-      .select("id, username, avatar_rpm_url, streak_days")
+      .select("id, username, avatar_url, streak_days")
       .order("streak_days", { ascending: false })
       .limit(50);
     profiles = data ?? [];
@@ -52,7 +52,7 @@ export default async function LeaderboardPage({
     const { data } = await supabase
       .from("profiles")
       .select(
-        "id, username, avatar_rpm_url, correct_predictions, total_predictions"
+        "id, username, avatar_url, correct_predictions, total_predictions"
       )
       .gte("total_predictions", 10)
       .order("correct_predictions", { ascending: false })
@@ -121,7 +121,11 @@ export default async function LeaderboardPage({
             >
               {i + 1}
             </span>
-            <Avatar3D modelUrl={p.avatar_rpm_url ?? ""} size="small" />
+            <ProfileAvatar
+              avatarUrl={p.avatar_url}
+              username={p.username}
+              size="sm"
+            />
             <span className="flex-1 font-medium">{p.username}</span>
             <span className="font-mono font-semibold text-gold">{stat(p)}</span>
           </Link>
