@@ -204,7 +204,7 @@ export function CosmeticsLocker({
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="card-glass relative flex min-h-[400px] items-center justify-center p-4">
+      <div className="card-glass relative flex min-h-[400px] items-center justify-center overflow-hidden p-4">
         {previewHasUnowned && (
           <Badge
             variant="outline"

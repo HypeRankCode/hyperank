@@ -9,7 +9,6 @@ import { PhotoCropper } from "./PhotoCropper";
 import {
   AvatarStageCanvas,
   type StageCaptureHandle,
-  type StudioDragState,
 } from "./AvatarStageCanvas";
 import {
   PROFILE_POSES,
@@ -31,8 +30,15 @@ import {
   STUDIO_VIEW_DEFAULT,
   STUDIO_ZOOM_MIN,
   STUDIO_ZOOM_MAX,
+  STUDIO_PAN_X_LIMIT,
+  STUDIO_PAN_Y_LIMIT,
   type StudioViewState,
 } from "./StudioViewControls";
+import {
+  avatarDragCursorClass,
+  avatarDragPointerProps,
+  useAvatarDragRotation,
+} from "@/hooks/useAvatarDragRotation";
 
 interface AvatarStudioProps {
   avatarConfig: Record<string, unknown>;
@@ -61,9 +67,8 @@ export function AvatarStudio({
       : "default"
   );
   const [view, setView] = useState<StudioViewState>(STUDIO_VIEW_DEFAULT);
-  const [dragYaw, setDragYaw] = useState(0);
-  const [dragPitch, setDragPitch] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const rotation = useAvatarDragRotation("free");
+  const panOrigin = useRef({ panX: 0, panY: 0 });
   const [flashing, setFlashing] = useState(false);
   const [captured, setCaptured] = useState<string | null>(null);
   const [cropped, setCropped] = useState<string | null>(null);
@@ -71,16 +76,26 @@ export function AvatarStudio({
   const [confirmSave, setConfirmSave] = useState(false);
   const [error, setError] = useState("");
   const stageRef = useRef<StageCaptureHandle>(null);
-  const pointerId = useRef<number | null>(null);
-  const lastPointer = useRef({ x: 0, y: 0 });
-  const panMode = useRef(false);
   const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
 
-  const drag: StudioDragState = {
-    yaw: dragYaw,
-    pitch: dragPitch,
-    isDragging,
-  };
+  const pointerProps = avatarDragPointerProps(rotation, {
+    onPanStart: () => {
+      panOrigin.current = { panX: view.panX, panY: view.panY };
+    },
+    onPanMove: (dx, dy) => {
+      setView((prev) => ({
+        ...prev,
+        panX: Math.max(
+          -STUDIO_PAN_X_LIMIT,
+          Math.min(STUDIO_PAN_X_LIMIT, panOrigin.current.panX + dx * 0.004)
+        ),
+        panY: Math.max(
+          -STUDIO_PAN_Y_LIMIT,
+          Math.min(STUDIO_PAN_Y_LIMIT, panOrigin.current.panY - dy * 0.004)
+        ),
+      }));
+    },
+  });
 
   useRegisterUnsavedChanges(
     Boolean(captured || cropped),
@@ -93,54 +108,8 @@ export function AvatarStudio({
 
   const resetView = useCallback(() => {
     setView(STUDIO_VIEW_DEFAULT);
-    setDragYaw(0);
-    setDragPitch(0);
-  }, []);
-
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if (e.button !== 0) return;
-    pointerId.current = e.pointerId;
-    panMode.current = e.shiftKey;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    if (!panMode.current) setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-  }, []);
-
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (pointerId.current !== e.pointerId) return;
-      const dx = e.clientX - lastPointer.current.x;
-      const dy = e.clientY - lastPointer.current.y;
-      lastPointer.current = { x: e.clientX, y: e.clientY };
-
-      if (panMode.current || e.shiftKey) {
-        setView((prev) => ({
-          ...prev,
-          panX: Math.max(-0.4, Math.min(0.4, prev.panX + dx * 0.004)),
-          panY: Math.max(-0.28, Math.min(0.28, prev.panY - dy * 0.004)),
-        }));
-        return;
-      }
-
-      if (!isDragging) return;
-      setDragYaw((prev) => prev + dx * 0.012);
-      setDragPitch((prev) =>
-        Math.max(-0.3, Math.min(0.3, prev + dy * 0.006))
-      );
-    },
-    [isDragging]
-  );
-
-  const onPointerUp = useCallback((e: React.PointerEvent) => {
-    if (pointerId.current !== e.pointerId) return;
-    pointerId.current = null;
-    setIsDragging(false);
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {
-      /* already released */
-    }
-  }, []);
+    rotation.resetRotation();
+  }, [rotation]);
 
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -256,11 +225,9 @@ export function AvatarStudio({
     <div className="grid gap-6 xl:grid-cols-[1fr_300px]">
       <div className="relative min-w-0">
         <div
-          className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl cursor-grab active:cursor-grabbing"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerLeave={onPointerUp}
+          className={avatarDragCursorClass(rotation.isDragging) +
+            " relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl"}
+          {...pointerProps}
           onWheel={onWheel}
         >
           <AvatarStageCanvas
@@ -270,7 +237,7 @@ export function AvatarStudio({
             pose={pose}
             backgroundId={backgroundId}
             view={view}
-            drag={drag}
+            rotation={{ yaw: rotation.yaw, pitch: rotation.pitch }}
           />
 
           <div className="pointer-events-none absolute inset-0">
@@ -287,7 +254,7 @@ export function AvatarStudio({
           </div>
 
           <div className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/55 px-2.5 py-1.5 text-[10px] text-white/70 backdrop-blur-sm md:left-5 md:top-5">
-            Drag to spin · Shift+drag to pan · Scroll to zoom
+            Drag to rotate · Shift+drag to pan · Scroll to zoom
           </div>
 
           <AnimatePresence>

@@ -1,10 +1,6 @@
 // @ts-nocheck
 "use client";
 
-import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
 import { resolveAvatarAppearance } from "@/lib/avatar/types";
 import {
   attachWebGLContextGuard,
@@ -12,32 +8,45 @@ import {
   CANVAS_GL_PROPS,
 } from "@/lib/avatar/webgl";
 import { ProceduralBody } from "./avatar/ProceduralBody";
-
-function RotatingAvatar({
-  appearance,
-  animate,
-}: {
-  appearance: ReturnType<typeof resolveAvatarAppearance>;
-  animate: boolean;
-}) {
-  const group = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (group.current && animate) {
-      group.current.rotation.y += delta * 0.4;
-    }
-  });
-  return (
-    <group ref={group}>
-      <ProceduralBody appearance={appearance} pose="default" />
-    </group>
-  );
-}
+import { AvatarDragRig } from "./avatar/AvatarDragRig";
+import {
+  avatarDragCursorClass,
+  avatarDragPointerProps,
+  useAvatarDragRotation,
+} from "@/hooks/useAvatarDragRotation";
+import { Canvas } from "@react-three/fiber";
 
 interface AvatarFigureProps {
   config?: Parameters<typeof resolveAvatarAppearance>[0];
   equipped?: Record<string, string>;
   size?: "small" | "full";
   animate?: boolean;
+  interactive?: boolean;
+}
+
+function AvatarScene({
+  appearance,
+  drag,
+}: {
+  appearance: ReturnType<typeof resolveAvatarAppearance>;
+  drag: ReturnType<typeof useAvatarDragRotation>;
+}) {
+  return (
+    <>
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[3, 5, 2]} intensity={1.2} />
+      <pointLight position={[-2, 3, 2]} intensity={0.4} color="#e82222" />
+      <AvatarDragRig
+        mode="springSpin"
+        yaw={drag.yaw}
+        pitch={drag.pitch}
+        isDragging={drag.isDragging}
+        position={[0, -0.12, 0]}
+      >
+        <ProceduralBody appearance={appearance} pose="default" />
+      </AvatarDragRig>
+    </>
+  );
 }
 
 export function AvatarFigure({
@@ -45,36 +54,43 @@ export function AvatarFigure({
   equipped = {},
   size = "full",
   animate = true,
+  interactive = true,
 }: AvatarFigureProps) {
   const appearance = resolveAvatarAppearance(config, equipped);
   const isSmall = size === "small";
+  const canInteract = interactive && !isSmall && animate;
+  const drag = useAvatarDragRotation("springSpin");
+  const pointerProps = canInteract ? avatarDragPointerProps(drag) : {};
 
   return (
     <div
       className={
         isSmall
           ? "h-20 w-20 overflow-hidden rounded-full bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
-          : "h-full min-h-[400px] w-full rounded-xl bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
+          : avatarDragCursorClass(canInteract && drag.isDragging) +
+            " relative h-full min-h-[400px] w-full rounded-xl bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a]"
       }
+      {...pointerProps}
     >
       <Canvas
-        camera={{ position: [0, 1.2, isSmall ? 4 : 3.2], fov: 45 }}
+        camera={{ position: [0, 0.85, 4.4], fov: 38 }}
         dpr={CANVAS_DPR}
         gl={CANVAS_GL_PROPS}
         onCreated={({ gl }) => attachWebGLContextGuard(gl)}
         style={{
           width: isSmall ? 80 : "100%",
-          height: isSmall ? 80 : 400,
+          height: isSmall ? 80 : "100%",
+          minHeight: isSmall ? 80 : 400,
+          touchAction: "none",
         }}
       >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[3, 5, 2]} intensity={1.2} />
-        <pointLight position={[-2, 3, 2]} intensity={0.4} color="#e82222" />
-        <RotatingAvatar appearance={appearance} animate={animate && !isSmall} />
-        {!isSmall && (
-          <OrbitControls enableZoom={false} enablePan={false} target={[0, 1, 0]} />
-        )}
+        <AvatarScene appearance={appearance} drag={drag} />
       </Canvas>
+      {canInteract && (
+        <p className="pointer-events-none absolute bottom-3 left-0 right-0 text-center text-[10px] text-white/40">
+          Drag to spin
+        </p>
+      )}
     </div>
   );
 }

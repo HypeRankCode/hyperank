@@ -18,6 +18,7 @@ import {
 import type { ProfilePose } from "@/lib/avatar/studio";
 import { STUDIO_BACKGROUNDS } from "@/lib/avatar/studio";
 import { ProceduralBody } from "./ProceduralBody";
+import { AvatarDragRig } from "./AvatarDragRig";
 import {
   attachWebGLContextGuard,
   CANVAS_DPR,
@@ -29,10 +30,9 @@ export interface StageCaptureHandle {
   capture: () => string | null;
 }
 
-export interface StudioDragState {
+export interface StudioRotationState {
   yaw: number;
   pitch: number;
-  isDragging: boolean;
 }
 
 interface StageSceneProps {
@@ -40,7 +40,7 @@ interface StageSceneProps {
   pose: ProfilePose;
   backgroundId: string;
   view: StudioViewState;
-  drag: StudioDragState;
+  rotation: StudioRotationState;
 }
 
 const BASE_CAMERA = { x: 0, y: 0.78, z: 4.85, lookY: 0.88 };
@@ -68,50 +68,12 @@ function StudioCamera({ view }: { view: StudioViewState }) {
   return null;
 }
 
-function StudioCharacterRig({
-  appearance,
-  pose,
-  drag,
-}: {
-  appearance: AvatarConfig & AvatarVisualExtras;
-  pose: ProfilePose;
-  drag: StudioDragState;
-}) {
-  const rig = useRef<THREE.Group>(null);
-  const spin = useRef(0.15);
-  const smoothDrag = useRef({ yaw: 0, pitch: 0 });
-
-  useFrame((_, delta) => {
-    if (!rig.current) return;
-
-    spin.current += delta * 0.35;
-
-    if (drag.isDragging) {
-      smoothDrag.current.yaw = drag.yaw;
-      smoothDrag.current.pitch = drag.pitch;
-    } else {
-      const t = 1 - Math.exp(-delta * 6);
-      smoothDrag.current.yaw += (0 - smoothDrag.current.yaw) * t;
-      smoothDrag.current.pitch += (0 - smoothDrag.current.pitch) * t;
-    }
-
-    rig.current.rotation.y = spin.current + smoothDrag.current.yaw;
-    rig.current.rotation.x = smoothDrag.current.pitch;
-  });
-
-  return (
-    <group ref={rig} position={[0, -0.18, 0]}>
-      <ProceduralBody appearance={appearance} pose={pose} />
-    </group>
-  );
-}
-
 function StageContents({
   appearance,
   pose,
   backgroundId,
   view,
-  drag,
+  rotation,
 }: StageSceneProps) {
   const bg = STUDIO_BACKGROUNDS[backgroundId] ?? STUDIO_BACKGROUNDS.default;
 
@@ -148,7 +110,14 @@ function StageContents({
         />
       </mesh>
 
-      <StudioCharacterRig appearance={appearance} pose={pose} drag={drag} />
+      <AvatarDragRig
+        mode="free"
+        yaw={rotation.yaw}
+        pitch={rotation.pitch}
+        position={[0, -0.18, 0]}
+      >
+        <ProceduralBody appearance={appearance} pose={pose} />
+      </AvatarDragRig>
     </>
   );
 }
@@ -171,14 +140,14 @@ interface AvatarStageCanvasProps {
   pose: ProfilePose;
   backgroundId: string;
   view: StudioViewState;
-  drag: StudioDragState;
+  rotation: StudioRotationState;
 }
 
 export const AvatarStageCanvas = forwardRef<
   StageCaptureHandle,
   AvatarStageCanvasProps
 >(function AvatarStageCanvas(
-  { config, equipped = {}, pose, backgroundId, view, drag },
+  { config, equipped = {}, pose, backgroundId, view, rotation },
   ref
 ) {
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -211,7 +180,7 @@ export const AvatarStageCanvas = forwardRef<
         pose={pose}
         backgroundId={backgroundId}
         view={view}
-        drag={drag}
+        rotation={rotation}
       />
     </Canvas>
   );
