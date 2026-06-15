@@ -1,16 +1,12 @@
 {
   "crons": [
-    { "path": "/api/cron/daily-drop", "schedule": "0 0 * * *" },
-    { "path": "/api/cron/vote-velocity", "schedule": "*/10 * * * *" },
-    { "path": "/api/cron/resolve-predictions", "schedule": "0 1 * * *" },
-    { "path": "/api/cron/resolve-battles", "schedule": "*/30 * * * *" },
-    { "path": "/api/cron/weekly-report", "schedule": "0 23 * * 0" },
-    { "path": "/api/cron/streak-check", "schedule": "0 6 * * *" },
-    { "path": "/api/cron/cosmetic-unlock-check", "schedule": "0 2 * * *" },
-    { "path": "/api/cron/weekly-drop", "schedule": "0 12 * * 1" },
-    { "path": "/api/cron/drop-end", "schedule": "0 * * * *" },
-    { "path": "/api/cron/expire-trades", "schedule": "0 3 * * *" },
-    { "path": "/api/cron/update-floor-prices", "schedule": "*/30 * * * *" },
-    { "path": "/api/cron/unban-check", "schedule": "0 4 * * *" }
+    {
+      "path": "/api/cron/daily",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/weekly",
+      "schedule": "0 12 * * 1"
+    }
   ]
 }

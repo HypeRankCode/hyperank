@@ -121,22 +121,40 @@ Supabase → **Authentication → Providers → Email**:
 - [ ] Allowed parent URLs: `https://hyperank.ca`, `http://localhost:3000`
 - [ ] Test `/locker` → create avatar → should save to profile
 
-### Vercel Cron jobs
+### Vercel Cron jobs (Hobby plan)
 
-`vercel.json` is already in the repo.
+**Vercel Hobby only allows 2 cron jobs, each running at most once per day.**  
+The repo is configured for that:
 
-- [ ] Vercel → **Settings → Cron Jobs** — confirm jobs listed after deploy
-- [ ] Crons use `CRON_SECRET` — verify Vercel sends `Authorization: Bearer <CRON_SECRET>` on your plan
+| Schedule | Path | What it does |
+|----------|------|----------------|
+| `0 0 * * *` (midnight UTC daily) | `/api/cron/daily` | Daily drop, vote velocity, predictions, battles, streaks, cosmetics, shop cleanup, trades, floor prices, unbans. Weekly report runs here on **Sundays**. |
+| `0 12 * * 1` (noon UTC Mondays) | `/api/cron/weekly` | Activates scheduled shop weekly drops |
 
-**Manual test:**
+- [ ] Set `CRON_SECRET` in Vercel env vars (Vercel sends it as `Authorization: Bearer …` on cron invocations)
+- [ ] Deploy → **Settings → Cron Jobs** — confirm **2 jobs** appear (not 12)
+- [ ] Vote velocity updates **once per day** (24h window), not every 10 minutes — upgrade to **Vercel Pro** for high-frequency crons
+
+**Manual test (runs everything daily):**
+
+```bash
+curl https://hyperank.ca/api/cron/daily \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
+```
+
+**Manual test (single job):**
 
 ```bash
 curl https://hyperank.ca/api/cron/daily-drop \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
-- [ ] Daily drop cron returns `{ ok: true }`
-- [ ] Check homepage "Daily Drop" section after trigger or next midnight UTC
+- [ ] Daily cron returns `{ ok: true, results: { ... } }`
+- [ ] Check homepage "Daily Drop" after trigger or next midnight UTC
+
+**Want 10-min velocity / 30-min battles?** Options without Pro:
+- [ ] Use [cron-job.org](https://cron-job.org) or **Cloudflare Workers cron** to hit `/api/cron/vote-velocity` with your `CRON_SECRET`
+- [ ] Or upgrade Vercel to Pro and restore granular schedules in `vercel.json`
 
 ### Create first battle (admin)
 
