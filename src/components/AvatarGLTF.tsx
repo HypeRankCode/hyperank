@@ -6,6 +6,11 @@ import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, Environment, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import {
+  attachWebGLContextGuard,
+  CANVAS_DPR,
+  CANVAS_GL_PROPS,
+} from "@/lib/avatar/webgl";
 
 interface AvatarModelProps {
   modelUrl: string;
@@ -60,6 +65,9 @@ export function AvatarGLTF({
     >
       <Canvas
         camera={{ position: [0, 0, 3], fov: 45 }}
+        dpr={CANVAS_DPR}
+        gl={CANVAS_GL_PROPS}
+        onCreated={({ gl }) => attachWebGLContextGuard(gl)}
         style={{
           width: isSmall ? 80 : "100%",
           height: isSmall ? 80 : 400,

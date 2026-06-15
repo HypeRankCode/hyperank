@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useEffect, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -12,6 +12,7 @@ import {
 import type { ProfilePose } from "@/lib/avatar/studio";
 import { STUDIO_BACKGROUNDS } from "@/lib/avatar/studio";
 import { ProceduralBody } from "./ProceduralBody";
+import { attachWebGLContextGuard, CANVAS_DPR, CANVAS_GL_PROPS } from "@/lib/avatar/webgl";
 
 export interface StageCaptureHandle {
   capture: () => string | null;
@@ -84,18 +85,22 @@ interface AvatarStageCanvasProps {
   equipped?: Record<string, string>;
   pose: ProfilePose;
   backgroundId: string;
-  onGlReady?: (gl: THREE.WebGLRenderer) => void;
 }
 
 export const AvatarStageCanvas = forwardRef<
   StageCaptureHandle,
   AvatarStageCanvasProps
 >(function AvatarStageCanvas(
-  { config, equipped = {}, pose, backgroundId, onGlReady },
+  { config, equipped = {}, pose, backgroundId },
   ref
 ) {
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const appearance = resolveAvatarAppearance(config, equipped);
+
+  const handleGlReady = useCallback((gl: THREE.WebGLRenderer) => {
+    glRef.current = gl;
+    attachWebGLContextGuard(gl);
+  }, []);
 
   useImperativeHandle(ref, () => ({
     capture: () => {
@@ -107,12 +112,13 @@ export const AvatarStageCanvas = forwardRef<
 
   return (
     <Canvas
-      gl={{ preserveDrawingBuffer: true, antialias: true }}
+      gl={{ ...CANVAS_GL_PROPS, preserveDrawingBuffer: true }}
+      dpr={CANVAS_DPR}
       camera={{ position: [0, 0.95, 3.35], fov: 32, near: 0.1, far: 20 }}
       style={{ width: "100%", height: "100%" }}
       shadows
     >
-      <GlBridge onReady={(gl) => { glRef.current = gl; onGlReady?.(gl); }} />
+      <GlBridge onReady={handleGlReady} />
       <StageContents
         appearance={appearance}
         pose={pose}

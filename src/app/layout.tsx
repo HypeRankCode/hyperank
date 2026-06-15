@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { UserProvider } from "@/components/UserProvider";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { LoginModal } from "@/components/LoginModal";
+import { UnsavedChangesGuard } from "@/components/UnsavedChangesGuard";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -65,6 +66,7 @@ export default function RootLayout({
           <CookieBanner />
           <MobileNav />
           <LoginModal />
+          <UnsavedChangesGuard />
         </UserProvider>
       </body>
     </html>

@@ -11,6 +11,9 @@ interface Props {
   trendBId: string;
   trendAName: string;
   trendBName: string;
+  /** Server-known vote — prevents re-vote UI on return */
+  initialVotedFor?: string | null;
+  initialVotedName?: string | null;
 }
 
 export function BattleVoteClient({
@@ -19,13 +22,17 @@ export function BattleVoteClient({
   trendBId,
   trendAName,
   trendBName,
+  initialVotedFor = null,
+  initialVotedName = null,
 }: Props) {
-  const [voted, setVoted] = useState(false);
+  const [votedFor, setVotedFor] = useState<string | null>(initialVotedFor);
+  const [votedName, setVotedName] = useState<string | null>(initialVotedName);
   const [error, setError] = useState("");
   const requireAuth = useRequireAuth();
   const showAuthModal = useAuthModalStore((s) => s.show);
 
-  async function vote(trendId: string) {
+  async function vote(trendId: string, name: string) {
+    if (votedFor) return;
     if (!requireAuth("Sign in to vote in battles")) return;
 
     const res = await fetch(`/api/battles/${battleId}/vote`, {
@@ -36,25 +43,39 @@ export function BattleVoteClient({
     const data = await res.json();
     if (!res.ok) {
       if (res.status === 401) showAuthModal("Sign in to vote");
-      else setError(data.error ?? "Failed");
+      else if (res.status === 409) {
+        setVotedFor(trendId);
+        setVotedName(name);
+      } else setError(data.error ?? "Failed");
       return;
     }
-    setVoted(true);
-    window.location.reload();
+    setVotedFor(trendId);
+    setVotedName(name);
   }
 
-  if (voted) return <p className="mt-6 text-center text-neon">Vote recorded.</p>;
+  if (votedFor) {
+    return (
+      <div className="mt-8 surface-card rounded-2xl p-6 text-center">
+        <p className="font-display text-lg font-bold text-emerald-400">
+          You voted for {votedName ?? "your pick"}
+        </p>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          One vote per battle — you&apos;re locked in.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8">
       <div className="flex gap-4">
-        <Button className="flex-1" onClick={() => vote(trendAId)}>
+        <Button className="flex-1" onClick={() => vote(trendAId, trendAName)}>
           Vote {trendAName}
         </Button>
         <Button
           className="flex-1"
           variant="secondary"
-          onClick={() => vote(trendBId)}
+          onClick={() => vote(trendBId, trendBName)}
         >
           Vote {trendBName}
         </Button>

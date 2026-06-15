@@ -42,6 +42,26 @@ export default async function BattleDetailPage({
   const trendB = battle.trend_b as { id: string; name: string };
   const total = battle.votes_a + battle.votes_b || 1;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let initialVotedFor: string | null = null;
+  let initialVotedName: string | null = null;
+  if (user) {
+    const { data: myVote } = await supabase
+      .from("battle_votes")
+      .select("voted_for")
+      .eq("battle_id", params.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (myVote?.voted_for) {
+      initialVotedFor = myVote.voted_for;
+      initialVotedName =
+        myVote.voted_for === trendA.id ? trendA.name : trendB.name;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <BackLink href="/battles" label="Battles" />
@@ -102,6 +122,8 @@ export default async function BattleDetailPage({
           trendBId={trendB.id}
           trendAName={trendA.name}
           trendBName={trendB.name}
+          initialVotedFor={initialVotedFor}
+          initialVotedName={initialVotedName}
         />
       )}
     </div>

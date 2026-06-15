@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { useUserStore } from "@/stores/useUserStore";
+import { useRegisterUnsavedChanges } from "@/hooks/useRegisterUnsavedChanges";
 import {
   getAppearanceFromConfig,
   hasUnownedEquipped,
@@ -66,6 +67,8 @@ export function CosmeticsLocker({
   const [buying, setBuying] = useState(false);
   const [error, setError] = useState("");
   const [confirmSave, setConfirmSave] = useState(false);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const [confirmClearLocked, setConfirmClearLocked] = useState(false);
   const [pendingBuy, setPendingBuy] = useState<Cosmetic | null>(null);
 
   const profile = useUserStore((s) => s.profile);
@@ -92,8 +95,52 @@ export function CosmeticsLocker({
 
   function tryOn(id: string) {
     setError("");
-    setPreviewEquipped((prev) => ({ ...prev, [category]: id }));
+    setPreviewEquipped((prev) => {
+      if (prev[category] === id) {
+        const next = { ...prev };
+        delete next[category];
+        return next;
+      }
+      return { ...prev, [category]: id };
+    });
   }
+
+  function clearAllPreviewChanges() {
+    setPreviewEquipped({ ...savedEquipped });
+    setConfirmClearAll(false);
+    setError("");
+  }
+
+  function clearLockedPreviewsOnly() {
+    setPreviewEquipped((prev) => {
+      const next = { ...prev };
+      for (const slot of Object.keys(next)) {
+        const id = next[slot];
+        if (id && !ownedIds.includes(id)) {
+          if (savedEquipped[slot]) next[slot] = savedEquipped[slot];
+          else delete next[slot];
+        }
+      }
+      return next;
+    });
+    setConfirmClearLocked(false);
+    setError("");
+  }
+
+  const hasPreviewChanges = useMemo(
+    () => JSON.stringify(previewEquipped) !== JSON.stringify(savedEquipped),
+    [previewEquipped, savedEquipped]
+  );
+
+  const hasLockedPreviews = useMemo(
+    () => hasUnownedEquipped(previewEquipped, ownedIds),
+    [previewEquipped, ownedIds]
+  );
+
+  useRegisterUnsavedChanges(
+    hasPreviewChanges,
+    "You have unsaved outfit changes. Leave the locker anyway?"
+  );
 
   async function confirmPurchase() {
     if (!pendingBuy || !profile) return;
@@ -216,9 +263,12 @@ export function CosmeticsLocker({
                 <Badge variant="outline" className="mt-1 text-[10px]">
                   {item.rarity}
                 </Badge>
-                {isPreview && !owned && (
-                  <Badge variant="outline" className="mt-1 text-[10px] text-amber-400">
-                    Try-on
+                {isPreview && (
+                  <Badge
+                    variant="outline"
+                    className={`mt-1 text-[10px] ${!owned ? "text-amber-400" : "text-red-400"}`}
+                  >
+                    {!owned ? "Try-on" : "Equipped"}
                   </Badge>
                 )}
                 {!owned && (
@@ -276,8 +326,53 @@ export function CosmeticsLocker({
               Buy previewed items or remove them before saving your outfit.
             </p>
           )}
+
+          {(hasPreviewChanges || hasLockedPreviews) && (
+            <div className="border-t border-white/10 pt-3 text-center text-xs text-[var(--text-secondary)]">
+              <span>Changed your mind? </span>
+              {hasPreviewChanges && (
+                <button
+                  type="button"
+                  className="text-red-400 hover:underline"
+                  onClick={() => setConfirmClearAll(true)}
+                >
+                  Clear all changes
+                </button>
+              )}
+              {hasPreviewChanges && hasLockedPreviews && (
+                <span className="mx-1">·</span>
+              )}
+              {hasLockedPreviews && (
+                <button
+                  type="button"
+                  className="text-amber-400 hover:underline"
+                  onClick={() => setConfirmClearLocked(true)}
+                >
+                  Remove try-ons only
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmClearAll}
+        title="Clear all changes?"
+        description="This reverts your outfit preview to what you last saved. Nothing is deleted from your inventory."
+        confirmLabel="Clear everything"
+        onConfirm={clearAllPreviewChanges}
+        onCancel={() => setConfirmClearAll(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmClearLocked}
+        title="Remove try-ons?"
+        description="This removes locked preview items only. Your owned selections stay as they are in the preview."
+        confirmLabel="Remove try-ons"
+        onConfirm={clearLockedPreviewsOnly}
+        onCancel={() => setConfirmClearLocked(false)}
+      />
 
       <ConfirmDialog
         open={confirmSave}

@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/Logo";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useRegisterUnsavedChanges } from "@/hooks/useRegisterUnsavedChanges";
+import { useUnsavedChangesStore } from "@/stores/useUnsavedChangesStore";
 import {
   DEFAULT_AVATAR_CONFIG,
   PROCEDURAL_AVATAR_URL,
@@ -43,6 +45,12 @@ export default function OnboardingPage() {
     ...DEFAULT_AVATAR_CONFIG,
   });
   const [confirmFinish, setConfirmFinish] = useState(false);
+  const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
+
+  useRegisterUnsavedChanges(
+    step === 2,
+    "Finish building your character before leaving setup."
+  );
 
   useEffect(() => {
     const supabase = createClient();
@@ -146,6 +154,7 @@ export default function OnboardingPage() {
       return;
     }
     setConfirmFinish(false);
+    clearUnsaved();
     router.push("/dashboard");
   }
 

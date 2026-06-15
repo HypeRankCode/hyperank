@@ -1,4 +1,4 @@
-import { subHours, differenceInDays } from "date-fns";
+import { subHours, differenceInDays, addDays } from "date-fns";
 import { createServiceClient } from "@/lib/supabase/admin";
 import { calcHypeScore, slugify } from "@/lib/hype-score";
 import { awardCredits } from "@/lib/credits";
@@ -11,7 +11,7 @@ export async function runDailyDrop() {
 
   await admin
     .from("trends")
-    .update({ is_daily_drop: false })
+    .update({ is_daily_drop: false, is_community_pick: false })
     .neq("id", "00000000-0000-0000-0000-000000000000");
 
   const { data: allTrends } = await admin
@@ -39,6 +39,92 @@ export async function runDailyDrop() {
     }
   }
 
+  let communityTrendId: string | null = null;
+
+  const { data: cooldowns } = await admin
+    .from("hype_pitch_cooldowns")
+    .select("pitch_key")
+    .gte("banned_until", today);
+
+  const blockedKeys = new Set((cooldowns ?? []).map((c) => c.pitch_key));
+
+  const { data: pitches } = await admin
+    .from("hype_pitches")
+    .select("*")
+    .eq("status", "active")
+    .order("vote_count", { ascending: false })
+    .limit(50);
+
+  const winner = (pitches ?? []).find((p) => !blockedKeys.has(p.pitch_key));
+
+  if (winner && winner.vote_count > 0) {
+    const baseSlug = slugify(winner.title);
+    let slug = baseSlug;
+    const { data: slugHit } = await admin
+      .from("trends")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (slugHit) {
+      slug = `${baseSlug}-${today}`;
+    }
+
+    const { data: newTrend } = await admin
+      .from("trends")
+      .insert({
+        slug,
+        name: winner.title,
+        description: winner.description,
+        submitted_by: winner.user_id,
+        is_daily_drop: true,
+        daily_drop_date: today,
+        is_community_pick: true,
+        status: "active",
+      })
+      .select("id")
+      .single();
+
+    communityTrendId = newTrend?.id ?? null;
+
+    if (communityTrendId) {
+      const bannedUntil = addDays(new Date(today), 7)
+        .toISOString()
+        .split("T")[0];
+
+      await admin
+        .from("hype_pitches")
+        .update({
+          status: "won",
+          won_on: today,
+          trend_id: communityTrendId,
+        })
+        .eq("id", winner.id);
+
+      await admin.from("hype_pitch_cooldowns").upsert(
+        {
+          pitch_key: winner.pitch_key,
+          banned_until: bannedUntil,
+          source_pitch_id: winner.id,
+        },
+        { onConflict: "pitch_key" }
+      );
+
+      await awardCredits(winner.user_id, 50, "pitch_won");
+    }
+
+    await admin
+      .from("hype_pitches")
+      .update({ status: "expired" })
+      .eq("status", "active")
+      .neq("id", winner.id);
+  } else if (pitches?.length) {
+    await admin
+      .from("hype_pitches")
+      .update({ status: "expired" })
+      .eq("status", "active");
+  }
+
   const { data: trends } = await admin
     .from("trends")
     .select("id")
@@ -46,7 +132,8 @@ export async function runDailyDrop() {
     .order("vote_velocity", { ascending: false })
     .limit(20);
 
-  const shuffled = (trends ?? []).sort(() => Math.random() - 0.5).slice(0, 5);
+  const pool = (trends ?? []).filter((t) => t.id !== communityTrendId);
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, communityTrendId ? 4 : 5);
 
   for (const t of shuffled) {
     await admin
@@ -55,7 +142,10 @@ export async function runDailyDrop() {
       .eq("id", t.id);
   }
 
-  return { daily_drop_count: shuffled.length };
+  return {
+    daily_drop_count: shuffled.length + (communityTrendId ? 1 : 0),
+    community_pick: communityTrendId,
+  };
 }
 
 /** Runs once daily on Hobby — uses 24h vote window instead of 10min. */

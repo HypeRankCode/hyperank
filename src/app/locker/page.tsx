@@ -59,9 +59,12 @@ export default async function LockerPage() {
         <div className="space-y-8">
           <div className="surface-card flex flex-wrap items-center justify-between gap-4 rounded-2xl p-4">
             <div>
-              <p className="font-medium">Profile icon</p>
+              <p className="font-medium">Profile &amp; appearance</p>
               <p className="text-sm text-[var(--text-secondary)]">
-                Snap a photo in the studio — used on battles, ranks &amp; header.
+                Photo studio for your icon ·{" "}
+                <Link href="/settings/avatar" className="text-red-400 hover:underline">
+                  edit skin, hair &amp; body
+                </Link>
               </p>
             </div>
             <Link href="/settings/profile-photo" className="btn-hype text-sm">
@@ -75,16 +78,6 @@ export default async function LockerPage() {
             modelUrl={profile.avatar_rpm_url ?? ""}
             avatarConfig={rawConfig}
           />
-          <div className="surface-card rounded-2xl p-8">
-            <h3 className="font-display text-lg font-bold">Edit appearance</h3>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">
-              Skin, hair, body type — cosmetics stay equipped in the locker
-              above.
-            </p>
-            <div className="mt-4">
-              <AvatarBuilder initialConfig={appearance} />
-            </div>
-          </div>
         </div>
       )}
     </PageShell>

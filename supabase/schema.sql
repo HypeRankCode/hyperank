@@ -76,6 +76,7 @@ create table public.trends (
   hype_score numeric(5, 2) default 50.0,
   is_daily_drop boolean default false,
   daily_drop_date date,
+  is_community_pick boolean default false,
   is_sponsored boolean default false,
   sponsor_profile_id uuid references public.profiles (id),
   sponsor_label text,
@@ -163,6 +164,36 @@ create table public.hot_take_votes (
   user_id uuid references public.profiles (id) on delete cascade,
   hot_take_id uuid references public.hot_takes (id) on delete cascade,
   primary key (user_id, hot_take_id)
+);
+
+-- -----------------------------------------------------------------------------
+-- HYPE PITCHES (community auditions for daily pick)
+-- -----------------------------------------------------------------------------
+create table public.hype_pitches (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles (id) on delete cascade not null,
+  title text not null,
+  description text,
+  pitch_key text not null,
+  vote_count integer default 0,
+  status text default 'active' check (status in ('active', 'won', 'expired')),
+  trend_id uuid references public.trends (id),
+  won_on date,
+  created_at timestamptz default now()
+);
+
+create table public.hype_pitch_votes (
+  user_id uuid references public.profiles (id) on delete cascade,
+  pitch_id uuid references public.hype_pitches (id) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, pitch_id)
+);
+
+create table public.hype_pitch_cooldowns (
+  pitch_key text primary key,
+  banned_until date not null,
+  source_pitch_id uuid references public.hype_pitches (id),
+  created_at timestamptz default now()
 );
 
 -- -----------------------------------------------------------------------------
@@ -440,6 +471,9 @@ create index idx_predictions_user_id on public.predictions (user_id);
 create index idx_predictions_trend_id on public.predictions (trend_id);
 create index idx_battle_votes_battle_id on public.battle_votes (battle_id);
 create index idx_hot_takes_trend_id on public.hot_takes (trend_id);
+create index idx_hype_pitches_status_votes on public.hype_pitches (status, vote_count desc);
+create index idx_hype_pitches_user_id on public.hype_pitches (user_id);
+create index idx_hype_pitch_cooldowns_until on public.hype_pitch_cooldowns (banned_until);
 create index idx_inventory_items_owner_id on public.inventory_items (owner_id);
 create index idx_marketplace_listings_active on public.marketplace_listings (is_active) where is_active = true;
 create index idx_marketplace_listings_cosmetic_id on public.marketplace_listings (cosmetic_id);
@@ -457,6 +491,9 @@ alter table public.battles enable row level security;
 alter table public.battle_votes enable row level security;
 alter table public.hot_takes enable row level security;
 alter table public.hot_take_votes enable row level security;
+alter table public.hype_pitches enable row level security;
+alter table public.hype_pitch_votes enable row level security;
+alter table public.hype_pitch_cooldowns enable row level security;
 alter table public.dictionary enable row level security;
 alter table public.weekly_reports enable row level security;
 alter table public.cosmetics enable row level security;
@@ -541,6 +578,29 @@ create policy "Users manage own hot take votes"
   on public.hot_take_votes for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Hype pitches
+create policy "Hype pitches public"
+  on public.hype_pitches for select
+  using (true);
+
+create policy "Users insert hype pitches"
+  on public.hype_pitches for insert
+  with check (auth.uid() = user_id);
+
+-- Hype pitch votes
+create policy "Hype pitch votes viewable by all"
+  on public.hype_pitch_votes for select
+  using (true);
+
+create policy "Users insert own hype pitch votes"
+  on public.hype_pitch_votes for insert
+  with check (auth.uid() = user_id);
+
+-- Hype pitch cooldowns (read-only for clients; cron uses service role)
+create policy "Hype pitch cooldowns public read"
+  on public.hype_pitch_cooldowns for select
+  using (true);
 
 -- Dictionary
 create policy "Dictionary publicly readable"

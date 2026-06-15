@@ -7,60 +7,225 @@ import type { ProfilePose } from "@/lib/avatar/studio";
 interface Props {
   appearance: AvatarConfig & AvatarVisualExtras;
   pose?: ProfilePose;
-  animate?: boolean;
 }
 
-function armPose(pose: ProfilePose, side: "left" | "right") {
-  const isLeft = side === "left";
+function armRotation(pose: ProfilePose, side: "left" | "right"): [number, number, number] {
+  const s = side === "left" ? 1 : -1;
   switch (pose) {
     case "wave":
-      return isLeft
-        ? { pos: [-0.62, 1.35, 0.1] as const, rot: [0, 0, 0.8] as const }
-        : { pos: [0.62, 1.05, 0] as const, rot: [0, 0, 0] as const };
+      return side === "left" ? [0.15, 0, 1.35] : [0, 0, -0.15];
     case "flex":
-      return isLeft
-        ? { pos: [-0.68, 1.28, 0] as const, rot: [0, 0, 1.1] as const }
-        : { pos: [0.68, 1.28, 0] as const, rot: [0, 0, -1.1] as const };
+      return [0, 0, s * 1.45];
     case "peace":
-      return isLeft
-        ? { pos: [-0.58, 1.22, 0.08] as const, rot: [0, 0, 0.5] as const }
-        : { pos: [0.58, 1.22, 0.08] as const, rot: [0, 0, -0.5] as const };
+      return [0, 0, s * 0.65];
     case "stance":
-      return isLeft
-        ? { pos: [-0.58, 1.02, 0.12] as const, rot: [0, 0, 0.35] as const }
-        : { pos: [0.58, 1.02, 0.12] as const, rot: [0, 0, -0.35] as const };
+      return [0, 0, s * 0.4];
     default:
-      return isLeft
-        ? { pos: [-0.58, 1.05, 0] as const, rot: [0, 0, 0] as const }
-        : { pos: [0.58, 1.05, 0] as const, rot: [0, 0, 0] as const };
+      return [0.08, 0, s * 0.12];
   }
 }
 
-export function ProceduralBody({
+function getHeadDims(face: string) {
+  if (face === "sharp") return { w: 0.38, h: 0.48, d: 0.36, round: false };
+  if (face === "soft") return { w: 0.44, h: 0.4, d: 0.42, round: false };
+  if (face === "round") return { w: 0.44, h: 0.44, d: 0.44, round: true };
+  return { w: 0.42, h: 0.42, d: 0.42, round: false };
+}
+
+function FaceFeatures({
+  headY,
+  dims,
+  skin,
+  eye,
+}: {
+  headY: number;
+  dims: ReturnType<typeof getHeadDims>;
+  skin: string;
+  eye: string;
+}) {
+  const frontZ = dims.d / 2 + 0.012;
+  const eyeY = headY + dims.h * 0.1;
+  const noseY = headY - dims.h * 0.06;
+  const mouthY = headY - dims.h * 0.22;
+  const earX = dims.w / 2 + 0.03;
+
+  return (
+    <>
+      <mesh position={[-dims.w * 0.22, eyeY, frontZ]}>
+        <boxGeometry args={[0.055, 0.055, 0.02]} />
+        <meshStandardMaterial color={eye} />
+      </mesh>
+      <mesh position={[dims.w * 0.22, eyeY, frontZ]}>
+        <boxGeometry args={[0.055, 0.055, 0.02]} />
+        <meshStandardMaterial color={eye} />
+      </mesh>
+      <mesh position={[0, noseY, frontZ + 0.02]}>
+        <boxGeometry args={[0.05, 0.06, 0.04]} />
+        <meshStandardMaterial color={skin} />
+      </mesh>
+      <mesh position={[0, mouthY, frontZ]}>
+        <boxGeometry args={[0.08, 0.03, 0.02]} />
+        <meshStandardMaterial color="#8b4545" />
+      </mesh>
+      <mesh position={[-earX, headY, 0]}>
+        <boxGeometry args={[0.05, 0.1, 0.06]} />
+        <meshStandardMaterial color={skin} />
+      </mesh>
+      <mesh position={[earX, headY, 0]}>
+        <boxGeometry args={[0.05, 0.1, 0.06]} />
+        <meshStandardMaterial color={skin} />
+      </mesh>
+    </>
+  );
+}
+
+function HairMesh({
   appearance,
-  pose = "default",
-}: Props) {
+  headY,
+  dims,
+}: {
+  appearance: AvatarConfig & AvatarVisualExtras;
+  headY: number;
+  dims: ReturnType<typeof getHeadDims>;
+}) {
+  const style = appearance.hairStyle ?? "short";
+  const hair = appearance.hair ?? "#1a120b";
+  if (style === "bald") return null;
+
+  const top = headY + dims.h / 2;
+  const capW = dims.w + 0.08;
+  const capD = dims.d + 0.06;
+
+  if (style === "buzz") {
+    return (
+      <mesh position={[0, top + 0.02, -0.01]} castShadow>
+        <boxGeometry args={[capW, 0.06, capD]} />
+        <meshStandardMaterial color={hair} />
+      </mesh>
+    );
+  }
+
+  if (style === "long") {
+    return (
+      <group>
+        <mesh position={[0, top + 0.05, -0.02]} castShadow>
+          <boxGeometry args={[capW, 0.12, capD]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+        <mesh position={[0, top - 0.02, -dims.d * 0.15]} castShadow>
+          <boxGeometry args={[capW * 0.95, 0.08, capD * 0.9]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+        <mesh position={[-dims.w / 2 - 0.04, headY - 0.05, -0.02]} castShadow>
+          <boxGeometry args={[0.1, 0.38, 0.1]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+        <mesh position={[dims.w / 2 + 0.04, headY - 0.05, -0.02]} castShadow>
+          <boxGeometry args={[0.1, 0.38, 0.1]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (style === "ponytail") {
+    return (
+      <group>
+        <mesh position={[0, top + 0.05, -0.02]} castShadow>
+          <boxGeometry args={[capW, 0.12, capD]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+        <mesh position={[0, headY, -dims.d / 2 - 0.22]} castShadow>
+          <boxGeometry args={[0.12, 0.42, 0.12]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+      </group>
+    );
+  }
+
+  // short — full cap on top + slight back, clear of face
+  return (
+    <group>
+      <mesh position={[0, top + 0.06, -0.02]} castShadow>
+        <boxGeometry args={[capW, 0.14, capD]} />
+        <meshStandardMaterial color={hair} />
+      </mesh>
+      <mesh position={[0, headY + dims.h * 0.15, -dims.d / 2 - 0.02]} castShadow>
+        <boxGeometry args={[capW * 0.92, 0.1, 0.08]} />
+        <meshStandardMaterial color={hair} />
+      </mesh>
+    </group>
+  );
+}
+
+function Arm({
+  side,
+  shoulderX,
+  shoulderY,
+  pose,
+  shirt,
+  skin,
+  watchColor,
+}: {
+  side: "left" | "right";
+  shoulderX: number;
+  shoulderY: number;
+  pose: ProfilePose;
+  shirt: string;
+  skin: string;
+  watchColor?: string;
+}) {
+  const rot = armRotation(pose, side);
+
+  return (
+    <group position={[shoulderX, shoulderY, 0]}>
+      {/* Shoulder cap — connects arm to torso */}
+      <mesh castShadow>
+        <sphereGeometry args={[0.1, 10, 10]} />
+        <meshStandardMaterial color={shirt} />
+      </mesh>
+      <group rotation={rot}>
+        <mesh position={[0, -0.2, 0]} castShadow>
+          <boxGeometry args={[0.17, 0.36, 0.17]} />
+          <meshStandardMaterial color={shirt} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]} castShadow>
+          <boxGeometry args={[0.15, 0.32, 0.15]} />
+          <meshStandardMaterial color={shirt} />
+        </mesh>
+        <mesh position={[0, -0.68, 0.02]} castShadow>
+          <boxGeometry args={[0.13, 0.13, 0.1]} />
+          <meshStandardMaterial color={skin} />
+        </mesh>
+        {watchColor && side === "left" && (
+          <mesh position={[0, -0.68, 0.08]}>
+            <boxGeometry args={[0.1, 0.05, 0.06]} />
+            <meshStandardMaterial color={watchColor} metalness={0.85} roughness={0.15} />
+          </mesh>
+        )}
+      </group>
+    </group>
+  );
+}
+
+export function ProceduralBody({ appearance, pose = "default" }: Props) {
   const isFemale = appearance.gender === "female";
   const bodyScale =
     appearance.bodyType === "tall" ? 1.08 : appearance.bodyType === "stocky" ? 0.94 : 1;
   const shoulderW = isFemale ? 0.62 : 0.72;
   const hipW = isFemale ? 0.3 : 0.27;
-  const headY = 1.55;
+  const torsoY = 0.95;
+  const torsoH = isFemale ? 0.72 : 0.78;
+  const shoulderY = torsoY + torsoH / 2 - 0.06;
+  const shoulderX = shoulderW / 2 + 0.04;
+
   const face = appearance.faceType ?? "default";
+  const dims = getHeadDims(face);
+  const headY = 1.58;
   const skin = appearance.skin ?? "#c68642";
   const eye = appearance.eyeColor ?? "#2a1810";
   const hat = appearance.hatColor;
-  const leftArm = armPose(pose, "left");
-  const rightArm = armPose(pose, "right");
-
-  const headArgs: [number, number, number] =
-    face === "sharp"
-      ? [0.38, 0.48, 0.36]
-      : face === "soft"
-        ? [0.44, 0.4, 0.42]
-        : face === "round"
-          ? [0.42, 0.42, 0.42]
-          : [0.42, 0.42, 0.42];
+  const shirt = appearance.shirt ?? "#e82222";
 
   return (
     <group scale={bodyScale}>
@@ -80,72 +245,68 @@ export function ProceduralBody({
         <boxGeometry args={[0.28, 0.1, 0.32]} />
         <meshStandardMaterial color={appearance.shoes} />
       </mesh>
-      <mesh position={[0, 0.95, 0]} castShadow>
-        <boxGeometry args={[shoulderW, isFemale ? 0.72 : 0.78, 0.38]} />
-        <meshStandardMaterial color={appearance.shirt} />
+
+      <mesh position={[0, torsoY, 0]} castShadow>
+        <boxGeometry args={[shoulderW, torsoH, 0.38]} />
+        <meshStandardMaterial color={shirt} />
       </mesh>
 
-      <group position={leftArm.pos} rotation={leftArm.rot}>
-        <mesh castShadow>
-          <boxGeometry args={[0.2, 0.68, 0.2]} />
-          <meshStandardMaterial color={appearance.shirt} />
-        </mesh>
-      </group>
-      <group position={rightArm.pos} rotation={rightArm.rot}>
-        <mesh castShadow>
-          <boxGeometry args={[0.2, 0.68, 0.2]} />
-          <meshStandardMaterial color={appearance.shirt} />
-        </mesh>
-      </group>
+      {/* Shoulder bridges on torso */}
+      <mesh position={[-shoulderW / 2, shoulderY, 0]} castShadow>
+        <boxGeometry args={[0.14, 0.14, 0.22]} />
+        <meshStandardMaterial color={shirt} />
+      </mesh>
+      <mesh position={[shoulderW / 2, shoulderY, 0]} castShadow>
+        <boxGeometry args={[0.14, 0.14, 0.22]} />
+        <meshStandardMaterial color={shirt} />
+      </mesh>
 
-      {appearance.jewelryWatch && (
-        <mesh position={[-0.58, 0.62, 0.1]} castShadow>
-          <boxGeometry args={[0.09, 0.05, 0.1]} />
-          <meshStandardMaterial
-            color={appearance.jewelryWatch}
-            metalness={0.85}
-            roughness={0.15}
-          />
-        </mesh>
-      )}
+      <Arm
+        side="left"
+        shoulderX={-shoulderX}
+        shoulderY={shoulderY}
+        pose={pose}
+        shirt={shirt}
+        skin={skin}
+        watchColor={appearance.jewelryWatch}
+      />
+      <Arm
+        side="right"
+        shoulderX={shoulderX}
+        shoulderY={shoulderY}
+        pose={pose}
+        shirt={shirt}
+        skin={skin}
+      />
 
-      {face === "round" ? (
+      {dims.round ? (
         <mesh position={[0, headY, 0]} castShadow>
-          <sphereGeometry args={[0.22, 16, 16]} />
+          <sphereGeometry args={[dims.w / 2, 16, 16]} />
           <meshStandardMaterial color={skin} />
         </mesh>
       ) : (
         <mesh position={[0, headY, 0]} castShadow>
-          <boxGeometry args={headArgs} />
+          <boxGeometry args={[dims.w, dims.h, dims.d]} />
           <meshStandardMaterial color={skin} />
         </mesh>
       )}
-      <mesh position={[-0.09, headY + 0.02, headArgs[2] / 2 + 0.01]}>
-        <boxGeometry args={[0.05, 0.05, 0.02]} />
-        <meshStandardMaterial color={eye} />
-      </mesh>
-      <mesh position={[0.09, headY + 0.02, headArgs[2] / 2 + 0.01]}>
-        <boxGeometry args={[0.05, 0.05, 0.02]} />
-        <meshStandardMaterial color={eye} />
-      </mesh>
 
-      {appearance.hairStyle !== "bald" && (
-        <HairMesh appearance={appearance} headY={headY} />
-      )}
+      <FaceFeatures headY={headY} dims={dims} skin={skin} eye={eye} />
+      <HairMesh appearance={appearance} headY={headY} dims={dims} />
 
       {appearance.jewelryChain && (
-        <mesh position={[0, 1.28, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[0, 1.32, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.2, 0.022, 8, 24]} />
           <meshStandardMaterial color={appearance.jewelryChain} metalness={0.9} />
         </mesh>
       )}
       {appearance.jewelryEarrings && (
         <>
-          <mesh position={[-0.24, headY, 0]}>
+          <mesh position={[-dims.w / 2 - 0.06, headY - 0.02, 0]}>
             <sphereGeometry args={[0.035, 8, 8]} />
             <meshStandardMaterial color={appearance.jewelryEarrings} metalness={0.9} />
           </mesh>
-          <mesh position={[0.24, headY, 0]}>
+          <mesh position={[dims.w / 2 + 0.06, headY - 0.02, 0]}>
             <sphereGeometry args={[0.035, 8, 8]} />
             <meshStandardMaterial color={appearance.jewelryEarrings} metalness={0.9} />
           </mesh>
@@ -153,9 +314,13 @@ export function ProceduralBody({
       )}
 
       {hat && (
-        <mesh position={[0, headY + 0.28, 0]} castShadow>
-          <boxGeometry args={[0.5, 0.12, 0.5]} />
-          <meshStandardMaterial color={hat} />
+        <mesh position={[0, headY + dims.h / 2 + 0.1, 0]} castShadow>
+          <boxGeometry args={[dims.w + 0.12, 0.12, dims.d + 0.12]} />
+          <meshStandardMaterial
+            color={hat}
+            emissive={hat === "#ffc933" ? "#ffc933" : "#000000"}
+            emissiveIntensity={hat === "#ffc933" ? 0.3 : 0}
+          />
         </mesh>
       )}
 
@@ -165,63 +330,18 @@ export function ProceduralBody({
           <meshStandardMaterial color="#e82222" emissive="#e82222" emissiveIntensity={0.7} />
         </mesh>
       )}
+      {appearance.effect === "glow" && (
+        <mesh position={[0, headY, 0]}>
+          <sphereGeometry args={[dims.w * 0.75, 16, 16]} />
+          <meshStandardMaterial
+            color="#ffc933"
+            transparent
+            opacity={0.15}
+            emissive="#ffc933"
+            emissiveIntensity={0.5}
+          />
+        </mesh>
+      )}
     </group>
-  );
-}
-
-function HairMesh({
-  appearance,
-  headY,
-}: {
-  appearance: AvatarConfig & AvatarVisualExtras;
-  headY: number;
-}) {
-  const style = appearance.hairStyle ?? "short";
-  const hair = appearance.hair ?? "#1a120b";
-  if (style === "buzz") {
-    return (
-      <mesh position={[0, headY + 0.14, 0]}>
-        <boxGeometry args={[0.44, 0.07, 0.44]} />
-        <meshStandardMaterial color={hair} />
-      </mesh>
-    );
-  }
-  if (style === "long") {
-    return (
-      <group>
-        <mesh position={[0, headY + 0.16, 0]}>
-          <boxGeometry args={[0.46, 0.16, 0.46]} />
-          <meshStandardMaterial color={hair} />
-        </mesh>
-        <mesh position={[-0.26, headY - 0.12, 0]}>
-          <boxGeometry args={[0.1, 0.4, 0.1]} />
-          <meshStandardMaterial color={hair} />
-        </mesh>
-        <mesh position={[0.26, headY - 0.12, 0]}>
-          <boxGeometry args={[0.1, 0.4, 0.1]} />
-          <meshStandardMaterial color={hair} />
-        </mesh>
-      </group>
-    );
-  }
-  if (style === "ponytail") {
-    return (
-      <group>
-        <mesh position={[0, headY + 0.16, 0]}>
-          <boxGeometry args={[0.44, 0.16, 0.44]} />
-          <meshStandardMaterial color={hair} />
-        </mesh>
-        <mesh position={[0, headY + 0.02, -0.32]}>
-          <boxGeometry args={[0.12, 0.45, 0.12]} />
-          <meshStandardMaterial color={hair} />
-        </mesh>
-      </group>
-    );
-  }
-  return (
-    <mesh position={[0, headY + 0.16, 0]}>
-      <boxGeometry args={[0.44, 0.16, 0.44]} />
-      <meshStandardMaterial color={hair} />
-    </mesh>
   );
 }

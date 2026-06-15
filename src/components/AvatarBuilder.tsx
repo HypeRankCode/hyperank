@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarFigure } from "./AvatarFigure";
 import { Button } from "./ui/button";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { useRegisterUnsavedChanges } from "@/hooks/useRegisterUnsavedChanges";
+import { useUnsavedChangesStore } from "@/stores/useUnsavedChangesStore";
 import {
   DEFAULT_AVATAR_CONFIG,
   PROCEDURAL_AVATAR_URL,
@@ -42,6 +44,7 @@ export function AvatarBuilder({
   onSaved,
 }: AvatarBuilderProps) {
   const router = useRouter();
+  const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
   const [internal, setInternal] = useState<AvatarConfig>({
     ...DEFAULT_AVATAR_CONFIG,
     ...initialConfig,
@@ -50,6 +53,19 @@ export function AvatarBuilder({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [confirmSave, setConfirmSave] = useState(false);
+
+  const baseline = useMemo(
+    () => ({ ...DEFAULT_AVATAR_CONFIG, ...initialConfig }),
+    [initialConfig]
+  );
+  const isDirty = useMemo(
+    () => JSON.stringify(config) !== JSON.stringify(baseline),
+    [config, baseline]
+  );
+  useRegisterUnsavedChanges(
+    isDirty && showSaveButton,
+    "You have unsaved appearance changes. Leave anyway?"
+  );
 
   function patch(partial: Partial<AvatarConfig>) {
     const next = { ...config, ...partial };
@@ -77,6 +93,7 @@ export function AvatarBuilder({
     }
     setConfirmSave(false);
     onSaved?.();
+    clearUnsaved();
     router.refresh();
     setSaving(false);
   }

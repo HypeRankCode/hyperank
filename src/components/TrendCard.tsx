@@ -112,11 +112,14 @@ export function TrendCard({
 
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            {trend.is_daily_drop && (
-              <Badge variant="hype" className="mb-2">
-                Today&apos;s drop
-              </Badge>
-            )}
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {trend.is_daily_drop && (
+                <Badge variant="hype">Today&apos;s drop</Badge>
+              )}
+              {trend.is_community_pick && (
+                <Badge variant="gold">Community pick</Badge>
+              )}
+            </div>
             <Link href={`/trends/${trend.slug}`}>
               <h3 className="font-display text-xl font-bold transition-colors group-hover:text-red-400">
                 {trend.name}

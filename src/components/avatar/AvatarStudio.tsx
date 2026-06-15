@@ -22,6 +22,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { useRegisterUnsavedChanges } from "@/hooks/useRegisterUnsavedChanges";
+import { useUnsavedChangesStore } from "@/stores/useUnsavedChangesStore";
 
 interface AvatarStudioProps {
   avatarConfig: Record<string, unknown>;
@@ -56,6 +58,12 @@ export function AvatarStudio({
   const [confirmSave, setConfirmSave] = useState(false);
   const [error, setError] = useState("");
   const stageRef = useRef<StageCaptureHandle>(null);
+  const clearUnsaved = useUnsavedChangesStore((s) => s.clear);
+
+  useRegisterUnsavedChanges(
+    Boolean(captured || cropped),
+    "You have an unsaved profile photo. Leave the photo booth anyway?"
+  );
 
   const ownedBackgrounds = Object.values(STUDIO_BACKGROUNDS).filter(
     (bg) => bg.id === "default" || ownedIds.includes(bg.id)
@@ -103,6 +111,7 @@ export function AvatarStudio({
     setSaving(false);
     setCaptured(null);
     setCropped(null);
+    clearUnsaved();
     router.refresh();
   }
 

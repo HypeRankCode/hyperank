@@ -51,6 +51,7 @@ export interface Trend {
   hype_score: number;
   is_daily_drop: boolean;
   daily_drop_date: string | null;
+  is_community_pick: boolean;
   is_sponsored: boolean;
   sponsor_label: string | null;
   sponsor_cta_url: string | null;
@@ -58,4 +59,25 @@ export interface Trend {
   image_url: string | null;
   status: string;
   created_at: string;
+}
+
+export interface HypePitch {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  pitch_key: string;
+  vote_count: number;
+  status: "active" | "won" | "expired";
+  trend_id: string | null;
+  won_on: string | null;
+  created_at: string;
+}
+
+export interface HypePitchWithAuthor extends HypePitch {
+  author: {
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+  };
 }
