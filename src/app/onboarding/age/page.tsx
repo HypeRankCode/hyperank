@@ -37,8 +37,9 @@ export default function VerifyAgePage() {
         .from("profiles")
         .select("age_verified")
         .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) return;
           if (data?.age_verified) router.push("/dashboard");
         });
     });
@@ -64,11 +65,13 @@ export default function VerifyAgePage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-black/50 p-8 backdrop-blur-xl">
+      <div className="w-full max-w-sm rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-8">
         <Logo size="sm" className="mb-6" />
-        <h1 className="font-display text-xl font-bold">Quick check</h1>
-        <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          What year were you born? Required once for compliance.
+        <h1 className="font-display text-xl font-semibold text-zinc-50">
+          Age verification
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+          Please confirm your birth year. This is required once for compliance.
         </p>
         <div className="mt-6">
           <BirthYearField onResult={setAgeResult} />

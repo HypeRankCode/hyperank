@@ -19,7 +19,7 @@ export async function GET(request: Request) {
           .from("profiles")
           .select("username, age_verified")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (!profile?.username) {
           return NextResponse.redirect(`${origin}/onboarding`);

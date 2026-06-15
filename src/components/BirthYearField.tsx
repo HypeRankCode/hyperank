@@ -42,7 +42,7 @@ export function BirthYearField({
       <select
         value={year}
         onChange={(e) => handleChange(e.target.value)}
-        className="h-11 w-full rounded-xl border border-white/10 bg-black/40 px-4 text-sm text-white backdrop-blur-sm focus:border-red-500/50 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+        className="h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3.5 text-sm text-zinc-100 focus:border-[var(--border-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-hype)]/20"
       >
         <option value="" className="bg-[#111]">
           Select year

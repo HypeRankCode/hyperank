@@ -16,8 +16,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) return;
           if (data) setProfile(data as Profile);
         });
     });

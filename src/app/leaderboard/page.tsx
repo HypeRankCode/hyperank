@@ -92,10 +92,10 @@ export default async function LeaderboardPage({
             key={t.id}
             href={`/leaderboard?tab=${t.id}`}
             className={cn(
-              "rounded-full px-5 py-2 text-sm font-medium transition-all",
+              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               tab === t.id
-                ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-hype-sm"
-                : "border border-white/10 bg-white/5 text-[var(--text-secondary)] hover:border-red-500/30 hover:text-white"
+                ? "bg-[var(--accent-hype)] text-white"
+                : "border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-zinc-200"
             )}
           >
             {t.label}

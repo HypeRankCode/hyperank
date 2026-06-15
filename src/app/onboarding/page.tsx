@@ -45,8 +45,9 @@ export default function OnboardingPage() {
         .from("profiles")
         .select("username, age_verified")
         .eq("id", u.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) return;
           if (data?.username && data.age_verified) router.push("/dashboard");
           else if (data?.username && !data.age_verified)
             router.push("/onboarding/age");
@@ -96,12 +97,13 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-black/50 p-8 shadow-hype-sm backdrop-blur-xl">
+      <div className="w-full max-w-md rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-8">
         <Logo size="sm" className="mb-8" />
-        <h1 className="font-display text-2xl font-bold">Almost in</h1>
-        <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          Pick a username and confirm your birth year. One time, then you&apos;re
-          done.
+        <h1 className="font-display text-xl font-semibold text-zinc-50">
+          Complete your profile
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+          Choose a username and confirm your birth year to finish setup.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -127,7 +129,7 @@ export default function OnboardingPage() {
           {error && <p className="text-sm text-red-400">{error}</p>}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Setting up…" : "Enter HypeRank"}
+            {loading ? "Creating account…" : "Continue"}
           </Button>
         </form>
       </div>

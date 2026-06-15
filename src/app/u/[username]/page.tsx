@@ -64,11 +64,11 @@ export default async function ProfilePage({ params }: Props) {
               <span
                 className={
                   v.vote_type === "hype"
-                    ? "font-mono text-red-400"
-                    : "font-mono text-[var(--text-secondary)]"
+                    ? "font-mono text-xs uppercase text-[var(--accent-hype)]"
+                    : "font-mono text-xs uppercase text-[var(--text-secondary)]"
                 }
               >
-                {v.vote_type === "hype" ? "🔥 hype" : "💀 dead"}
+                {v.vote_type}
               </span>
             </div>
           );

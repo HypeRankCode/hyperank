@@ -27,7 +27,7 @@ Stack: **GitHub → Vercel → Cloudflare DNS → Supabase**
 | `NEXT_PUBLIC_SUPABASE_URL` | From Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | From Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | From Supabase (server only) |
-| `NEXT_PUBLIC_SITE_URL` | `https://hyperank.ca` |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.hyperank.ca` (use `www` — bare `hyperank.ca` redirects) |
 | `CRON_SECRET` | Random string (`openssl rand -hex 32`) |
 | `ADMIN_USER_ID` | Your Supabase user UUID (see below) |
 | `NEXT_PUBLIC_RPM_SUBDOMAIN` | `hyperank` (after RPM setup) |
@@ -52,15 +52,44 @@ Stack: **GitHub → Vercel → Cloudflare DNS → Supabase**
 After deploy + env vars are set:
 
 ```bash
-curl -X POST https://hyperank.ca/api/seed/trends \
-  -H "Authorization: Bearer 4f8637fa1e533ad8ecf2583ab8e84b1e70b6fc0945b86b58cc3b10232b1e5d29"
+# Use www (or -L to follow redirect). Replace YOUR_CRON_SECRET with Vercel CRON_SECRET.
+export CRON_SECRET="YOUR_CRON_SECRET"
 
-curl -X POST https://hyperank.ca/api/seed/dictionary \
-  -H "Authorization: Bearer 4f8637fa1e533ad8ecf2583ab8e84b1e70b6fc0945b86b58cc3b10232b1e5d29"
+curl -L -X POST https://www.hyperank.ca/api/seed/trends \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -L -X POST https://www.hyperank.ca/api/seed/dictionary \
+  -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-- [ ] Run both commands
+**Local dev** (with `npm run dev` and `.env.local`):
+
+`CRON_SECRET` in `.env.local` must match the Bearer token in curl. After editing `.env.local`, restart `npm run dev`.
+
+```bash
+# Option A — use the same secret as production (paste into .env.local CRON_SECRET=...)
+export CRON_SECRET="your-cron-secret"
+
+# Option B — use the placeholder from .env.local.example (default: local-dev-secret-change-me)
+export CRON_SECRET="local-dev-secret-change-me"
+
+curl -X POST http://localhost:3000/api/seed/trends \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+curl -X POST http://localhost:3000/api/seed/dictionary \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+- [ ] Run both commands — expect JSON like `{"ok":true,"seeded":42}`
 - [ ] Homepage should show trends
+
+### Local environment
+
+```bash
+cp .env.local.example .env.local
+# Edit .env.local with your Supabase keys and CRON_SECRET
+npm run dev
+```
 
 ---
 
@@ -78,8 +107,8 @@ curl -X POST https://hyperank.ca/api/seed/dictionary \
 
 | Setting | Value |
 |---------|--------|
-| Site URL | `https://hyperank.ca` |
-| Redirect URLs | `https://hyperank.ca/auth/callback` |
+| Site URL | `https://www.hyperank.ca` |
+| Redirect URLs | `https://www.hyperank.ca/auth/callback`, `http://localhost:3000/auth/callback` |
 | | `http://localhost:3000/auth/callback` (local dev) |
 
 - [ ] Save and test login at `/login`
