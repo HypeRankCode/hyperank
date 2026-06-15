@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProfileByUsername } from "@/lib/supabase/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileHero } from "@/components/ProfileHero";
+import { PageShell, SectionHeader } from "@/components/PageShell";
 import type { Metadata } from "next";
 
 interface Props {
@@ -23,9 +24,14 @@ export default async function ProfilePage({ params }: Props) {
 
   if (!profile.is_public) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <p className="text-2xl">This profile is private.</p>
-      </div>
+      <PageShell>
+        <div className="surface-card rounded-2xl p-16 text-center">
+          <p className="font-display text-2xl font-bold">Private profile</p>
+          <p className="mt-2 text-[var(--text-secondary)]">
+            This user has a private profile.
+          </p>
+        </div>
+      </PageShell>
     );
   }
 
@@ -38,31 +44,39 @@ export default async function ProfilePage({ params }: Props) {
     .limit(20);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
+    <PageShell>
       <ProfileHero profile={profile} />
 
-      <section>
-        <h2 className="font-display text-xl font-bold">Recent votes</h2>
-        <div className="mt-4 space-y-2">
-          {(votes ?? []).map((v, i) => {
-            const trend = v.trends as unknown as {
-              name: string;
-              slug: string;
-            } | null;
-            return (
-              <div key={i} className="card-glass flex justify-between p-3 text-sm">
-                <span>{trend?.name}</span>
-                <span className={v.vote_type === "hype" ? "text-hype" : "text-dead"}>
-                  {v.vote_type}
-                </span>
-              </div>
-            );
-          })}
-          {!votes?.length && (
-            <p className="text-[var(--text-secondary)]">No votes yet.</p>
-          )}
-        </div>
-      </section>
-    </div>
+      <SectionHeader label="Activity" title="Recent votes" className="mt-10" />
+
+      <div className="space-y-2">
+        {(votes ?? []).map((v, i) => {
+          const trend = v.trends as unknown as {
+            name: string;
+            slug: string;
+          } | null;
+          return (
+            <div
+              key={i}
+              className="surface-card-hover flex justify-between p-4 text-sm"
+            >
+              <span className="font-medium">{trend?.name}</span>
+              <span
+                className={
+                  v.vote_type === "hype"
+                    ? "font-mono text-red-400"
+                    : "font-mono text-[var(--text-secondary)]"
+                }
+              >
+                {v.vote_type === "hype" ? "🔥 hype" : "💀 dead"}
+              </span>
+            </div>
+          );
+        })}
+        {!votes?.length && (
+          <p className="text-[var(--text-secondary)]">No votes yet.</p>
+        )}
+      </div>
+    </PageShell>
   );
 }

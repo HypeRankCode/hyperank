@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { BattleCard } from "@/components/BattleCard";
+import { PageShell, SectionHeader } from "@/components/PageShell";
 
 export const metadata = { title: "Battles | HypeRank" };
 
@@ -18,38 +19,42 @@ export default async function BattlesPage() {
     .limit(20);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold">Battles</h1>
-      <p className="mt-1 text-[var(--text-secondary)]">
-        Head-to-head trend matchups.
-      </p>
+    <PageShell wide>
+      <SectionHeader
+        label="Arena"
+        title="Battles"
+        subtitle="Head-to-head trend matchups. Pick a side and rally the crowd."
+      />
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {(battles ?? []).map((b) => (
-          <BattleCard
-            key={b.id}
-            battle={{
-              ...b,
-              trend_a: b.trend_a as unknown as {
-                id: string;
-                name: string;
-                slug: string;
-              },
-              trend_b: b.trend_b as unknown as {
-                id: string;
-                name: string;
-                slug: string;
-              },
-            }}
-          />
-        ))}
-      </div>
-
-      {!battles?.length && (
-        <p className="mt-8 text-center text-[var(--text-secondary)]">
-          No battles live right now. Check back soon.
-        </p>
+      {!battles?.length ? (
+        <div className="surface-card rounded-2xl p-16 text-center">
+          <p className="text-4xl">⚔️</p>
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
+            No battles live right now. Check back soon.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2">
+          {(battles ?? []).map((b) => (
+            <BattleCard
+              key={b.id}
+              battle={{
+                ...b,
+                trend_a: b.trend_a as unknown as {
+                  id: string;
+                  name: string;
+                  slug: string;
+                },
+                trend_b: b.trend_b as unknown as {
+                  id: string;
+                  name: string;
+                  slug: string;
+                },
+              }}
+            />
+          ))}
+        </div>
       )}
-    </div>
+    </PageShell>
   );
 }

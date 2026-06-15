@@ -3,6 +3,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StreakDisplay } from "@/components/StreakDisplay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageShell, SectionHeader } from "@/components/PageShell";
+import { Badge } from "@/components/ui/badge";
+
+const quickLinks = [
+  { href: "/locker", label: "Your Locker", desc: "Avatar & cosmetics", icon: "🎒" },
+  { href: "/trends", label: "Vote", desc: "Cast your votes", icon: "🔥" },
+  { href: "/shop/drop", label: "Weekly Drop", desc: "Limited items", icon: "✨" },
+  { href: "/shop/market", label: "Marketplace", desc: "Buy & sell", icon: "🏪" },
+  { href: "/dashboard/trades", label: "Trades", desc: "Pending offers", icon: "🤝" },
+  { href: "/settings", label: "Settings", desc: "Account & privacy", icon: "⚙️" },
+];
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -20,57 +31,91 @@ export default async function DashboardPage() {
   if (!profile) redirect("/onboarding");
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-      <p className="text-[var(--text-secondary)]">@{profile.username}</p>
+    <PageShell>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <Badge variant="hype" className="mb-3">
+            Dashboard
+          </Badge>
+          <h1 className="font-display text-4xl font-extrabold">
+            Hey, <span className="text-gradient-fire">{profile.username}</span>
+          </h1>
+          <p className="mt-2 text-[var(--text-secondary)]">
+            Your command center. Vote, earn, flex.
+          </p>
+        </div>
+        <Link
+          href={`/u/${profile.username}`}
+          className="btn-ghost-glow text-sm"
+        >
+          View public profile →
+        </Link>
+      </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="border-red-500/20">
           <CardHeader>
-            <CardTitle>Streak</CardTitle>
+            <CardTitle className="text-base text-[var(--text-secondary)]">
+              Streak
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <StreakDisplay days={profile.streak_days} />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-yellow-500/20">
           <CardHeader>
-            <CardTitle>Credits</CardTitle>
+            <CardTitle className="text-base text-[var(--text-secondary)]">
+              Credits
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono text-3xl text-gold">{profile.credits}</p>
+            <p className="font-display text-4xl font-extrabold text-gold">
+              {profile.credits.toLocaleString()}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Predictions</CardTitle>
+            <CardTitle className="text-base text-[var(--text-secondary)]">
+              Predictions
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono">
-              {profile.correct_predictions}/{profile.total_predictions} correct
+            <p className="font-display text-4xl font-extrabold">
+              {profile.correct_predictions}
+              <span className="text-lg text-[var(--text-secondary)]">
+                /{profile.total_predictions}
+              </span>
             </p>
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">correct</p>
           </CardContent>
         </Card>
       </div>
 
-      <nav className="mt-8 grid gap-2 sm:grid-cols-2">
-        {[
-          { href: "/locker", label: "Your Locker" },
-          { href: "/trends", label: "Vote on trends" },
-          { href: "/shop/drop", label: "Weekly drop" },
-          { href: "/shop/market", label: "Marketplace" },
-          { href: "/dashboard/trades", label: "Trade offers" },
-          { href: "/settings", label: "Settings" },
-        ].map((l) => (
+      <SectionHeader
+        className="mt-12"
+        label="Quick nav"
+        title="Where to next?"
+      />
+
+      <nav className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {quickLinks.map((l) => (
           <Link
             key={l.href}
             href={l.href}
-            className="card-glass p-4 text-hype hover:border-hype/30"
+            className="surface-card-hover group flex items-center gap-4 p-5"
           >
-            {l.label}
+            <span className="text-2xl">{l.icon}</span>
+            <div>
+              <p className="font-display font-bold group-hover:text-red-400">
+                {l.label}
+              </p>
+              <p className="text-xs text-[var(--text-secondary)]">{l.desc}</p>
+            </div>
           </Link>
         ))}
       </nav>
-    </div>
+    </PageShell>
   );
 }

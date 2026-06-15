@@ -5,32 +5,51 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { sanitizeText } from "@/lib/sanitize";
 import { validateUserContent } from "@/lib/moderation";
+import {
+  birthYearFromOAuthUser,
+  type AgeResult,
+} from "@/lib/age";
+import { BirthYearField } from "@/components/BirthYearField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Logo } from "@/components/Logo";
+import type { User } from "@supabase/supabase-js";
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [ageResult, setAgeResult] = useState<AgeResult | null>(null);
+  const [oauthYear, setOauthYear] = useState<number | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
+    supabase.auth.getUser().then(({ data: { user: u } }) => {
+      if (!u) {
         router.push("/login");
         return;
       }
-      setUserId(user.id);
+      setUser(u);
+      const detected = birthYearFromOAuthUser(u);
+      if (detected) {
+        setOauthYear(detected);
+        setAgeResult({
+          birthYear: detected,
+          blocked: false,
+          isMinor: new Date().getFullYear() - detected < 18,
+        });
+      }
       supabase
         .from("profiles")
-        .select("username")
-        .eq("id", user.id)
+        .select("username, age_verified")
+        .eq("id", u.id)
         .single()
         .then(({ data }) => {
-          if (data?.username) router.push("/dashboard");
+          if (data?.username && data.age_verified) router.push("/dashboard");
+          else if (data?.username && !data.age_verified)
+            router.push("/onboarding/age");
         });
     });
   }, [router]);
@@ -38,8 +57,13 @@ export default function OnboardingPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    if (!ageResult || ageResult.blocked) {
+      setError("Select a valid birth year.");
+      return;
+    }
+
+    setLoading(true);
     const cleaned = sanitizeText(username, 20);
     const validation = validateUserContent(cleaned, 20);
     if (!validation.ok || !/^[a-zA-Z0-9_]{3,20}$/.test(cleaned)) {
@@ -48,18 +72,13 @@ export default function OnboardingPage() {
       return;
     }
 
-    const ageRaw = sessionStorage.getItem("hyperank_age");
-    const ageData = ageRaw ? JSON.parse(ageRaw) : { isMinor: false };
-
     const supabase = createClient();
     const { error: insertError } = await supabase.from("profiles").insert({
-      id: userId,
+      id: user!.id,
       username: cleaned,
-      is_minor: ageData.isMinor ?? false,
+      is_minor: ageResult.isMinor,
       age_verified: true,
-      is_public: !ageData.isMinor,
-      parent_email: ageData.parentEmail ?? null,
-      parental_consent_given: !ageData.isMinor,
+      is_public: !ageResult.isMinor,
     });
 
     if (insertError) {
@@ -72,32 +91,46 @@ export default function OnboardingPage() {
       return;
     }
 
-    sessionStorage.removeItem("hyperank_age");
     router.push("/locker");
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>Pick a username</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-black/50 p-8 shadow-hype-sm backdrop-blur-xl">
+        <Logo size="sm" className="mb-8" />
+        <h1 className="font-display text-2xl font-bold">Almost in</h1>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          Pick a username and confirm your birth year. One time, then you&apos;re
+          done.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <div>
+            <label className="text-sm text-[var(--text-secondary)]">
+              Username
+            </label>
             <Input
-              placeholder="username"
+              className="mt-1.5"
+              placeholder="yourname"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               maxLength={20}
               required
             />
-            {error && <p className="text-sm text-hype">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Saving..." : "Continue"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+
+          <BirthYearField
+            defaultYear={oauthYear}
+            onResult={setAgeResult}
+          />
+
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Setting up…" : "Enter HypeRank"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

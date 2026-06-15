@@ -2,6 +2,7 @@ import { getTrends } from "@/lib/supabase/trends";
 import { createClient } from "@/lib/supabase/server";
 import { TrendCard } from "@/components/TrendCard";
 import { AdSlot } from "@/components/AdSlot";
+import { PageShell, SectionHeader } from "@/components/PageShell";
 
 export const metadata = { title: "Trends | HypeRank" };
 
@@ -24,26 +25,29 @@ export default async function TrendsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold">Trends</h1>
-      <p className="mt-1 text-[var(--text-secondary)]">
-        Vote on what&apos;s hype and what&apos;s dead.
-      </p>
+    <PageShell wide>
+      <SectionHeader
+        label="Vote"
+        title="All trends"
+        subtitle="Cast your vote. One per trend. No take-backs."
+      />
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {trends.map((t, i) => (
-          <div key={t.id}>
-            <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />
-            {i === 2 && <AdSlot slot="trends-feed-1" />}
-          </div>
-        ))}
-      </div>
-
-      {trends.length === 0 && (
-        <p className="mt-8 text-center text-[var(--text-secondary)]">
-          No trends yet. Could be you.
-        </p>
+      {trends.length === 0 ? (
+        <div className="surface-card rounded-2xl p-16 text-center">
+          <p className="text-lg text-[var(--text-secondary)]">
+            No trends yet. Could be you.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2">
+          {trends.map((t, i) => (
+            <div key={t.id}>
+              <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />
+              {i === 2 && <AdSlot slot="trends-feed-1" />}
+            </div>
+          ))}
+        </div>
       )}
-    </div>
+    </PageShell>
   );
 }

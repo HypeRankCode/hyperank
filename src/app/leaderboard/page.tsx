@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Avatar3D } from "@/components/Avatar3DClient";
+import { PageShell, SectionHeader } from "@/components/PageShell";
+import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Leaderboard | HypeRank" };
 
@@ -60,63 +62,78 @@ export default async function LeaderboardPage({
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "voters", label: "Top Voters" },
-    { id: "prophets", label: "Trend Prophets" },
+    { id: "prophets", label: "Prophets" },
     { id: "credits", label: "Credit Kings" },
     { id: "streaks", label: "Streak Hall" },
   ];
 
   function stat(p: (typeof profiles)[0]) {
-    if (tab === "voters") return p.total_votes ?? 0;
-    if (tab === "credits") return p.credits ?? 0;
-    if (tab === "streaks") return p.streak_days ?? 0;
+    if (tab === "voters") return (p.total_votes ?? 0).toLocaleString();
+    if (tab === "credits") return (p.credits ?? 0).toLocaleString();
+    if (tab === "streaks") return `${p.streak_days ?? 0}d`;
     const total = p.total_predictions ?? 0;
     const correct = p.correct_predictions ?? 0;
     return total > 0 ? `${Math.round((correct / total) * 100)}%` : "—";
   }
 
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold">Leaderboard</h1>
+  const rankColors = ["text-gold", "text-gray-300", "text-amber-700"];
 
-      <div className="mt-4 flex flex-wrap gap-2">
+  return (
+    <PageShell>
+      <SectionHeader
+        label="Hall of fame"
+        title="Leaderboard"
+        subtitle="The biggest voters, prophets, and streak legends."
+      />
+
+      <div className="mb-8 flex flex-wrap gap-2">
         {tabs.map((t) => (
           <Link
             key={t.id}
             href={`/leaderboard?tab=${t.id}`}
-            className={`rounded-full px-4 py-1.5 text-sm ${
+            className={cn(
+              "rounded-full px-5 py-2 text-sm font-medium transition-all",
               tab === t.id
-                ? "bg-hype text-white"
-                : "bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
-            }`}
+                ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-hype-sm"
+                : "border border-white/10 bg-white/5 text-[var(--text-secondary)] hover:border-red-500/30 hover:text-white"
+            )}
           >
             {t.label}
           </Link>
         ))}
       </div>
 
-      <div className="mt-8 space-y-2">
+      <div className="space-y-2">
         {profiles.map((p, i) => (
           <Link
             key={p.id}
             href={`/u/${p.username}`}
-            className={`card-glass flex items-center gap-4 p-4 ${
-              i < 3 ? "ring-1 ring-gold/30" : ""
-            }`}
+            className={cn(
+              "surface-card-hover flex items-center gap-4 p-4",
+              i < 3 && "border-yellow-500/20"
+            )}
           >
-            <span className="w-8 font-mono text-[var(--text-secondary)]">
+            <span
+              className={cn(
+                "w-8 font-display text-lg font-bold",
+                i < 3 ? rankColors[i] : "text-[var(--text-secondary)]"
+              )}
+            >
               {i + 1}
             </span>
             <Avatar3D modelUrl={p.avatar_rpm_url ?? ""} size="small" />
             <span className="flex-1 font-medium">{p.username}</span>
-            <span className="font-mono text-gold">{stat(p)}</span>
+            <span className="font-mono font-semibold text-gold">{stat(p)}</span>
           </Link>
         ))}
         {profiles.length === 0 && (
-          <p className="text-center text-[var(--text-secondary)]">
-            No entries yet. Could be you.
-          </p>
+          <div className="surface-card rounded-2xl p-12 text-center">
+            <p className="text-[var(--text-secondary)]">
+              No entries yet. Could be you.
+            </p>
+          </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmeticsLocker } from "@/components/CosmeticsLocker";
 import { RPMEditor } from "@/components/RPMEditor";
+import { PageShell, SectionHeader } from "@/components/PageShell";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata = { title: "Your Locker | HypeRank" };
 
@@ -23,29 +25,39 @@ export default async function LockerPage() {
   const { data: cosmetics } = await supabase.from("cosmetics").select("*");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold">Your Locker</h1>
+    <PageShell wide>
+      <SectionHeader
+        label="Avatar"
+        title="Your Locker"
+        subtitle="Build your character. Equip cosmetics. Flex."
+        action={
+          <Badge variant="hype">{profile.username}</Badge>
+        }
+      />
 
       {!profile.avatar_rpm_url ? (
-        <div className="mt-8">
-          <p className="mb-4 text-[var(--text-secondary)]">
-            You haven&apos;t built your character yet.
+        <div className="surface-card rounded-2xl p-8">
+          <p className="mb-6 text-[var(--text-secondary)]">
+            You haven&apos;t built your character yet. Time to fix that.
           </p>
           <RPMEditor userId={user.id} />
         </div>
       ) : (
-        <div className="mt-8">
+        <div className="space-y-8">
           <CosmeticsLocker
             cosmetics={cosmetics ?? []}
             ownedIds={profile.owned_cosmetic_ids ?? []}
             equipped={(profile.avatar_config as Record<string, string>) ?? {}}
             modelUrl={profile.avatar_rpm_url}
           />
-          <div className="mt-8">
-            <RPMEditor userId={user.id} />
+          <div className="surface-card rounded-2xl p-8">
+            <h3 className="font-display text-lg font-bold">Edit avatar</h3>
+            <div className="mt-4">
+              <RPMEditor userId={user.id} />
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

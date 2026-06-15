@@ -17,12 +17,17 @@ export async function GET(request: Request) {
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("username")
+          .select("username, age_verified")
           .eq("id", user.id)
           .single();
 
-        const destination = profile?.username ? redirect : "/onboarding";
-        return NextResponse.redirect(`${origin}${destination}`);
+        if (!profile?.username) {
+          return NextResponse.redirect(`${origin}/onboarding`);
+        }
+        if (!profile.age_verified) {
+          return NextResponse.redirect(`${origin}/onboarding/age`);
+        }
+        return NextResponse.redirect(`${origin}${redirect}`);
       }
     }
   }

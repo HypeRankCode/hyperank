@@ -53,10 +53,10 @@ After deploy + env vars are set:
 
 ```bash
 curl -X POST https://hyperank.ca/api/seed/trends \
-  -H "Authorization: Bearer YOUR_CRON_SECRET"
+  -H "Authorization: Bearer 4f8637fa1e533ad8ecf2583ab8e84b1e70b6fc0945b86b58cc3b10232b1e5d29"
 
 curl -X POST https://hyperank.ca/api/seed/dictionary \
-  -H "Authorization: Bearer YOUR_CRON_SECRET"
+  -H "Authorization: Bearer 4f8637fa1e533ad8ecf2583ab8e84b1e70b6fc0945b86b58cc3b10232b1e5d29"
 ```
 
 - [ ] Run both commands
