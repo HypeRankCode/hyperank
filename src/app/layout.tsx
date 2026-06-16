@@ -1,5 +1,6 @@
-import { Syne, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Syne, Inter } from "next/font/google";
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { HeaderClient } from "@/components/HeaderClient";
 import { Footer } from "@/components/Footer";
@@ -13,19 +14,15 @@ import { UnsavedChangesGuard } from "@/components/UnsavedChangesGuard";
 const syne = Syne({
   subsets: ["latin"],
   variable: "--font-syne",
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-dm",
+  variable: "--font-inter",
   weight: ["400", "500", "600"],
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -54,10 +51,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${syne.variable} ${dmSans.variable} ${jetbrains.variable} relative flex min-h-screen flex-col pb-20 md:pb-0`}
-      >
+    <html
+      lang="en"
+      className={`dark ${syne.variable} ${inter.variable}`}
+    >
+      <body className="relative flex min-h-screen flex-col pb-20 md:pb-0">
         <AmbientBackground />
         <UserProvider>
           <HeaderClient />
@@ -67,6 +65,19 @@ export default function RootLayout({
           <MobileNav />
           <LoginModal />
           <UnsavedChangesGuard />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: "var(--bg-raised)",
+                border: "1px solid var(--border-bright)",
+                color: "var(--text-1)",
+                fontFamily: "var(--font-inter)",
+                fontSize: "0.875rem",
+              },
+            }}
+            className="md:bottom-4 md:right-4 max-md:bottom-20 max-md:left-1/2 max-md:-translate-x-1/2"
+          />
         </UserProvider>
       </body>
     </html>

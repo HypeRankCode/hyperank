@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -9,28 +8,32 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { icon: 28, text: "text-lg" },
-  md: { icon: 36, text: "text-xl" },
-  lg: { icon: 52, text: "text-3xl" },
+  sm: { box: "h-7 w-7 text-xs", text: "text-lg" },
+  md: { box: "h-9 w-9 text-sm", text: "text-xl" },
+  lg: { box: "h-12 w-12 text-base", text: "text-3xl" },
 };
 
 export function Logo({ size = "md", showText = true, className }: LogoProps) {
   const s = sizes[size];
   return (
     <Link href="/" className={cn("group flex items-center gap-2.5", className)}>
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-red-500/30 blur-md transition group-hover:bg-red-500/50" />
-        <Image
-          src="/hyperank_icon.png"
-          alt="HypeRank"
-          width={s.icon}
-          height={s.icon}
-          className="relative drop-shadow-[0_0_12px_rgba(255,43,43,0.6)]"
-        />
+      <div
+        className={cn(
+          "flex shrink-0 items-center justify-center rounded-lg bg-hype font-display font-extrabold text-white shadow-hype-sm transition group-hover:shadow-hype",
+          s.box
+        )}
+        aria-hidden
+      >
+        HR
       </div>
       {showText && (
-        <span className={cn("font-display font-extrabold tracking-tight", s.text)}>
-          Hype<span className="text-gradient-fire">Rank</span>
+        <span
+          className={cn(
+            "font-display font-extrabold tracking-tight text-[var(--text-1)]",
+            s.text
+          )}
+        >
+          HypeRank
         </span>
       )}
     </Link>
