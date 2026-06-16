@@ -65,6 +65,7 @@ export default async function TrendDetailPage({ params }: Props) {
           <TrendCard
             trend={trend}
             userVote={userVote}
+            hotTakeCount={count ?? 0}
           />
           <HotTakeSection trendId={trend.id} initialTakes={hotTakes ?? []} />
         </div>

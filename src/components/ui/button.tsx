@@ -4,26 +4,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hype/50 disabled:pointer-events-none disabled:opacity-40",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hype/50 disabled:pointer-events-none disabled:opacity-40 active:scale-[0.97]",
   {
     variants: {
       variant: {
         default:
-          "bg-hype text-white hover:brightness-110 shadow-hype-sm hover:shadow-hype",
+          "bg-gradient-to-r from-[#ff2b2b] to-[#b91c1c] text-white shadow-hype-sm hover:shadow-hype hover:brightness-110",
         secondary:
-          "border border-[var(--border-bright)] bg-transparent text-[var(--text-1)] hover:border-hype hover:bg-hype/10",
+          "border border-white/10 bg-white/5 text-white backdrop-blur-sm hover:border-red-500/30 hover:bg-red-500/10",
         outline:
-          "border border-[var(--border-bright)] bg-transparent text-[var(--text-1)] hover:border-hype/60 hover:bg-hype/5",
-        ghost:
-          "text-[var(--text-2)] hover:bg-[var(--bg-raised)] hover:text-[var(--text-1)]",
-        dead: "border border-[var(--border)] bg-[var(--bg-raised)] text-[var(--text-2)] hover:border-[var(--border-bright)] hover:text-[var(--text-1)]",
+          "border border-red-500/30 bg-transparent text-white hover:border-red-500/60 hover:bg-red-500/5",
+        ghost: "text-[var(--text-secondary)] hover:bg-white/5 hover:text-white",
+        dead: "border border-white/10 bg-[#1a1a1f] text-[var(--text-secondary)] hover:border-white/20 hover:text-white",
         glow: "btn-ghost-glow",
       },
       size: {
         default: "h-11 px-6 py-2",
         sm: "h-9 px-4 text-xs",
         lg: "h-12 px-8 text-base",
-        hero: "h-12 px-8 text-base min-h-[48px]",
         icon: "h-11 w-11",
       },
     },

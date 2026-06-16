@@ -44,9 +44,9 @@ export function SectionHeader({
     >
       <div>
         {label && <p className="section-label mb-1">{label}</p>}
-        <h2 className="text-display-md">{title}</h2>
+        <h2 className="font-display text-2xl font-bold md:text-3xl">{title}</h2>
         {subtitle && (
-          <p className="mt-1 text-body-md text-[var(--text-2)]">{subtitle}</p>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">{subtitle}</p>
         )}
       </div>
       {action}

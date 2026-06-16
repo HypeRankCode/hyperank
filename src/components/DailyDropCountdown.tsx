@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock } from "lucide-react";
 
 function getMsUntilMidnightUTC(): number {
   const now = new Date();
@@ -20,16 +19,16 @@ export function DailyDropCountdown() {
   const [remaining, setRemaining] = useState(getMsUntilMidnightUTC());
 
   useEffect(() => {
-    const tick = () => setRemaining(getMsUntilMidnightUTC());
-    tick();
-    const interval = setInterval(tick, 60000);
+    const interval = setInterval(() => {
+      setRemaining(getMsUntilMidnightUTC());
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex items-center gap-2 rounded-full border border-gold/25 bg-gold/10 px-4 py-2">
-      <Clock className="h-4 w-4 text-gold" aria-hidden />
-      <span className="font-display text-sm font-bold text-gold">
+    <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2">
+      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_#00e676]" />
+      <span className="font-mono text-sm text-emerald-400">
         Next drop in {formatCountdown(remaining)}
       </span>
     </div>

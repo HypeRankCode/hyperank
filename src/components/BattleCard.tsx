@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Progress } from "./ui/progress";
-import { LiveDot } from "./LiveDot";
-import { cn } from "@/lib/utils";
+
+interface VoterProfile {
+  avatar_url: string | null;
+  username?: string | null;
+}
 
 interface BattleWithTrends {
   id: string;
@@ -17,95 +18,87 @@ interface BattleWithTrends {
   status?: string;
   trend_a: { id: string; name: string; slug: string };
   trend_b: { id: string; name: string; slug: string };
+  voters_a?: VoterProfile[];
+  voters_b?: VoterProfile[];
 }
 
-interface BattleCardProps {
-  battle: BattleWithTrends;
-  compact?: boolean;
-  className?: string;
-}
-
-function formatTimeLeft(endsAt: string) {
-  const diff = new Date(endsAt).getTime() - Date.now();
-  if (diff <= 0) return "Ending soon";
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  return `${h}h ${m}m`;
-}
-
-export function BattleCard({ battle, compact = false, className }: BattleCardProps) {
-  const reduced = useReducedMotion();
+export function BattleCard({ battle }: { battle: BattleWithTrends }) {
   const total = battle.votes_a + battle.votes_b || 1;
   const percentA = Math.round((battle.votes_a / total) * 100);
   const isLive = battle.status === "active";
-  const timeLeft = formatTimeLeft(battle.ends_at);
 
   return (
-    <motion.article
-      className={cn("surface-card-hover relative overflow-hidden p-6", className)}
-      initial={reduced ? false : { opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={reduced ? undefined : { scale: 1.01, y: -2 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-    >
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span aria-hidden>⚔️</span>
-          <span className="text-label text-[var(--text-2)]">
-            {isLive ? "Battle Live" : "Battle"}
-          </span>
-          {isLive && <LiveDot />}
-        </div>
-        <span className="font-display text-sm font-bold text-gold">{timeLeft}</span>
-      </div>
+    <Link href={`/battles/${battle.id}`}>
+      <motion.article
+        className="surface-card-hover group relative overflow-hidden p-6"
+        whileHover={{ y: -4 }}
+        transition={{ type: "spring", stiffness: 400, damping: 28 }}
+      >
+        {isLive && (
+          <div className="absolute right-4 top-4">
+            <Badge variant="live">Live</Badge>
+          </div>
+        )}
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div>
-          <p className="font-display text-lg font-bold text-[var(--text-1)]">
-            {battle.trend_a.name}
-          </p>
-          <p className="font-display text-2xl font-extrabold text-hype">{percentA}%</p>
-        </div>
-        <span className="font-display text-xl font-extrabold text-[var(--text-3)]">
-          VS
-        </span>
-        <div className="text-right">
-          <p className="font-display text-lg font-bold text-[var(--text-1)]">
-            {battle.trend_b.name}
-          </p>
-          <p className="font-display text-2xl font-extrabold text-[var(--text-2)]">
-            {100 - percentA}%
-          </p>
-        </div>
-      </div>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <div className="text-center">
+            <p className="font-display text-lg font-bold transition-colors group-hover:text-red-400">
+              {battle.trend_a.name}
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-red-400">
+              {percentA}%
+            </p>
+            <div className="mt-3 flex justify-center gap-1">
+              {(battle.voters_a ?? []).slice(0, 4).map((v, i) => (
+                <ProfileAvatar
+                  key={i}
+                  avatarUrl={v.avatar_url}
+                  username={v.username}
+                  size="sm"
+                />
+              ))}
+            </div>
+          </div>
 
-      <div className="mt-4">
-        <Progress value={percentA} variant="battle" />
-      </div>
+          <div className="flex flex-col items-center">
+            <span className="font-display text-2xl font-extrabold text-[var(--text-secondary)]">
+              VS
+            </span>
+          </div>
 
-      {!compact && (
-        <div className="mt-5 flex gap-3">
-          <Button asChild className="flex-1" size="sm">
-            <Link href={`/battles/${battle.id}`}>
-              Vote {battle.trend_a.name}
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="flex-1" size="sm">
-            <Link href={`/battles/${battle.id}`}>
-              Vote {battle.trend_b.name}
-            </Link>
-          </Button>
+          <div className="text-center">
+            <p className="font-display text-lg font-bold transition-colors group-hover:text-red-400">
+              {battle.trend_b.name}
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-[var(--text-secondary)]">
+              {100 - percentA}%
+            </p>
+            <div className="mt-3 flex justify-center gap-1">
+              {(battle.voters_b ?? []).slice(0, 4).map((v, i) => (
+                <ProfileAvatar
+                  key={i}
+                  avatarUrl={v.avatar_url}
+                  username={v.username}
+                  size="sm"
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      )}
 
-      {compact && (
-        <Link
-          href={`/battles/${battle.id}`}
-          className="mt-4 block text-center text-body-sm text-hype hover:underline"
-        >
-          Join the battle →
-        </Link>
-      )}
-    </motion.article>
+        <div className="mt-5 h-2 overflow-hidden rounded-full bg-black/60 ring-1 ring-white/[0.06]">
+          <motion.div
+            className="h-full bg-gradient-to-r from-red-500 via-red-400 to-white/20"
+            initial={false}
+            animate={{ width: `${percentA}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
+        </div>
+
+        <p className="mt-3 text-center font-mono text-xs text-[var(--text-secondary)]">
+          {battle.votes_a + battle.votes_b} total votes
+        </p>
+      </motion.article>
+    </Link>
   );
 }

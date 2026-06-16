@@ -1,23 +1,20 @@
 import Link from "next/link";
 import { getTrends } from "@/lib/supabase/trends";
-import { getActivePitches } from "@/lib/supabase/pitches";
 import {
-  getHomeStats,
-  getActiveBattle,
-  getActiveShopDrop,
-  getLeaderboardPreview,
-} from "@/lib/supabase/stats";
+  getActivePitches,
+  getTodaysWinningPitch,
+  getUserPitchVotes,
+} from "@/lib/supabase/pitches";
 import { createClient } from "@/lib/supabase/server";
 import { DailyDropCountdown } from "@/components/DailyDropCountdown";
 import { TrendCard } from "@/components/TrendCard";
-import { BattleCard } from "@/components/BattleCard";
-import { PitchCard } from "@/components/pitches/PitchCard";
-import { HomeHero } from "@/components/home/HomeHero";
-import { TrendingFeed } from "@/components/home/TrendingFeed";
-import { ShopTeaser } from "@/components/home/ShopTeaser";
-import { LeaderboardPreview } from "@/components/home/LeaderboardPreview";
+import { AdSlot } from "@/components/AdSlot";
 import { Button } from "@/components/ui/button";
-import { getUserPitchVotes } from "@/lib/supabase/pitches";
+import { Badge } from "@/components/ui/badge";
+import { PageShell, SectionHeader } from "@/components/PageShell";
+import { HypeMascot } from "@/components/HypeMascot";
+import { FeaturedPitchBanner } from "@/components/home/FeaturedPitchBanner";
+import { PitchCard } from "@/components/pitches/PitchCard";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -25,180 +22,184 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [
-    dailyDrops,
-    trending,
-    activePitches,
-    stats,
-    activeBattle,
-    shopDrop,
-    leaders,
-  ] = await Promise.all([
-    getTrends({ dailyDrop: true, limit: 5 }),
-    getTrends({ limit: 20 }),
-    getActivePitches(3),
-    getHomeStats(),
-    getActiveBattle(),
-    getActiveShopDrop(),
-    getLeaderboardPreview(5),
-  ]);
+  const [dailyDrops, trending, activePitches, featuredPitch, activeBattle] =
+    await Promise.all([
+      getTrends({ dailyDrop: true, limit: 5 }),
+      getTrends({ limit: 10 }),
+      getActivePitches(5),
+      getTodaysWinningPitch(),
+      supabase
+        .from("battles")
+        .select("id")
+        .eq("status", "active")
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
   let userVotes: Record<string, "hype" | "dead"> = {};
   let votedPitchIds = new Set<string>();
-  let profile = null;
 
   if (user) {
-    const [{ data: votes }, pitchVotes, profileData] = await Promise.all([
+    const [{ data: votes }, pitchVotes] = await Promise.all([
       supabase
         .from("votes")
         .select("trend_id, vote_type")
         .eq("user_id", user.id),
       getUserPitchVotes(user.id),
-      supabase
-        .from("profiles")
-        .select("streak_days, credits, hype_score")
-        .eq("id", user.id)
-        .maybeSingle(),
     ]);
     userVotes = Object.fromEntries(
       (votes ?? []).map((v) => [v.trend_id, v.vote_type as "hype" | "dead"])
     );
     votedPitchIds = pitchVotes;
-    profile = profileData.data;
   }
 
-  const featuredTrend =
-    dailyDrops[0] ?? trending.sort((a, b) => b.vote_velocity - a.vote_velocity)[0];
-  const risingFast = [...trending]
-    .sort((a, b) => b.vote_velocity - a.vote_velocity)
-    .slice(0, 3);
-
-  const battleData = activeBattle
-    ? {
-        id: activeBattle.id,
-        votes_a: activeBattle.votes_a,
-        votes_b: activeBattle.votes_b,
-        ends_at: activeBattle.ends_at,
-        status: activeBattle.status,
-        trend_a: activeBattle.trend_a as unknown as {
-          id: string;
-          name: string;
-          slug: string;
-        },
-        trend_b: activeBattle.trend_b as unknown as {
-          id: string;
-          name: string;
-          slug: string;
-        },
-      }
-    : null;
+  const communityDrop = dailyDrops.find((t) => t.is_community_pick);
 
   return (
     <>
-      <HomeHero
-        stats={stats}
-        hasLiveBattle={!!activeBattle}
-        featuredTrend={featuredTrend}
-        userVote={featuredTrend ? userVotes[featuredTrend.id] ?? null : null}
-        userStreak={profile?.streak_days}
-      />
-
-      {/* Section 2 — Daily Drop */}
-      <section className="bg-[var(--bg-surface)] py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <h2 className="text-display-md">Today&apos;s Drop</h2>
-            <DailyDropCountdown />
+      {/* Hero */}
+      <section className="relative overflow-x-hidden overflow-y-visible border-b border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.08] via-transparent to-transparent" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center md:py-24 lg:flex-row lg:text-left">
+          <div className="flex-1">
+            <Badge variant="live" className="mb-6">
+              Live culture rankings
+            </Badge>
+            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
+              What&apos;s{" "}
+              <span className="text-gradient-fire">hot.</span>
+              <br />
+              What&apos;s{" "}
+              <span className="text-[var(--text-secondary)]">not.</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-lg text-lg text-[var(--text-secondary)] lg:mx-0">
+              Vote on internet culture. Pitch the next viral thing. Stack
+              streaks, earn credits, and flex on the leaderboard.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Button asChild size="lg">
+                <Link href="/trends">Start voting</Link>
+              </Button>
+              <Button asChild variant="glow" size="lg">
+                <Link href="/pitches">Auditions</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/battles">Live battles</Link>
+              </Button>
+              {!user && (
+                <Button asChild variant="ghost" size="lg">
+                  <Link href="/login">Sign in</Link>
+                </Button>
+              )}
+            </div>
+            <div className="mt-10 flex flex-wrap justify-center gap-8 lg:justify-start">
+              {[
+                { label: "Votes cast", value: "∞" },
+                { label: "Daily drops", value: "24h" },
+                { label: "Your streak", value: user ? "🔥" : "—" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-display text-2xl font-bold text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
+          <div className="relative mt-12 flex shrink-0 items-end justify-center overflow-visible pb-4 lg:mt-0 lg:pb-0">
+            <HypeMascot size="hero" />
+          </div>
+        </div>
+      </section>
 
+      <PageShell wide>
+        {(featuredPitch || communityDrop) && (
+          <section className="mb-16">
+            <SectionHeader
+              label="Community"
+              title="Featured today"
+              subtitle="The top audition pick — pitched and voted on by the crowd."
+              action={
+                <Link
+                  href="/pitches"
+                  className="text-sm font-medium text-red-400 hover:text-red-300"
+                >
+                  All auditions →
+                </Link>
+              }
+            />
+            <div className="surface-card overflow-hidden rounded-2xl">
+              {featuredPitch ? (
+                <FeaturedPitchBanner pitch={featuredPitch} />
+              ) : communityDrop ? (
+                <div className="p-6">
+                  <TrendCard
+                    trend={communityDrop}
+                    userVote={userVotes[communityDrop.id] ?? null}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </section>
+        )}
+
+        <section className="mb-16">
+          <SectionHeader
+            label="Daily drop"
+            title="Today's picks"
+            subtitle="Fresh trends drop every day. Vote before the clock resets."
+            action={<DailyDropCountdown />}
+          />
           {dailyDrops.length === 0 ? (
-            <div className="glass-card p-12 text-center">
-              <p className="text-body-md text-[var(--text-2)]">
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
                 No drop today yet.{" "}
-                <Link href="/pitches" className="text-hype hover:underline">
-                  Pitch the first one
+                <Link href="/pitches" className="text-red-400 hover:text-red-300">
+                  Pitch the first one →
                 </Link>
               </p>
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {dailyDrops.map((t) => (
-                <div key={t.id} className="min-w-[300px] shrink-0 md:min-w-0">
-                  <TrendCard
-                    trend={t}
-                    userVote={userVotes[t.id] ?? null}
-                    variant="daily"
-                  />
-                </div>
+                <TrendCard
+                  key={t.id}
+                  trend={t}
+                  userVote={userVotes[t.id] ?? null}
+                />
               ))}
             </div>
           )}
-        </div>
-      </section>
+        </section>
 
-      {/* Section 3 — What's Moving */}
-      <TrendingFeed
-        trends={trending}
-        userVotes={userVotes}
-        risingFast={risingFast}
-        battle={battleData}
-        isLoggedIn={!!user}
-        streak={profile?.streak_days}
-        credits={profile?.credits}
-        hypeScore={profile?.hype_score}
-      />
-
-      {/* Section 4 — Battle Arena */}
-      <section className="bg-[var(--bg-void)] py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-8 flex items-end justify-between">
-            <h2 className="text-display-md">
-              {battleData ? "Battle Live Now" : "Battle Arena"}
-            </h2>
-            <Link
-              href="/battles"
-              className="text-body-sm font-medium text-hype hover:underline"
-            >
-              See all battles →
-            </Link>
-          </div>
-
-          {battleData ? (
-            <BattleCard battle={battleData} />
-          ) : (
-            <div className="glass-card p-12 text-center">
-              <p className="text-body-md text-[var(--text-2)]">
-                Nothing live right now. Check back later.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Section 5 — Auditions */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-8 flex items-end justify-between">
-            <h2 className="text-display-md">Auditions</h2>
-            <Link
-              href="/pitches"
-              className="text-body-sm font-medium text-hype hover:underline"
-            >
-              All auditions →
-            </Link>
-          </div>
-
+        <section className="mb-16">
+          <SectionHeader
+            label="Go viral"
+            title="Live auditions"
+            subtitle="Pitch an idea, rally votes — the winner becomes today's featured drop."
+            action={
+              <Link
+                href="/pitches"
+                className="text-sm font-medium text-red-400 hover:text-red-300"
+              >
+                Pitch yours →
+              </Link>
+            }
+          />
           {activePitches.length === 0 ? (
-            <div className="glass-card flex flex-col items-center p-12 text-center">
-              <p className="text-body-md text-[var(--text-2)]">
-                Nothing here yet. Be the first to pitch something.
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
+                No auditions yet — be the first to pitch the next big thing.
               </p>
               <Button asChild className="mt-4">
-                <Link href="/pitches">Pitch an idea</Link>
+                <Link href="/pitches">Start an audition</Link>
               </Button>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="surface-card divide-y divide-white/[0.06] overflow-hidden rounded-2xl">
               {activePitches.map((pitch, i) => (
                 <PitchCard
                   key={pitch.id}
@@ -209,24 +210,68 @@ export default async function HomePage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
+        </section>
 
-      {/* Section 6 — Shop Teaser */}
-      {shopDrop && (
-        <ShopTeaser
-          drop={{
-            id: shopDrop.id,
-            name: shopDrop.name,
-            ends_at: shopDrop.ends_at,
-            theme: shopDrop.theme,
-            shop_items: (shopDrop.shop_items as { id: string }[]) ?? [],
-          }}
-        />
-      )}
+        {activeBattle.data && (
+          <section className="mb-16">
+            <SectionHeader
+              label="Live now"
+              title="Battle arena"
+              action={
+                <Link
+                  href="/battles"
+                  className="text-sm font-medium text-red-400 hover:text-red-300"
+                >
+                  View all →
+                </Link>
+              }
+            />
+            <Link
+              href={`/battles/${activeBattle.data.id}`}
+              className="group surface-card-hover block overflow-hidden p-8"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <Badge variant="live" className="mb-3">
+                    Battle live
+                  </Badge>
+                  <p className="font-display text-2xl font-bold group-hover:text-red-400">
+                    A head-to-head is happening right now
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    Pick your side. Watch the votes roll in.
+                  </p>
+                </div>
+                <span className="hidden text-4xl md:block">⚔️</span>
+              </div>
+            </Link>
+          </section>
+        )}
 
-      {/* Section 7 — Leaderboard Preview */}
-      <LeaderboardPreview leaders={leaders} />
+        <section>
+          <SectionHeader
+            label="Trending"
+            title="What's moving"
+            subtitle="The pulse of the internet, ranked by the crowd."
+          />
+          {trending.length === 0 ? (
+            <div className="surface-card rounded-2xl p-12 text-center">
+              <p className="text-[var(--text-secondary)]">
+                No trends yet. Seed via POST /api/seed/trends
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2">
+              {trending.map((t, i) => (
+                <div key={t.id}>
+                  <TrendCard trend={t} userVote={userVotes[t.id] ?? null} />
+                  {i === 2 && <AdSlot slot="home-feed-1" />}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </PageShell>
     </>
   );
 }

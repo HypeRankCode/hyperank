@@ -1,18 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?:
-    | "default"
-    | "hype"
-    | "dead"
-    | "gold"
-    | "neon"
-    | "outline"
-    | "live"
-    | "rare"
-    | "epic"
-    | "legendary"
-    | "mythic";
+  variant?: "default" | "hype" | "dead" | "gold" | "neon" | "outline" | "live";
 }
 
 export function Badge({
@@ -23,26 +12,14 @@ export function Badge({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-label",
-        variant === "default" &&
-          "border border-[var(--border)] bg-[var(--bg-raised)] text-[var(--text-2)]",
-        variant === "hype" &&
-          "border border-hype/40 bg-hype/15 text-hype",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium uppercase tracking-wider",
+        variant === "default" && "border border-white/10 bg-white/5 text-[var(--text-secondary)]",
+        variant === "hype" && "border border-red-500/40 bg-red-500/15 text-red-400",
         variant === "live" && "pill-live",
-        variant === "dead" &&
-          "border border-[var(--border)] bg-[var(--bg-raised)] text-[var(--text-3)]",
-        variant === "gold" &&
-          "border border-gold/30 bg-gold/10 text-gold",
-        variant === "neon" &&
-          "border border-neon/30 bg-neon/10 text-neon",
-        variant === "outline" &&
-          "border border-[var(--border-bright)] text-[var(--text-2)]",
-        variant === "rare" && "border border-rare/30 bg-rare/10 text-rare",
-        variant === "epic" && "border border-epic/30 bg-epic/10 text-epic",
-        variant === "legendary" &&
-          "border border-legendary/30 bg-legendary/10 text-legendary",
-        variant === "mythic" &&
-          "border border-mythic/30 bg-mythic/10 text-mythic",
+        variant === "dead" && "border border-white/10 bg-white/5 text-[var(--text-secondary)]",
+        variant === "gold" && "border border-yellow-500/30 bg-yellow-500/10 text-gold",
+        variant === "neon" && "border border-emerald-500/30 bg-emerald-500/10 text-neon",
+        variant === "outline" && "border border-white/15 text-[var(--text-secondary)]",
         className
       )}
       {...props}

@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreditDisplay } from "./CreditDisplay";
-import { StreakChip } from "./StreakChip";
 import { Logo } from "./Logo";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { useUserStore } from "@/stores/useUserStore";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
 
 const navLinks = [
   { href: "/trends", label: "Trends" },
+  { href: "/pitches", label: "Auditions" },
   { href: "/battles", label: "Battles" },
   { href: "/leaderboard", label: "Ranks" },
   { href: "/shop/drop", label: "Shop" },
@@ -25,7 +24,7 @@ export function HeaderClient() {
   if (pathname === "/login" || pathname.startsWith("/auth/")) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg-void)]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-black/60 backdrop-blur-2xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
         <Logo size="sm" />
 
@@ -38,50 +37,47 @@ export function HeaderClient() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative px-4 py-2 text-sm font-medium transition-colors",
+                  "relative rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "text-[var(--text-1)]"
-                    : "text-[var(--text-2)] hover:text-[var(--text-1)]"
+                    ? "text-white"
+                    : "text-[var(--text-secondary)] hover:text-white"
                 )}
               >
-                {link.label}
                 {active && (
-                  <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-hype" />
+                  <span className="absolute inset-0 rounded-full border border-red-500/30 bg-red-500/10" />
                 )}
+                <span className="relative">{link.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          {user && profile && (
-            <>
-              <StreakChip />
-              <CreditDisplay />
-              <Link
-                href={`/u/${profile.username}`}
-                className="rounded-full transition hover:ring-2 hover:ring-hype/40"
-                aria-label="Your profile"
-              >
-                <ProfileAvatar
-                  avatarUrl={profile.avatar_url}
-                  username={profile.username}
-                  size="sm"
-                  ring={Boolean(profile.avatar_url)}
-                  className="h-6 w-6"
-                />
-              </Link>
-            </>
-          )}
-          {user && !profile && (
-            <Button asChild size="sm">
-              <Link href="/onboarding">Finish setup</Link>
-            </Button>
-          )}
-          {!user && (
-            <Button asChild variant="outline" size="sm">
-              <Link href="/login">Sign in</Link>
-            </Button>
+        <div className="ml-auto flex items-center gap-3">
+          <CreditDisplay />
+          {user && profile ? (
+            <Link
+              href={`/u/${profile.username}`}
+              className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 py-1 pr-4 pl-1 text-sm transition-all hover:border-red-500/40 hover:bg-red-500/10"
+            >
+              <ProfileAvatar
+                avatarUrl={profile.avatar_url}
+                username={profile.username}
+                size="sm"
+                ring={Boolean(profile.avatar_url)}
+                className="h-9 w-9"
+              />
+              <span className="hidden font-medium sm:inline">
+                {profile.username}
+              </span>
+            </Link>
+          ) : user ? (
+            <Link href="/onboarding" className="btn-hype text-sm">
+              Finish setup
+            </Link>
+          ) : (
+            <Link href="/login" className="btn-hype text-sm">
+              Sign in
+            </Link>
           )}
         </div>
       </div>
